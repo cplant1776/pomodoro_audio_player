@@ -1,9 +1,10 @@
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.popup import Popup
 from source.functions import extract_file_paths, get_playlist_song_titles
-from kivy.properties import NumericProperty, StringProperty
+from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.clock import Clock
 from time import sleep
+import datetime
 
 # ====================================
 # CONSTANTS
@@ -124,6 +125,11 @@ class SessionScreen(Screen):
 
     def update_session_progress(self, *args):
         self.progress_value += 1
+        # self.ids.session_time_remaining.text = str(
+        #     datetime.timedelta(seconds=self.progress_max-self.progress_value))
+        self.ids.interval_time_remaining.text = str(
+            datetime.timedelta(seconds=self.parent.session.Timer.get_event_time_remaining()))
+
 
     def pause_session_progress(self):
         # Stop counting

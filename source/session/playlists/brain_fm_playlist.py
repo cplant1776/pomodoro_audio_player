@@ -30,7 +30,6 @@ CSS_SELECTORS = {'home_button'             : '[href="/app"] > div',
                  'skip_track_button': '[class*="Skip"]'
                  }
 X_PATHS = {'infinity_button'    : '//button[text()="2 hours"]/following-sibling::button',
-           'skip_button'        : '//a[text()="Skip >>"]',
            }
 
 
@@ -137,7 +136,7 @@ class BrainFMBrowser:
 
     def click_skip_button(self):
         """Skips currently playing track and plays next"""
-        skip_button = self.driver.find_element_by_css_selector(CSS_SELECTORS['skip_button'])
+        skip_button = self.driver.find_element_by_css_selector(CSS_SELECTORS['skip_track_button'])
         self.protected_click(skip_button)
 
     def navigate_to_home(self):

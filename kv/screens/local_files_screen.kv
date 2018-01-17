@@ -12,7 +12,7 @@
         height: self.texture_size[1]
 
 <LocalFilesScreenSection@BoxLayout>:
-    size_hint: 0.8, 0.75
+    size_hint: 0.8, 1
     pos_hint: {'center_x': 0.5}
     text: "I am a placeholder"
     BoxLayout:
@@ -20,8 +20,12 @@
 
         Label:
             id: title_label
+            text_size: self.size
+            halign: 'left'
+            font_size: "20dp"
             size_hint: 1, 0.2
             text: root.text + " Playlist"
+
         ScrollableLabel:
             id: scrollable_label
             text: ''
@@ -35,10 +39,18 @@
         on_release: app.root.ids.local_files_screen.show_load()
 
 <LocalFilesScreen>:
+    Label:
+        id: local_banner
+        text: "Select Playlist Locations"
+        size_hint_y: None
+        pos_hint: {'top': 1, 'center_x': 0.5}
+        font_size: "65dp"
+
     BoxLayout:
         orientation: "vertical"
         padding: "60dp"
         spacing: "60dp"
+        size_hint: 1, 0.9
 
         LocalFilesScreenSection:
             id: lf_work
@@ -50,9 +62,9 @@
             id: lf_long_rest
             text: 'Long Rest'
 
-        Button:
-            text: "Start!"
-            pos_hint: {'center_x': 0.5}
-            size_hint: 0.3, 0.25
-            on_release: app.root.session.initialize_session_intervals()
-            on_release: app.root.current = 'SessionScreen'
+    Button:
+        text: "Start!"
+        pos_hint: {'center_x': 0.5, 'top': 0.05}
+        size_hint: 0.3, 0.05
+        on_release: app.root.session.initialize_session_intervals()
+        on_release: app.root.current = 'SessionScreen'

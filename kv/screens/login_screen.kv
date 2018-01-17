@@ -9,9 +9,11 @@
         spacing: '50dp'
 
         Label:
-            text: '[PLACEHOLDER]'
-#            text: app.root.session.style
-            font_size: 32
+            id: login_banner
+            text: "Enter Login Information"
+            size_hint_y: None
+            pos_hint: {'top': 1, 'center_x': 0.5}
+            font_size: "65dp"
 
         BoxLayout:
             orientation: 'vertical'
@@ -19,6 +21,7 @@
 
             Label:
                 text: 'Username/Email'
+                font_size: "30dp"
 
             TextInput:
                 id: username
@@ -33,6 +36,7 @@
 
             Label:
                 text: 'Password'
+                font_size: "30dp"
 
             TextInput:
                 id: password

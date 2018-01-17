@@ -29,6 +29,6 @@ class PomodoroApp(App):
 if __name__ == "__main__":
     PomodoroApp().run()
 
-# TODO: Make the interface nicer to look at
-# TODO: Create load queue to reduce memory usage
+# TODO: Add protections for user's incorrect use
+# TODO: Create load queue to reduce memory usage for local playlists
 # TODO: Look into spotify API
