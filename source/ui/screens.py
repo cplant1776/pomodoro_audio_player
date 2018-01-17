@@ -125,8 +125,6 @@ class SessionScreen(Screen):
 
     def update_session_progress(self, *args):
         self.progress_value += 1
-        # self.ids.session_time_remaining.text = str(
-        #     datetime.timedelta(seconds=self.progress_max-self.progress_value))
         self.ids.interval_time_remaining.text = str(
             datetime.timedelta(seconds=self.parent.session.Timer.get_event_time_remaining()))
 
@@ -135,9 +133,16 @@ class SessionScreen(Screen):
         # Stop counting
         self.progress_value_event.cancel()
 
-    def skip_interval_progress(self):
+    def schedule_skip_interval_progress(self):
+        Clock.schedule_once(self.skip_interval_progress, 0.5)
+
+    def skip_interval_progress(self, *args):
         # Update progress bar for skipped interval
+        print("Timer time_passed_since_start: {}".format(self.parent.session.Timer.time_passed_since_start))
+        print("before: {}".format(self.progress_value))
         self.progress_value = self.parent.session.Timer.time_passed_since_start
+        print("Timer time_passed_since_start: {}".format(self.parent.session.Timer.time_passed_since_start))
+        print("after: {}".format(self.progress_value))
 
 
 class TesterScreen(LocalFilesScreen):

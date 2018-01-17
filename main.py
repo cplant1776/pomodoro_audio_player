@@ -19,6 +19,12 @@ def load_kv_file(kv):
 
 
 class PomodoroApp(App):
+
+    def on_stop(self):
+        """End program if clicking Close"""
+        print("I stopped!")
+        quit()
+
     def build(self):
         """Start main loop"""
         session = Session()
