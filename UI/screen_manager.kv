@@ -5,6 +5,11 @@
 <RootScreen@ScreenManager>:
     id: screen_manager
 
+    SourceScreen:
+        id: source_screen
+        name: 'SourceScreen'
+        manager: 'screen_manager'
+
 # 1st screen listed pops up 1st
     StartScreen:
         id: start_screen
@@ -16,16 +21,18 @@
         name: 'LocalFilesScreen'
         manager: 'screen_manager'
 
-    SourceScreen:
-        id: source_screen
-        name: 'SourceScreen'
-        manager: 'screen_manager'
-
+#    SourceScreen:
+#        id: source_screen
+#        name: 'SourceScreen'
+#        manager: 'screen_manager'
 
     SessionScreen:
         id: session_screen
         name: 'SessionScreen'
         manager: 'screen_manager'
+
+
+
 
     BrowseFilesScreen:
         id: browse_file_screen
@@ -144,22 +151,22 @@
         padding: "60dp"
         spacing: "60dp"
 
-        LocalFilesScreenSection:
-            id: lf_work
-            text: 'Work'
-        LocalFilesScreenSection:
-            id: lf_rest
-            text: 'Rest'
-        LocalFilesScreenSection:
-            id: lf_long_rest
-            text: 'Long Rest'
+#        LocalFilesScreenSection:
+#            id: lf_work
+#            text: 'Work'
+#        LocalFilesScreenSection:
+#            id: lf_rest
+#            text: 'Rest'
+#        LocalFilesScreenSection:
+#            id: lf_long_rest
+#            text: 'Long Rest'
 
         Button:
             text: "Start!"
             pos_hint: {'center_x': 0.5}
             size_hint: 0.3, 0.25
+            on_release: app.root.session.initialize_session_intervals()
             on_release: app.root.current = 'SessionScreen'
-            on_release: app.root.session.initialize_session()
 
 #===================================
 # BROWSE FILE SCREEN
@@ -197,6 +204,7 @@
     value: 0
 
 <SessionScreen>:
+    on_enter: app.root.session.start_next_interval()
     on_enter: self.start_interval_progress()
     BoxLayout:
         orientation: 'vertical'

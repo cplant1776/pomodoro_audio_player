@@ -31,7 +31,7 @@ class LocalFilesScreen(Screen):
 
     def show_load(self):
         content = BrowseFilesScreen(load=self.load)
-        # Popup a file browser to select playlist
+        # Popup a file browser to select current_playlist
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.75, 0.75))
         self._popup.open()
@@ -39,10 +39,10 @@ class LocalFilesScreen(Screen):
     def load(self, path, filename):
         # Generate list of format [(song1), (song1 directory), (song2), (song2 directory),...]
         new_playlist = parse_playlist_file(path, filename)
-        # Get playlist type (work/rest/long_rest)
+        # Get current_playlist type (work/rest/long_rest)
         playlist_type = str(self.parent.session.current_type).lower()
 
-        # Update appropriate playlist then update label text to display songs in the playlist
+        # Update appropriate current_playlist then update label text to display songs in the current_playlist
         if playlist_type == 'work':
             self.parent.session.work_playlist = new_playlist
             self.ids['lf_work'].ids['scrollable_label'].text = self.parent.session.get_songs_string(new_playlist)
@@ -85,13 +85,13 @@ class SessionScreen(Screen):
         self.progress_max = 100
 
     def start_interval_progress(self):
-        self.progress_max = self.parent.session.get_session_time_remaining()
+        self.progress_max = int(self.parent.session.Timer.time_passed_since_start - self.parent.session.Timer.total_time)
         self.progress_value_event = Clock.schedule_interval(self.update_interval_progress, 1)
         print(self.progress_max)
 
     def update_interval_progress(self, *args):
         self.progress_value += 1
-        print(self.progress_value)
+        # print(self.progress_value)
 
     def pause_interval_progress(self):
         # Stop counting
@@ -99,7 +99,7 @@ class SessionScreen(Screen):
 
     def skip_interval_progress(self):
         # Update progress bar for skipped interval
-        self.progress_value = self.parent.session.session_time_passed
+        self.progress_value = self.parent.session.Timer.time_passed_since_start
 
 
 class TesterScreen(Screen):

@@ -1,27 +1,26 @@
 from kivy.core.audio import SoundLoader
 from random import shuffle
 from kivy.clock import Clock
-from copy import deepcopy
-from time import time
+
+from time import sleep, strftime
+
+
+NUM_OF_WORK_INTERVALS = 4
+NUM_OF_REST_INTERVALS = 3
 
 
 class Session:
     def __init__(self):
-        self.work_interval = 10
-        self.rest_interval = 5
-        self.long_rest_interval = 15
+        self.interval_duration = {'work': 3, 'rest': 2, 'long_rest': 5}
 
-        self.work_playlist = []
-        self.rest_playlist = []
-        self.long_rest_playlist = []
+        self.playlist = {'work': [], 'rest': []}
 
-        self.current_playlist = []
-
-        self.interval = None
+        self.Intervals = {}
         self.interval_loop = 1
-        self.interval_time_elapsed = 0
 
-        self.session_time_passed = 0
+        self.Timer = Timer()
+        self.EventHandler = EventHandler()
+
 
     @staticmethod
     def get_songs_string(playlist):
@@ -35,159 +34,179 @@ class Session:
         shuffle(result)
         return result
 
-    def initialize_session(self):
-        # Set duration of intervals (W-R-W-R-W-R-W-LR]
-        self.duration = dict.fromkeys([1, 3, 5, 7], self.work_interval)
-        self.duration.update(dict.fromkeys([2, 4, 6], self.rest_interval))
-        self.duration[8] = self.long_rest_interval
+    def initialize_session_intervals(self):
+        # Create all 8 intervals for the session (W-R-W-R-W-R-W-LR)
+        self.Intervals.update(dict.fromkeys([1, 3, 5, 7], Interval(duration=self.interval_duration['work'],
+                                                                   playlist=self.playlist['work'])))
+        self.Intervals.update(dict.fromkeys([2, 4, 6], Interval(duration=self.interval_duration['rest'],
+                                                                playlist=self.playlist['rest'])))
+        self.Intervals[8] = Interval(duration=self.interval_duration['long_rest'],
+                                     playlist=self.playlist['rest'])
 
-        # define each playlist (work, rest, long rest)
-        work_queue = self.get_path_list(self.work_playlist)
-        rest_queue = self.get_path_list(self.rest_playlist)
-        long_rest_queue = self.get_path_list(self.long_rest_playlist)
+        self.Timer.set_total_time(self.get_session_total_time())
 
-        # Set playlist for each interval (W-R-W-R-W-R-W-LR]
-        self.current_playlist = dict.fromkeys([1, 3, 5, 7], work_queue)
-        self.current_playlist.update(dict.fromkeys([2, 4, 6], rest_queue))
-        self.current_playlist[8] = long_rest_queue
+    def start_next_interval(self):
+        self.Intervals[self.interval_loop].start()
+        self.Timer.set_event_duration(self.Intervals[self.interval_loop].duration)
+        self.Timer.start()
 
-        # Start interval 1
-        self.start_interval()
+        end_interval_event = Clock.schedule_once(self.end_interval,
+                                                 self.Timer.event_duration)
+        self.EventHandler.schedule_event(event=end_interval_event, event_name='end_interval')
 
-    def start_interval(self):
-        self.interval = Interval(playlist=self.current_playlist[self.interval_loop])
-        self.interval.start()
-        self.end_interval_event = Clock.schedule_once(self.end_interval, self.duration[self.interval_loop])
-        self.session_progress_event = Clock.schedule_interval(self.update_session_progress, 1)
+    def end_interval(self, *args):
 
-    def update_session_progress(self, *args):
-        self.session_time_passed += 1
+        self.Intervals[self.interval_loop].stop()
+        self.Timer.pause()
 
-    def end_interval(self, dt=0):
-        self.interval.stop()
         if self.interval_loop == 8:
             self.end_session()
         else:
             self.interval_loop += 1
-        self.start_interval()
+
+        self.start_next_interval()
+
         print("Start Interval " + str(self.interval_loop))
 
     def skip_interval(self):
         # Unschedule current end event
-        self.end_interval_event.cancel()
+        self.EventHandler.cancel_event(event_name='end_interval')
         # Unschedule current session progression
-        self.session_progress_event.cancel()
-        # Update time remaining in session
-        self.session_time_passed += self.get_interval_time_remaining()
+        self.Timer.pause()
+        # Update time remaining in session w/ remaining interval time
+        self.Timer.update_time_passed_since_start()
+
         self.end_interval()
         print("end interval")
 
     def pause_interval(self):
         # Unschedule current end event
-        self.end_interval_event.cancel()
+        self.EventHandler.cancel_event(event_name='end_interval')
         # Unschedule current session progression
-        self.session_progress_event.cancel()
+        self.Timer.pause()
         # Pause current song
-        self.interval.pause_song()
+        self.Intervals[self.interval_loop].pause()
         # Save interval position for resume
-        self.interval_time_elapsed = int(time() - self.interval.start_time)
         print("pause_interval")
 
     def resume_interval(self):
         # Start song
-        self.interval.resume_song()
-        # Save start time
-        self.interval.start_time = time()
+        self.Intervals[self.interval_loop].resume()
 
         # Reschedule interval transition
-        self.end_interval_event = Clock.schedule_once(self.end_interval, self.get_interval_time_remaining())
+        end_interval_event = Clock.schedule_once(self.end_interval, self.Timer.get_event_time_remaining())
+        self.EventHandler.schedule_event(event=end_interval_event, event_name='end_interval')
+
         # Reschedule session progress event
-        self.session_progress_event = Clock.schedule_interval(self.update_session_progress, 1)
+        self.Timer.start()
         print("start_interval")
 
     def end_session(self):
-        print("winwinwinnomatterwhat")
+        print(self.interval_loop)
         quit()
 
-    def get_session_time_remaining(self):
-        return int(self.get_session_total_time() - self.session_time_passed)
-
-    def get_interval_time_remaining(self):
-        return int(self.duration[self.interval_loop] - self.interval_time_elapsed)
-
     def get_session_total_time(self):
-        return int(self.work_interval*4 + self.rest_interval*3 + self.long_rest_interval)
+        return int(self.interval_duration['work'] * NUM_OF_WORK_INTERVALS +
+                   self.interval_duration['rest'] * NUM_OF_REST_INTERVALS +
+                   self.interval_duration['long_rest'])
 
 
 class Interval:
-    def __init__(self, playlist=[]):
-        self.full_playlist = playlist
-        self.playlist = [i for i in playlist]
-        self.start_time = time()
+    def __init__(self, duration=0, playlist=[]):
 
-        self.next_song = None
-        self.current_song = None
+        self.playlists = {'current': None, 'full': playlist}
+        # current playlist gets popped until it is empty, then refills
+        self.refill_current_playlist()
 
-        self.current_song_path = None
-        self.next_song_path = None
+        self.songs = {'current': Song(), 'next': Song()}
 
-        self.playing_song = None
-        self.end_song_event = None
+        self.duration = duration
+
+        self.Timer = Timer()
+        self.EventHandler = EventHandler()
 
     def start(self):
-        self.next_song = Song(path=self.pop_song_from_playlist())
+        # Pop 1st song into current_playlist and start playing it
+        self.set_next_song()
         self.play_next_song()
 
-    def pop_song_from_playlist(self):
-        result = self.playlist.pop()
-        if not self.playlist:
-            self.loop_playlist()
-        return result
+    def set_next_song(self):
+        self.songs['next'] = Song(path=self.pop_song_path_from_playlist())
 
-    def loop_playlist(self):
-        self.playlist = [i for i in self.full_playlist]
+    def pop_song_path_from_playlist(self):
+        popped_song = self.playlists['current'].pop()
+        # If current_playlist is empty, refill it
+        if not self.playlists['current']:
+            self.refill_current_playlist()
+        return popped_song
+
+    def refill_current_playlist(self):
+        self.playlists['current'] = [i for i in self.playlists['full']]
 
     def play_current_song(self):
-        self.current_song.load()
-        self.current_song.play()
+        self.songs['current'].play()
+
+    def queue_next_song(self):
+        self.songs['current'], self.songs['next'] = self.songs['next'], Song(self.pop_song_path_from_playlist())
+        self.songs['current'].load()
+
+    def set_current_song_event_length(self):
+        self.Timer.reset_event_time_passed()
+        self.Timer.set_event_duration(self.songs['current'].get_length())
 
     def play_next_song(self):
-        # Make next song the current song and pop the next song
-        self.current_song, self.next_song = self.next_song, Song(self.pop_song_from_playlist())
+        # Change next-song to current-song and pop a new next-song
+        self.queue_next_song()
 
     #     start song
         self.play_current_song()
-    #     set up play_next_song to trigger after current song duration
-        self.end_song_event = Clock.schedule_once(self.end_current_song,
-                                                  int(self.current_song.get_length()))
+        self.set_current_song_event_length()
+        self.Timer.start()
 
-    def end_current_song(self, dt=0):
+    #     set up play_next_song to trigger after current song duration
+    #     print("*" * 20,"\n",int(self.songs['current'].get_length()),"\n","*" * 20)
+        end_song_event = Clock.schedule_once(self.end_current_song,
+                                             int(self.songs['current'].get_length()))
+        self.EventHandler.schedule_event(event=end_song_event, event_name='end_song')
+
+    def end_current_song(self, *args):
+        self.songs['current'].stop()
+        self.Timer.pause()
         self.play_next_song()
 
     def pause_song(self):
         # Unschedule event to transition to next song
-        self.end_song_event.cancel()
-        # Save current song position for resume
-        self.current_song.save_position()
+        # self.EventHandler.cancel_event(event_name='end_song')
         # Stop playing
-        self.current_song.stop()
+        self.songs['current'].stop()
+        # Stop timer
+        self.Timer.pause()
+
         print("Pause song")
 
     def resume_song(self):
         # Reload song and start playing
         self.play_current_song()
+        self.Timer.start()
         # Jump to pause position
-        self.current_song.seek()
+        self.songs['current'].seek(self.Timer.event_time_passed)
         # Schedule event to transition to next song
-        self.end_song_event = Clock.schedule_once(self.end_current_song,
-                                                  self.current_song.time_remaining)
+        end_song_event = Clock.schedule_once(self.end_current_song,
+                                             self.Timer.get_event_time_remaining())
+        self.EventHandler.schedule_event(event=end_song_event, event_name='end_song')
+
         # Reset seek position
         print("resume song")
 
-    def stop(self, dt=0):
-        print("Changing intervals . . .")
-        self.end_song_event.cancel()
-        self.current_song.stop()
+    def pause(self):
+        self.pause_song()
+
+    def resume(self):
+        self.resume_song()
+
+    def stop(self):
+        # self.EventHandler.cancel_event('end_song')
+        self.songs['current'].stop()
 
 
 class Song:
@@ -205,17 +224,66 @@ class Song:
         self.song.play()
 
     def stop(self):
-        self.time_remaining = self.song.length - self.time_elapsed
         self.song.stop()
 
-    def seek(self):
-        self.song.seek(self.time_elapsed)
-
-    def save_position(self):
-        self.time_elapsed = int(self.song.get_pos())
+    def seek(self, position):
+        self.song.seek(position)
 
     def get_length(self):
         return self.song.length
+
+
+class EventHandler:
+    def __init__(self):
+        self.events = {}
+
+    def schedule_event(self, event, event_name):
+        print("{} - Scheduled: {}".format(strftime('%X'), event_name))
+        self.events[event_name] = event
+
+    def cancel_event(self, event_name):
+        print("{} - Canceled: {}".format(strftime('%X'), event_name))
+        self.events[event_name].cancel()
+
+
+class Timer:
+    def __init__(self):
+        self.total_time = 0
+        self.time_passed_since_start = 0
+
+        self.event_duration = 0
+        self.event_time_passed = 0
+
+        self.time_passed_update_event = None
+
+    def set_total_time(self, total_time=0):
+        self.total_time = total_time
+
+    def set_event_duration(self, event_duration=0):
+        self.event_duration = event_duration
+
+    def reset_event_time_passed(self):
+        self.event_time_passed = 0
+
+    def start(self):
+        self.time_passed_update_event = Clock.schedule_interval(self.update_time_passed, 1)
+
+    def pause(self):
+        self.time_passed_update_event.cancel()
+
+    def update_time_passed(self, *args):
+        self.time_passed_since_start += 1
+        self.event_time_passed += 1
+        print("{}: {}".format(self,self.event_time_passed))
+
+    def get_event_time_passed(self):
+        return self.event_time_passed
+
+    def update_time_passed_since_start(self):
+        self.time_passed_since_start += int(self.event_duration - self.event_time_passed)
+
+    def get_event_time_remaining(self):
+        return int(self.event_duration - self.event_time_passed)
 
 
 
