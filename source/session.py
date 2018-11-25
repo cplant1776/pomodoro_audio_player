@@ -1,6 +1,7 @@
 from kivy.core.audio import SoundLoader
 from random import shuffle
 from kivy.clock import Clock
+from random import shuffle
 
 from time import sleep, strftime
 
@@ -11,7 +12,9 @@ NUM_OF_REST_INTERVALS = 3
 
 class Session:
     def __init__(self):
-        self.interval_duration = {'work': 3, 'rest': 2, 'long_rest': 5}
+        self.interval_duration = {'work': 5, 'rest': 3, 'long_rest': 5}
+
+        # self.playlist = {'work': [], 'rest': []}
 
         self.playlist = {'work': [], 'rest': []}
 
@@ -46,27 +49,34 @@ class Session:
         self.Timer.set_total_time(self.get_session_total_time())
 
     def start_next_interval(self):
+        # Start interval
         self.Intervals[self.interval_loop].start()
+        # Set event timer to length of interval
         self.Timer.set_event_duration(self.Intervals[self.interval_loop].duration)
+        # Star session timer
         self.Timer.start()
 
+        # Schedule event to end current interval
         end_interval_event = Clock.schedule_once(self.end_interval,
                                                  self.Timer.event_duration)
         self.EventHandler.schedule_event(event=end_interval_event, event_name='end_interval')
 
     def end_interval(self, *args):
+        print("{} - Execute: {}".format(strftime('%X'), "end_interval"))
 
         self.Intervals[self.interval_loop].stop()
+        # Pause session timer
         self.Timer.pause()
 
+        # If final interval, end the session
         if self.interval_loop == 8:
             self.end_session()
         else:
             self.interval_loop += 1
 
-        self.start_next_interval()
-
         print("Start Interval " + str(self.interval_loop))
+
+        self.start_next_interval()
 
     def skip_interval(self):
         # Unschedule current end event
@@ -86,7 +96,6 @@ class Session:
         self.Timer.pause()
         # Pause current song
         self.Intervals[self.interval_loop].pause()
-        # Save interval position for resume
         print("pause_interval")
 
     def resume_interval(self):
@@ -112,84 +121,33 @@ class Session:
 
 
 class Interval:
-    def __init__(self, duration=0, playlist=[]):
+    def __init__(self, duration=0, playlist=None):
 
-        self.playlists = {'current': None, 'full': playlist}
-        # current playlist gets popped until it is empty, then refills
-        self.refill_current_playlist()
-
-        self.songs = {'current': Song(), 'next': Song()}
-
+        self.playlist = playlist
         self.duration = duration
 
         self.Timer = Timer()
         self.EventHandler = EventHandler()
 
     def start(self):
-        # Pop 1st song into current_playlist and start playing it
-        self.set_next_song()
         self.play_next_song()
 
-    def set_next_song(self):
-        self.songs['next'] = Song(path=self.pop_song_path_from_playlist())
-
-    def pop_song_path_from_playlist(self):
-        popped_song = self.playlists['current'].pop()
-        # If current_playlist is empty, refill it
-        if not self.playlists['current']:
-            self.refill_current_playlist()
-        return popped_song
-
-    def refill_current_playlist(self):
-        self.playlists['current'] = [i for i in self.playlists['full']]
-
-    def play_current_song(self):
-        self.songs['current'].play()
-
-    def queue_next_song(self):
-        self.songs['current'], self.songs['next'] = self.songs['next'], Song(self.pop_song_path_from_playlist())
-        self.songs['current'].load()
-
-    def set_current_song_event_length(self):
-        self.Timer.reset_event_time_passed()
-        self.Timer.set_event_duration(self.songs['current'].get_length())
-
-    def play_next_song(self):
-        # Change next-song to current-song and pop a new next-song
-        self.queue_next_song()
-
-    #     start song
-        self.play_current_song()
-        self.set_current_song_event_length()
-        self.Timer.start()
-
-    #     set up play_next_song to trigger after current song duration
-    #     print("*" * 20,"\n",int(self.songs['current'].get_length()),"\n","*" * 20)
-        end_song_event = Clock.schedule_once(self.end_current_song,
-                                             int(self.songs['current'].get_length()))
-        self.EventHandler.schedule_event(event=end_song_event, event_name='end_song')
-
-    def end_current_song(self, *args):
-        self.songs['current'].stop()
-        self.Timer.pause()
-        self.play_next_song()
-
-    def pause_song(self):
-        # Unschedule event to transition to next song
-        # self.EventHandler.cancel_event(event_name='end_song')
-        # Stop playing
-        self.songs['current'].stop()
+    def pause(self):
+        # Unschedule event that ends current song
+        self.EventHandler.cancel_event(event_name='end_song')
+        # Pause playlist
+        self.playlist.pause()
         # Stop timer
         self.Timer.pause()
 
-        print("Pause song")
+        print("Pause interval")
 
-    def resume_song(self):
+    def resume(self):
         # Reload song and start playing
-        self.play_current_song()
+        self.playlist.resume(position=self.Timer.event_time_passed)
+        # Start timer again
         self.Timer.start()
-        # Jump to pause position
-        self.songs['current'].seek(self.Timer.event_time_passed)
+
         # Schedule event to transition to next song
         end_song_event = Clock.schedule_once(self.end_current_song,
                                              self.Timer.get_event_time_remaining())
@@ -198,15 +156,96 @@ class Interval:
         # Reset seek position
         print("resume song")
 
-    def pause(self):
-        self.pause_song()
-
-    def resume(self):
-        self.resume_song()
-
     def stop(self):
         # self.EventHandler.cancel_event('end_song')
-        self.songs['current'].stop()
+        self.playlist.stop_current_song()
+        self.Timer.pause()
+
+    def set_current_song_event_length(self):
+        # Reset event timer
+        self.Timer.reset_event_time_passed()
+        # Set event duration to song duration
+        self.Timer.set_event_duration(self.playlist.get_current_song_length())
+
+    def play_next_song(self):
+        # Start next song
+        self.playlist.play_next_song()
+        # Set event duration
+        self.set_current_song_event_length()
+
+        #
+        print(self.Timer.event_duration)
+
+        # Start the timer
+        self.Timer.start()
+
+        # Schedule event to end song
+        end_song_event = Clock.schedule_once(self.end_current_song,
+                                             int(self.playlist.get_current_song_length()))
+        self.EventHandler.schedule_event(event=end_song_event, event_name='end_song')
+
+    def end_current_song(self, *args):
+        print("{} - Execute: {}".format(strftime('%X'), "end_song"))
+        # Stop playback
+        self.playlist.stop_current_song()
+        # Pause timer
+        self.Timer.pause()
+        # Play next song
+        self.play_next_song()
+
+
+class Playlist:
+    def __init__(self, paths):
+        # Create randomized track list and load them for use
+        self.tracks = []
+        self.populate_tracks(paths)
+        self.randomize_tracks()
+        self.load_tracks_into_memory()
+
+        self.current_index = 0
+
+    def populate_tracks(self, paths):
+        # Create list of tracks
+        for path in paths:
+            self.tracks.append(Song(path))
+
+    def randomize_tracks(self):
+        # Shuffle tracks in random order
+        shuffle(self.tracks)
+
+    def load_tracks_into_memory(self):
+        for track in self.tracks:
+            track.load()
+
+    def play_next_song(self):
+        # Refill playlist if needed
+        if self.no_more_tracks():
+            self.restart_playlist()
+        # Play next track in playlist
+        self.tracks[self.current_index].play()
+
+    def stop_current_song(self):
+        self.tracks[self.current_index].stop()
+
+    def no_more_tracks(self):
+        if self.current_index == len(self.tracks):
+            return True
+        else:
+            return False
+
+    def restart_playlist(self):
+        self.current_index = 0
+
+    def get_current_song_length(self):
+        return self.tracks[self.current_index].get_length()
+
+    def pause(self):
+        self.tracks[self.current_index].stop()
+
+    def resume(self, position=0):
+        # Start playback and jump to paused position
+        self.tracks[self.current_index].play()
+        self.tracks[self.current_index].seek(position)
 
 
 class Song:
@@ -214,17 +253,17 @@ class Song:
         self.path = path
         self.song = None
 
-        self.time_elapsed = 0
-        self.time_remaining = 0
-
     def load(self):
-        self.song = SoundLoader.load(self.path)
+        if self.song is None:
+            self.song = SoundLoader.load(self.path)
 
     def play(self):
+        print("playing {}".format(self.path))
         self.song.play()
 
     def stop(self):
-        self.song.stop()
+        if self.song.status != 'stop':
+            self.song.stop()
 
     def seek(self, position):
         self.song.seek(position)
