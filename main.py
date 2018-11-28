@@ -1,11 +1,8 @@
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.clock import Clock
 import os.path
-import source.screens as screens
-import source.ui_elements as ui_elements
-from time import sleep
-from source.session import Session
+import source.ui.screens as screens
+from source.session.session_local_file import Session
 
 import logging
 
@@ -21,7 +18,7 @@ KV_FILE = 'pomodoro.kv'
 # Change directories because kv
 # had trouble including from a relative path
 def load_kv_file(kv):
-    os.chdir("UI")
+    os.chdir("kv")
     Builder.load_file(kv)
     os.chdir("..")
 

@@ -1,7 +1,8 @@
 import os.path
+from random import shuffle
 
 
-def parse_playlist_file(path, filename):
+def extract_file_paths(path, filename):
     result = []
     with open(os.path.join(path, filename[0])) as playlist_file:
         # skip 1st line
@@ -16,7 +17,9 @@ def parse_playlist_file(path, filename):
                 # path
                 result.append(items[0])
     # remove newline characters from results
-    for item in result:
-        item.replace("\n", "")
+    result = [s.strip('\n') for s in result]
 
+    # get list of song directories in random order
+    result = result[1::2]
+    shuffle(result)
     return result
