@@ -8,15 +8,31 @@ NUM_OF_REST_INTERVALS = 3
 
 class Session:
     def __init__(self):
-        self.interval_duration = {'work': 10, 'rest': 5, 'long_rest': 15}
+        # self.interval_duration = {'work': -1, 'rest': -1, 'long_rest': -1}
+        self.interval_duration = {'work': 5, 'rest': 5, 'long_rest': 10}
 
-        self.playlist = {'work': None, 'rest': None}
+        self.playlist = {'work': LocalPlaylist(), 'rest': LocalPlaylist(), 'long_rest': LocalPlaylist()}
 
         self.Intervals = {}
         self.interval_loop = 1
 
         self.Timer = Timer()
         self.EventHandler = EventHandler()
+
+    def generate_playlist_object(self, file_paths="", playlist_type=""):
+        self.playlist[playlist_type] = LocalPlaylist(paths=file_paths)
+
+    @staticmethod
+    def get_songs_string(playlist):
+        # extract every other entry (the file name)
+        return ''.join(playlist[0::2])
+
+    @staticmethod
+    def get_path_list(playlist):
+        # get list of song directories in random order
+        result = playlist[1::2]
+        shuffle(result)
+        return result
 
     def initialize_session_intervals(self):
         # Create all 8 intervals for the session (W-R-W-R-W-R-W-LR)
@@ -27,14 +43,15 @@ class Session:
         self.Intervals[8] = Interval(duration=self.interval_duration['long_rest'],
                                      playlist=self.playlist['rest'])
 
+        # Set duration of session
         self.Timer.set_total_time(self.get_session_total_time())
 
     def start_next_interval(self):
         # Start interval
         self.Intervals[self.interval_loop].start()
-        # Set event timer to length of interval
+        # Timer event_length = interval_length
         self.Timer.set_event_duration(self.Intervals[self.interval_loop].duration)
-        # Reset event time passed
+        # Time event_time_passed = 0
         self.Timer.reset_event_time_passed()
         # Star session timer
         self.Timer.start()
@@ -45,7 +62,7 @@ class Session:
         self.EventHandler.schedule_event(event=end_interval_event, event_name='end_interval')
 
     def end_interval(self, *args):
-        print("{} - Execute: {}".format(strftime('%X'), "end_interval"))
+        print("{} - Execute: {} ==> {}".format(strftime('%X'), "end_interval", self.EventHandler.events['end_interval']))
 
         self.Intervals[self.interval_loop].stop()
         # Pause session timer
@@ -70,7 +87,7 @@ class Session:
         self.Timer.update_time_passed_since_start()
 
         self.end_interval()
-        print("end interval")
+        print("SKIP INTERVAL")
 
     def pause_interval(self):
         # Unschedule current end event

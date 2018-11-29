@@ -5,7 +5,19 @@
 <RootScreen@ScreenManager>:
     id: screen_manager
 
+
+
 # 1st screen listed pops up 1st
+#    TesterScreen:
+#        id: tester_screen
+#        name: 'TesterScreen'
+#        manager: 'screen_manager'
+
+    LocalFilesScreen:
+        id: local_files_screen
+        name: 'LocalFilesScreen'
+        manager: 'screen_manager'
+
     StartScreen:
         id: start_screen
         name: 'StartScreen'
@@ -16,10 +28,10 @@
         name: 'SourceScreen'
         manager: 'screen_manager'
 
-    LocalFilesScreen:
-        id: local_files_screen
-        name: 'LocalFilesScreen'
-        manager: 'screen_manager'
+#    LocalFilesScreen:
+#        id: local_files_screen
+#        name: 'LocalFilesScreen'
+#        manager: 'screen_manager'
 
     SessionScreen:
         id: session_screen
@@ -245,3 +257,26 @@
 #            Rectangle:
 #                pos: self.pos
 #                size: self.size
+
+<TesterScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "60dp"
+        spacing: "60dp"
+
+        LocalFilesScreenSection:
+            id: lf_work
+            text: 'Work'
+        LocalFilesScreenSection:
+            id: lf_rest
+            text: 'Rest'
+        LocalFilesScreenSection:
+            id: lf_long_rest
+            text: 'Long Rest'
+
+        Button:
+            text: "Start!"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.3, 0.25
+            on_release: app.root.session.initialize_session_intervals()
+            on_release: app.root.current = 'SessionScreen'

@@ -45,13 +45,13 @@ class LocalFilesScreen(Screen):
 
         # Update appropriate type of playlist then update label text to display songs in the current_playlist
         if playlist_type == 'work':
-            self.parent.session.generate_playlist(file_paths=new_playlist_file_paths, playlist_type='work')
+            self.parent.session.generate_playlist_object(file_paths=new_playlist_file_paths, playlist_type='work')
             self.ids['lf_work'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
         elif playlist_type == 'rest':
-            self.parent.session.generate_playlist(file_paths=new_playlist_file_paths, playlist_type='rest')
+            self.parent.session.generate_playlist_object(file_paths=new_playlist_file_paths, playlist_type='rest')
             self.ids['lf_rest'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
         elif playlist_type == 'long rest':
-            self.parent.session.generate_playlist(file_paths=new_playlist_file_paths, playlist_type='long_rest')
+            self.parent.session.generate_playlist_object(file_paths=new_playlist_file_paths, playlist_type='long_rest')
             self.ids['lf_long_rest'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
 
         # Close the window
@@ -114,6 +114,6 @@ class SessionScreen(Screen):
         self.progress_value = self.parent.session.Timer.time_passed_since_start
 
 
-class TesterScreen(Screen):
+class TesterScreen(LocalFilesScreen):
     pass
 
