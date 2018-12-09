@@ -1,11 +1,10 @@
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.popup import Popup
 from source.functions import extract_file_paths
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, StringProperty
 from kivy.clock import Clock
 from os import path
-
-import os.path
+from time import sleep
 
 
 class RootScreen(ScreenManager):
@@ -18,9 +17,12 @@ class StartScreen(Screen):
     # Fires on move to next screen - default intervals: 25/5/15
     def update_intervals(self, work_interval, rest_interval, long_rest_interval):
         # Update intervals with duration in SECONDS (multiply by 60)
-        self.parent.session.interval_duration['work'] = int(work_interval) * 60
-        self.parent.session.interval_duration['rest'] = int(rest_interval) * 60
-        self.parent.session.interval_duration['long_rest'] = int(long_rest_interval) * 60
+        # self.parent.session.interval_duration['work'] = int(work_interval) * 60
+        # self.parent.session.interval_duration['rest'] = int(rest_interval) * 60
+        # self.parent.session.interval_duration['long_rest'] = int(long_rest_interval) * 60
+        self.parent.session.interval_duration['work'] = int(work_interval)
+        self.parent.session.interval_duration['rest'] = int(rest_interval)
+        self.parent.session.interval_duration['long_rest'] = int(long_rest_interval)
 
 
 class LocalFilesScreen(Screen):
@@ -45,13 +47,13 @@ class LocalFilesScreen(Screen):
 
         # Update appropriate type of playlist then update label text to display songs in the current_playlist
         if playlist_type == 'work':
-            self.parent.session.generate_playlist_object(file_paths=new_playlist_file_paths, playlist_type='work')
+            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths, playlist_type='work')
             self.ids['lf_work'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
         elif playlist_type == 'rest':
-            self.parent.session.generate_playlist_object(file_paths=new_playlist_file_paths, playlist_type='rest')
+            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths, playlist_type='rest')
             self.ids['lf_rest'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
         elif playlist_type == 'long rest':
-            self.parent.session.generate_playlist_object(file_paths=new_playlist_file_paths, playlist_type='long_rest')
+            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths, playlist_type='long_rest')
             self.ids['lf_long_rest'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
 
         # Close the window
@@ -70,6 +72,24 @@ class LocalFilesScreen(Screen):
 
 
 class SourceScreen(Screen):
+    pass
+
+
+class LoginScreen(Screen):
+    session_style = StringProperty("")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def submit_form(self, submission_type='', username='', password=''):
+        sleep(1)
+        if submission_type == 'BrainFM':
+            self.parent.session.generate_brain_fm_playlist(username=username, password=password)
+            self.parent.session.initialize_session_intervals()
+
+
+
+class LoadingScreen(Screen):
     pass
 
 

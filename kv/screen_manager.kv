@@ -5,19 +5,6 @@
 <RootScreen@ScreenManager>:
     id: screen_manager
 
-
-
-# 1st screen listed pops up 1st
-#    TesterScreen:
-#        id: tester_screen
-#        name: 'TesterScreen'
-#        manager: 'screen_manager'
-
-    LocalFilesScreen:
-        id: local_files_screen
-        name: 'LocalFilesScreen'
-        manager: 'screen_manager'
-
     StartScreen:
         id: start_screen
         name: 'StartScreen'
@@ -28,18 +15,20 @@
         name: 'SourceScreen'
         manager: 'screen_manager'
 
-#    LocalFilesScreen:
-#        id: local_files_screen
-#        name: 'LocalFilesScreen'
-#        manager: 'screen_manager'
-
-    SessionScreen:
-        id: session_screen
-        name: 'SessionScreen'
+    LoadingScreen:
+        id: loading_screen
+        name: 'LoadingScreen'
         manager: 'screen_manager'
 
+    LoginScreen:
+        id: login_screen
+        name: 'LoginScreen'
+        manager: 'screen_manager'
 
-
+    LocalFilesScreen:
+        id: local_files_screen
+        name: 'LocalFilesScreen'
+        manager: 'screen_manager'
 
     BrowseFilesScreen:
         id: browse_file_screen
@@ -47,236 +36,12 @@
         name: 'BrowseFilesScreen'
         manager: 'screen_manager'
 
-#===================================
-# START SCREEN
-#===================================
+    SessionScreen:
+        id: session_screen
+        name: 'SessionScreen'
+        manager: 'screen_manager'
 
-<StartScreenLabel@Label>:
-    size_hint_y: None
-    height: "30dp"
-    width: "100dp"
-
-<StartScreenTextInput@TextInput>:
-    size_hint: (None, None)
-    height: "30dp"
-    width: "30dp"
-
-<StartScreen>:
-    GridLayout:
-        cols: 2
-        pos_hint: {'top': 0.6, 'center_x': 0.5}
-        size_hint: 0.4, 0.75
-        spacing: "25dp"
-        padding: "25dp"
-
-        StartScreenLabel:
-            text: "Work Interval"
-        StartScreenTextInput:
-            id: w_i
-            text: "25"
-        StartScreenLabel:
-            text: "Rest Interval"
-        StartScreenTextInput:
-            id: r_i
-            text: "5"
-        StartScreenLabel:
-            text: "Long Rest Duration"
-        StartScreenTextInput:
-            id: l_r_i
-            text: "15"
-
-    Button:
-        size_hint: 0.2, 0.15
-        pos_hint: {'center_x': 0.5, 'top': 0.2}
-        text: "Next"
-        on_release: root.update_intervals(work_interval=w_i.text, rest_interval=r_i.text, long_rest_interval=l_r_i.text)
-        on_release: app.root.current = 'SourceScreen'
-
-#===================================
-# SOURCE SCREEN - select source
-#===================================
-
-<SourceScreenButton@Button>:
-    size_hint: 0.3333, None
-    pos_hint: {"center_x": 0.5}
-    height: "60dp"
-
-<SourceScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        size_hint: 0.5, 0.5
-        pos_hint: {'center_x': 0.5, 'center_y': 0.4}
-        spacing: "25dp"
-
-        SourceScreenButton:
-            text: "Local files"
-            on_release: app.root.current = 'LocalFilesScreen'
-        SourceScreenButton
-            text: "Spotify"
-        SourceScreenButton
-            text: "Brain.fm"
-
-#===================================
-# LOCAL FILES SCREEN
-#===================================
-
-<ScrollableLabel@ScrollView>:
-    text: 'I am a placeholder'
-    Label:
-        text: root.text
-        font_size: 12
-        text_size: self.width, None
-        size_hint_y: None
-        height: self.texture_size[1]
-
-<LocalFilesScreenSection@BoxLayout>:
-    size_hint: 0.8, 0.75
-    pos_hint: {'center_x': 0.5}
-    text: "I am a placeholder"
-    BoxLayout:
-        orientation: "vertical"
-
-        Label:
-            id: title_label
-            size_hint: 1, 0.2
-            text: root.text + " Playlist"
-        ScrollableLabel:
-            id: scrollable_label
-            text: ''
-            size_hint: 1, 0.8
-    Button:
-        id: browse_button
-        size_hint: 0.2, 0.2
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        text: "Browse"
-        on_release: app.root.session.current_type = root.text
-        on_release: app.root.ids.local_files_screen.show_load()
-
-<LocalFilesScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        padding: "60dp"
-        spacing: "60dp"
-
-        LocalFilesScreenSection:
-            id: lf_work
-            text: 'Work'
-        LocalFilesScreenSection:
-            id: lf_rest
-            text: 'Rest'
-        LocalFilesScreenSection:
-            id: lf_long_rest
-            text: 'Long Rest'
-
-        Button:
-            text: "Start!"
-            pos_hint: {'center_x': 0.5}
-            size_hint: 0.3, 0.25
-            on_release: app.root.session.initialize_session_intervals()
-            on_release: app.root.current = 'SessionScreen'
-
-#===================================
-# BROWSE FILE SCREEN
-#===================================
-
-<BrowseFilesScreen>:
-    BoxLayout:
-#        size: root.size
-#        pos: root.pos
-        size_hint: 1, 1
-        orientation: "vertical"
-        FileChooserListView:
-            id: filechooser
-
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-                text: "Cancel"
-                on_release: root.cancel()
-
-            Button:
-                text: "Load"
-                on_release: root.load(filechooser.path, filechooser.selection)
-
-
-#===================================
-# SESSION SCREEN
-#===================================
-
-<SessionScreenProgressBar@ProgressBar>:
-    size_hint: 0.5, 0.5
-    pos_hint: {'center_x': 0.5}
-    max: 100
-    value: 0
-
-<SessionScreen>:
-    on_enter: app.root.session.start_next_interval()
-    on_enter: self.start_session_progress()
-    BoxLayout:
-        orientation: 'vertical'
-
-        Label:
-            text: 'placeholder!!!'
-            pos_hint_y: 0.6
-
-        SessionScreenProgressBar:
-            pos_hint_y: 0.2
-            max: root.progress_max
-            value: root.progress_value
-
-        BoxLayout:
-            pos_hint_y: 0.2
-            padding: "100dp"
-            spacing: "20dp"
-            orientation: 'horizontal'
-
-            Button:
-                pos_hint_x: 0.3
-                id: pause
-                text: "pause"
-                on_release: app.root.session.pause_interval()
-                on_release: root.pause_session_progress()
-            Button:
-                pos_hint_x: 0.3
-                id: resume
-                text: "resume"
-                on_release: app.root.session.resume_interval()
-                on_release: root.start_session_progress()
-            Button:
-                pos_hint_x: 0.3
-                id: skip
-                text: "skip"
-                on_release: app.root.session.skip_interval()
-                on_release: root.skip_interval_progress()
-
-#
-#        canvas.before:
-#            Color:
-#                rgba: 0, 1, 0, 1
-#            Rectangle:
-#                pos: self.pos
-#                size: self.size
-
-<TesterScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        padding: "60dp"
-        spacing: "60dp"
-
-        LocalFilesScreenSection:
-            id: lf_work
-            text: 'Work'
-        LocalFilesScreenSection:
-            id: lf_rest
-            text: 'Rest'
-        LocalFilesScreenSection:
-            id: lf_long_rest
-            text: 'Long Rest'
-
-        Button:
-            text: "Start!"
-            pos_hint: {'center_x': 0.5}
-            size_hint: 0.3, 0.25
-            on_release: app.root.session.initialize_session_intervals()
-            on_release: app.root.current = 'SessionScreen'
+    TesterScreen:
+        id: tester_screen
+        name: 'TesterScreen'
+        manager: 'screen_manager'

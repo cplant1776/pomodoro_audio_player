@@ -1,0 +1,58 @@
+#===================================
+# LOCAL FILES SCREEN
+#===================================
+
+<ScrollableLabel@ScrollView>:
+    text: 'I am a placeholder'
+    Label:
+        text: root.text
+        font_size: 12
+        text_size: self.width, None
+        size_hint_y: None
+        height: self.texture_size[1]
+
+<LocalFilesScreenSection@BoxLayout>:
+    size_hint: 0.8, 0.75
+    pos_hint: {'center_x': 0.5}
+    text: "I am a placeholder"
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            id: title_label
+            size_hint: 1, 0.2
+            text: root.text + " Playlist"
+        ScrollableLabel:
+            id: scrollable_label
+            text: ''
+            size_hint: 1, 0.8
+    Button:
+        id: browse_button
+        size_hint: 0.2, 0.2
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        text: "Browse"
+        on_release: app.root.session.current_type = root.text
+        on_release: app.root.ids.local_files_screen.show_load()
+
+<LocalFilesScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "60dp"
+        spacing: "60dp"
+
+        LocalFilesScreenSection:
+            id: lf_work
+            text: 'Work'
+        LocalFilesScreenSection:
+            id: lf_rest
+            text: 'Rest'
+        LocalFilesScreenSection:
+            id: lf_long_rest
+            text: 'Long Rest'
+
+        Button:
+            text: "Start!"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.3, 0.25
+            on_release: app.root.session.initialize_session_intervals()
+            on_release: app.root.current = 'SessionScreen'

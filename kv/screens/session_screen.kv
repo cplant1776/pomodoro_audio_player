@@ -1,0 +1,77 @@
+#===================================
+# SESSION SCREEN
+#===================================
+
+<SessionScreenProgressBar@ProgressBar>:
+    size_hint: 0.5, 0.5
+    pos_hint: {'center_x': 0.5}
+    max: 100
+    value: 0
+
+<SessionScreen>:
+    on_enter: app.root.session.start_next_interval()
+    on_enter: self.start_session_progress()
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            text: 'placeholder!!!'
+            pos_hint_y: 0.6
+
+        SessionScreenProgressBar:
+            pos_hint_y: 0.2
+            max: root.progress_max
+            value: root.progress_value
+
+        BoxLayout:
+            pos_hint_y: 0.2
+            padding: "100dp"
+            spacing: "20dp"
+            orientation: 'horizontal'
+
+            Button:
+                pos_hint_x: 0.25
+                id: pause
+                text: "pause"
+                on_release: app.root.session.pause_interval()
+                on_release: root.pause_session_progress()
+            Button:
+                pos_hint_x: 0.25
+                id: resume
+                text: "resume"
+                on_release: app.root.session.resume_interval()
+                on_release: root.start_session_progress()
+            Button:
+                pos_hint_x: 0.25
+                id: skip_interval
+                text: "skip interval"
+                on_release: app.root.session.skip_interval()
+                on_release: root.skip_interval_progress()
+            Button:
+                pos_hint_x: 0.25
+                id: skip_interval
+                text: "skip track"
+                on_release: app.root.session.skip_track()
+
+<TesterScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: "60dp"
+        spacing: "60dp"
+
+        LocalFilesScreenSection:
+            id: lf_work
+            text: 'Work'
+        LocalFilesScreenSection:
+            id: lf_rest
+            text: 'Rest'
+        LocalFilesScreenSection:
+            id: lf_long_rest
+            text: 'Long Rest'
+
+        Button:
+            text: "Start!"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.3, 0.25
+            on_release: app.root.session.initialize_session_intervals()
+            on_release: app.root.current = 'SessionScreen'

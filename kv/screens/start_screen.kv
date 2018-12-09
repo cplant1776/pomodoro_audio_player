@@ -1,0 +1,44 @@
+#===================================
+# START SCREEN
+#===================================
+
+<StartScreenLabel@Label>:
+    size_hint_y: None
+    height: "30dp"
+    width: "100dp"
+
+<StartScreenTextInput@TextInput>:
+    size_hint: (None, None)
+    height: "30dp"
+    width: "30dp"
+
+<StartScreen>:
+    GridLayout:
+        cols: 2
+        pos_hint: {'top': 0.6, 'center_x': 0.5}
+        size_hint: 0.4, 0.75
+        spacing: "25dp"
+        padding: "25dp"
+
+        StartScreenLabel:
+            text: "Work Interval"
+        StartScreenTextInput:
+            id: w_i
+            text: "25"
+        StartScreenLabel:
+            text: "Rest Interval"
+        StartScreenTextInput:
+            id: r_i
+            text: "5"
+        StartScreenLabel:
+            text: "Long Rest Duration"
+        StartScreenTextInput:
+            id: l_r_i
+            text: "15"
+
+    Button:
+        size_hint: 0.2, 0.15
+        pos_hint: {'center_x': 0.5, 'top': 0.2}
+        text: "Next"
+        on_release: root.update_intervals(work_interval=w_i.text, rest_interval=r_i.text, long_rest_interval=l_r_i.text)
+        on_release: app.root.current = 'SourceScreen'

@@ -2,22 +2,13 @@ from kivy.app import App
 from kivy.lang import Builder
 import os.path
 import source.ui.screens as screens
-from source.session.session_local_file import Session
-
-import logging
-
-log = logging.getLogger(__name__)
-
-
-def do_something():
-    log.debug("Doing something!")
+from source.session.session import Session
 
 KV_FILE = 'pomodoro.kv'
 
 
-# Change directories because kv
-# had trouble including from a relative path
 def load_kv_file(kv):
+    # Workaround because kivy had trouble with relative paths
     os.chdir("kv")
     Builder.load_file(kv)
     os.chdir("..")
@@ -25,9 +16,8 @@ def load_kv_file(kv):
 
 class PomodoroApp(App):
     def build(self):
-        # Clock.max_iterations = 20
-        load_kv_file(KV_FILE)
         session = Session()
+        load_kv_file(KV_FILE)
         return screens.RootScreen(session=session)
 
 

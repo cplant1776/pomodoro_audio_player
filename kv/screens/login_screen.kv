@@ -1,0 +1,51 @@
+#===================================
+# LOGIN SCREEN
+#===================================
+<LoginScreen>:
+    BoxLayout
+        id: login_layout
+        orientation: 'vertical'
+        padding: ['10dp','50dp','10dp','50dp']
+        spacing: '50dp'
+
+        Label:
+            text: '[PLACEHOLDER]'
+#            text: app.root.session.style
+            font_size: 32
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+
+            Label:
+                text: 'Username/Email'
+
+            TextInput:
+                id: username
+                multiline: False
+                write_tab: False
+                size_hint: 0.5, 1
+                pos_hint: {'center_x': 0.5}
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 10
+
+            Label:
+                text: 'Password'
+
+            TextInput:
+                id: password
+                multiline:False
+                write_tab: False
+                password: True
+                size_hint: 0.5, 1
+                pos_hint: {'center_x': 0.5}
+
+        Button:
+            text: 'Submit'
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.4,0.5
+            on_release: root.submit_form(submission_type=app.root.session.style, username=username.text, password=password.text)
+            on_release: app.root.current = 'SessionScreen'
+

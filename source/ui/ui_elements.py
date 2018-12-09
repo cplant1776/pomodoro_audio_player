@@ -32,6 +32,10 @@ class SessionScreenProgressBar(ProgressBar):
     progress_value = NumericProperty(None)
 
 
+class LoginScreenField(BoxLayout):
+    label_text = StringProperty('')
+
+
 class TestLabel(Label):
     my_text = StringProperty('')
 

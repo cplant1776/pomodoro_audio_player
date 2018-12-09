@@ -1,6 +1,11 @@
 from .timer import Timer
 from .eventhandler import EventHandler
-
+from source.session.playlists.local_playlist import LocalPlaylist
+from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
+from random import shuffle
+from kivy.clock import Clock
+from kivy.properties import StringProperty
+from time import strftime
 
 NUM_OF_WORK_INTERVALS = 4
 NUM_OF_REST_INTERVALS = 3
@@ -8,19 +13,27 @@ NUM_OF_REST_INTERVALS = 3
 
 class Session:
     def __init__(self):
-        # self.interval_duration = {'work': -1, 'rest': -1, 'long_rest': -1}
-        self.interval_duration = {'work': 5, 'rest': 5, 'long_rest': 10}
+        self.interval_duration = {'work': -1, 'rest': -1, 'long_rest': -1}
+        # self.interval_duration = {'work': 5, 'rest': 5, 'long_rest': 10}
 
-        self.playlist = {'work': LocalPlaylist(), 'rest': LocalPlaylist(), 'long_rest': LocalPlaylist()}
+        self.playlist = {'work': None, 'rest': None, 'long_rest': None}
 
         self.Intervals = {}
         self.interval_loop = 1
 
+        self.style = ''
+
         self.Timer = Timer()
         self.EventHandler = EventHandler()
 
-    def generate_playlist_object(self, file_paths="", playlist_type=""):
+    def generate_local_playlist_object(self, file_paths="", playlist_type=""):
         self.playlist[playlist_type] = LocalPlaylist(paths=file_paths)
+
+    def generate_brain_fm_playlist(self, username='', password=''):
+        brain_fm_browser = BrainFMBrowser(username=username, password=password)
+        self.playlist = dict.fromkeys(self.playlist, BrainFMPlaylist(browser=brain_fm_browser))
+        print("generated brain fm playlist...")
+
 
     @staticmethod
     def get_songs_string(playlist):
@@ -89,6 +102,9 @@ class Session:
         self.end_interval()
         print("SKIP INTERVAL")
 
+    def skip_track(self):
+        self.Intervals[self.interval_loop].skip_track()
+
     def pause_interval(self):
         # Unschedule current end event
         self.EventHandler.cancel_event(event_name='end_interval')
@@ -118,3 +134,32 @@ class Session:
         return (self.interval_duration['work'] * NUM_OF_WORK_INTERVALS +
                 self.interval_duration['rest'] * NUM_OF_REST_INTERVALS +
                 self.interval_duration['long_rest'])
+
+
+class Interval:
+    def __init__(self, duration=0, playlist=None):
+
+        self.playlist = playlist
+        self.duration = duration
+
+    def start(self):
+        # Start next song
+        self.playlist.start()
+        print("Start interval")
+
+    def stop(self):
+        self.playlist.stop()
+        print("Stop interval")
+
+    def pause(self):
+        # Pause playlist
+        self.playlist.pause()
+        print("Pause interval")
+
+    def resume(self):
+        self.playlist.resume()
+        print("Resume interval")
+
+    def skip_track(self):
+        self.playlist.skip_track()
+        print("Skipping track....")

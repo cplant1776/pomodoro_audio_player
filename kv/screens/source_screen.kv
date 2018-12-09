@@ -1,0 +1,28 @@
+#===================================
+# SOURCE SCREEN - select source
+#===================================
+
+<SourceScreenButton@Button>:
+    size_hint: 0.3333, None
+    pos_hint: {"center_x": 0.5}
+    height: "60dp"
+
+<SourceScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        size_hint: 0.5, 0.5
+        pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+        spacing: "25dp"
+
+        SourceScreenButton:
+            text: "Local files"
+            on_release: app.root.session.style = 'Local'
+            on_release: app.root.current = 'LocalFilesScreen'
+        SourceScreenButton
+            text: "Brain.fm"
+            on_release: app.root.session.style = 'BrainFM'
+            on_release: app.root.current = 'LoginScreen'
+        SourceScreenButton
+            text: "Spotify"
+            on_release: app.root.session.style = 'Spotify'
+            on_release: app.root.current = 'LoginScreen'
