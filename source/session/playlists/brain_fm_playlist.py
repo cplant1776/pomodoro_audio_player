@@ -3,23 +3,51 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
 from selenium.common.exceptions import TimeoutException
+
+from source.session.playlists.playlist import Playlist
 
 from time import sleep
 from os import environ
+from itertools import cycle
 
-# @pQ2U5V@#N4Wz1OBAJ
+# =========================
+# CONSTANTS
+# =========================
+MODE_TOGGLE = cycle(['work', 'rest'])
 BRAIN_FM_URL = "https://brain.fm/login"
+CSS_SELECTORS = {'home_button'             : '[href="/app"] > div',
+                 'focus'            : '[class*="focus"]',
+                 'focus_time'       : ['div[class^=timeOptionNumber]'],
+                 'relax'            : '[class*="relax"]',
+                 'relax_style'      : 'div[class*="optionContainer"]:nth-child(2)',
+                 'relax_duration'   : 'div[class="timeOptionNumber"]',
+                 'playback_toggle'  : '[class*="PlayControl"]',
+                 'login_user'       : '#login-email',
+                 'login_pw'         : '#login-password',
+                 'login_button'     : '#login-confirm-btn',
+                 'skip_track_button': '[class*="Skip"]'
+                 }
+X_PATHS = {'infinity_button'    : '//button[text()="2 hours"]/following-sibling::button',
+           'skip_button'        : '//a[text()="Skip >>"]',
+           }
 
 
-class BrainFMPlaylist:
+def alternate_mode():
+    """Returns alternating value each time it'c called: swaps between 'work' and 'rest'"""
+    return next(MODE_TOGGLE)
+
+
+class BrainFMPlaylist(Playlist):
+    """Container for BrainFMBrowser"""
     def __init__(self, browser):
+        super().__init__()
         self.browser = browser
-        self.current_mode = 'work'
+        self.current_mode = 'rest'
 
     def start(self):
-        self.browser.start_focus()
+        self.toggle_mode()
 
     def stop(self):
         self.browser.toggle_playback()
@@ -31,123 +59,103 @@ class BrainFMPlaylist:
         self.browser.toggle_playback()
 
     def skip_track(self):
-        pass
+        self.browser.click_skip_button()
 
     def toggle_mode(self):
-        self.browser.toggle_current_mode(self.current_mode)
-        if self.current_mode == 'work':
-            self.current_mode = 'rest'
-        else:
-            self.current_mode = 'work'
+        """Swaps browser between res/twork modes"""
+        self.current_mode = alternate_mode()
+        self.browser.set_current_mode(self.current_mode)
 
 
 class BrainFMBrowser:
+    """Selenium driver that navigates https://brain.fm/"""
     def __init__(self, username='', password=''):
         self.url = BRAIN_FM_URL
         # Pull credentials from environmental variables
-        # self.username = environ['BRAIN_FM_EMAIL']
-        # self.password = environ['BRAIN_FM_PASSWORD']
-        self.username = username
-        self.password = password
-        self.driver = self.create_headless_driver()
-
-        self.css_selectors = {'home': '[href="/app"] > div',
-                              'focus': '[class*="focus"]',
-                              'focus_time': ['div[class^=modules-music-player-css-DurationH]'],
-                              'relax': '[class*="relax"]',
-                              'relax_style': 'div[class*="optionContainer"]:nth-child(2)',
-                              'relax_duration': 'div[class="timeOptionNumber"]',
-                              'playback_toggle': '[class*="PlayControl"]'}
-
+        self.username = environ['BRAIN_FM_EMAIL'].strip('"')
+        self.password = environ['BRAIN_FM_PASSWORD'].strip('"')
+        # self.username = username
+        # self.password = password
+        # TODO: Add invalid credentials warning
+        self.driver = create_headless_driver()
         self.log_in()
 
-    @staticmethod
-    def create_headless_driver():
-        options = Options()
-        # Set browser to headless mode
-        # options.add_argument("--headless")
-        driver = webdriver.Firefox(options=options)
-        return driver
 
-    def toggle_current_mode(self, current_mode=''):
+    def set_current_mode(self, current_mode=None):
+        """Navigate to work/rest page"""
         self.navigate_to_home()
-        if current_mode == 'rest':
-            self.start_focus()
-        else:
-            self.start_relax()
+        self.start_focus() if current_mode == 'work' else self.start_relax()
 
     def log_in(self):
-        # Load the page
+        """Submit credentials to login page"""
+        # Load login page
         self.driver.get(self.url)
         # Fill out credentials
         self.enter_login_credentials()
-        # Submit credentials
-        self.protected_click(self.driver.find_element_by_id("login-confirm-btn"))
-
-        # Wait for page to load
-        self.wait_for_page_load(delay=10, selector='[class*="focus"]')
+        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['login_button'],
+                                     wait_selector='[class*="focus"]')
 
     def enter_login_credentials(self):
+        """Fills in username/password fields in login form"""
         # Find form inputs
-        user_email_input = self.driver.find_element_by_id("login-email")
-        user_password_input = self.driver.find_element_by_id("login-password")
+        user_email_input = self.driver.find_element_by_css_selector(CSS_SELECTORS['login_user'])
+        user_password_input = self.driver.find_element_by_css_selector(CSS_SELECTORS['login_pw'])
         # Fill out form
         user_email_input.send_keys(self.username)
         user_password_input.send_keys(self.password)
 
-    def click_and_wait_for_load(self, button_selector='', wait_selector='', index=None):
-        if index:
-            button = self.driver.find_element_by_css_selector(button_selector)[index]
-        else:
-            button = self.driver.find_element_by_css_selector(button_selector)
+    def click_and_wait_for_load(self, button_selector='', wait_selector=''):
+        """Clicks an element based on button_selector and waits for full load before continuing"""
+        print('click_and_wait')
+        button = self.driver.find_element_by_css_selector(button_selector)
         self.protected_click(button)
         self.wait_for_page_load(selector=wait_selector)
 
     def start_focus(self):
-        self.click_and_wait_for_load(button_selector=self.css_selectors['focus'],
-                                     wait_selector=self.css_selectors['focus_time'])
-        # focus_button = self.driver.find_element_by_css_selector('[class*="focus"]')
-        # self.protected_click(focus_button)
-        # self.wait_for_page_load(selector='[class*="focus"]')
+        """Navigates to page that plays focus audio"""
+        print('start_focus')
+        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['focus'],
+                                     wait_selector=CSS_SELECTORS['focus_time'])
 
     def start_relax(self):
+        """Navigates to page that plays relax audio"""
         # Choose relax
-        self.click_and_wait_for_load(button_selector=self.css_selectors['relax'],
-                                     wait_selector=self.css_selectors['relax_style'])
-        # relax_button = self.driver.find_element_by_css_selector('[class*="relax"]')
-        # self.protected_click(relax_button)
-        # self.wait_for_page_load(selector='[class*="relax"]')
-        # Set to relax mode
-        # relax_style_button = self.driver.find_element_by_css_selector('div[class*="optionContainer"]:nth-child(2)')
-        # self.protected_click(relax_style_button)
-        self.click_and_wait_for_load(button_selector=self.css_selectors['relax_style'],
-                                     wait_selector=self.css_selectors['relax_duration'])
+        print('start_relax')
+        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['relax'],
+                                     wait_selector=CSS_SELECTORS['relax_style'])
+
+        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['relax_style'],
+                                     wait_selector=CSS_SELECTORS['relax_duration'])
         # Choose relaxation duration
-        self.click_and_wait_for_load(button_selector=self.css_selectors['relax_duration'],
-                                     wait_selector=self.css_selectors['playback_toggle'],
-                                     index=1)
-        # relax_duration_button = self.driver.find_elements_by_css_selector('div[class="timeOptionNumber"]')
-        # self.protected_click(relax_duration_button[1])
+        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['relax_duration'],
+                                     wait_selector=CSS_SELECTORS['playback_toggle'])
 
-    def set_duration_to_infinite(self):
-        # Set duration to infinite
-        infinity_button = self.driver.find_element_by_xpath('//button[text()="2 hours"]/following-sibling::button')
-        self.protected_click(infinity_button)
+    # def set_duration_to_infinite(self):
+    #     # Set duration to infinite
+    #     infinity_button = self.driver.find_element_by_xpath(X_PATHS['infinity_button'])
+    #     self.protected_click(infinity_button)
 
-    def skip_track(self):
-        skip_button = self.driver.find_element_by_xpath('//a[text()="Skip >>"]')
+    def click_skip_button(self):
+        """Skips currently playing track and plays next"""
+        skip_button = self.driver.find_element_by_css_selector(CSS_SELECTORS['skip_button'])
         self.protected_click(skip_button)
 
     def navigate_to_home(self):
-        home_button = self.driver.find_element_by_css_selector('[href="/app"] > div')
+        """Nagivates to home page of site"""
+        print('navigate_to_home')
+        home_button = self.driver.find_element_by_css_selector(CSS_SELECTORS['home_button'])
         self.protected_click(home_button)
         self.wait_for_page_load(selector='[class*="focus"]')
 
     def toggle_playback(self):
-        play_control_button = self.driver.find_element_by_css_selector('[class*="PlayControl"]')
+        """Clicks play/pause button"""
+        print('toggle_playback')
+        play_control_button = self.driver.find_element_by_css_selector(CSS_SELECTORS['playback_toggle'])
         self.protected_click(play_control_button)
 
     def wait_for_page_load(self, delay=10, selector=''):
+        """Returns True once selector finds element, or times out after delay seconds"""
+        print('wait_for_page_load')
         try:
             found_element = WebDriverWait(self.driver, delay).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, selector))
@@ -157,7 +165,26 @@ class BrainFMBrowser:
             return True
 
     def protected_click(self, button):
+        """Attempts to click an element
+
+        Exceptions:
+        ElementNotInteractableException - button not found
+        ElementClickInterceptedException - element hidden behind something. Wait and try again
+
+        """
         try:
             button.click()
         except ElementNotInteractableException:
             print("Button not found!")
+        except ElementClickInterceptedException:
+            sleep(0.5)
+            self.protected_click(button)
+
+
+def create_headless_driver():
+    """Returns a headless Firefox webdriver"""
+    options = Options()
+    # Set browser to headless mode
+    options.add_argument("--headless")
+    driver = webdriver.Firefox(options=options)
+    return driver

@@ -1,10 +1,19 @@
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.popup import Popup
-from source.functions import extract_file_paths
+from source.functions import extract_file_paths, get_playlist_song_titles
 from kivy.properties import NumericProperty, StringProperty
 from kivy.clock import Clock
-from os import path
 from time import sleep
+
+# ====================================
+# CONSTANTS
+# ====================================
+TIME_MULTIPLIER = {'SECONDS': 1, 'MINUTES': 60, 'HOURS': 3600}
+
+# ====================================
+# PARAMETERS
+# ====================================
+TIME_UNIT = 'MINUTES'
 
 
 class RootScreen(ScreenManager):
@@ -14,15 +23,13 @@ class RootScreen(ScreenManager):
 
 
 class StartScreen(Screen):
-    # Fires on move to next screen - default intervals: 25/5/15
-    def update_intervals(self, work_interval, rest_interval, long_rest_interval):
-        # Update intervals with duration in SECONDS (multiply by 60)
-        # self.parent.session.interval_duration['work'] = int(work_interval) * 60
-        # self.parent.session.interval_duration['rest'] = int(rest_interval) * 60
-        # self.parent.session.interval_duration['long_rest'] = int(long_rest_interval) * 60
-        self.parent.session.interval_duration['work'] = int(work_interval)
-        self.parent.session.interval_duration['rest'] = int(rest_interval)
-        self.parent.session.interval_duration['long_rest'] = int(long_rest_interval)
+    # Fires on move to next screen - default intervals: 25/5/15 minutesS
+    def update_intervals(self, work_interval, rest_interval, long_rest_interval, num_of_intervals):
+        # Update intervals with duration
+        self.parent.session.interval_duration['work'] = int(work_interval) * TIME_MULTIPLIER[TIME_UNIT]
+        self.parent.session.interval_duration['rest'] = int(rest_interval) * TIME_MULTIPLIER[TIME_UNIT]
+        self.parent.session.interval_duration['long_rest'] = int(long_rest_interval) * TIME_MULTIPLIER[TIME_UNIT]
+        self.parent.session.set_intervals_per_session(num_of_intervals)
 
 
 class LocalFilesScreen(Screen):
@@ -40,35 +47,31 @@ class LocalFilesScreen(Screen):
         self._popup.open()
 
     def load(self, path, filename):
-        # Generate list of format [(song1), (song1 directory), (song2), (song2 directory),...]
+        # Generate list of format [song1, song1 directory, song2, song2 directory,... songN, songN directory]
         new_playlist_file_paths = extract_file_paths(path, filename)
         # Get current_playlist type (work/rest/long_rest)
         playlist_type = str(self.parent.session.current_type).lower()
 
-        # Update appropriate type of playlist then update label text to display songs in the current_playlist
         if playlist_type == 'work':
-            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths, playlist_type='work')
-            self.ids['lf_work'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
+            # Generate playlist
+            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
+                                                               playlist_type='work')
+            # Update label text on screen to show songs in playlist
+            self.ids['lf_work'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
         elif playlist_type == 'rest':
-            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths, playlist_type='rest')
-            self.ids['lf_rest'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
+            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
+                                                               playlist_type='rest')
+            self.ids['lf_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
         elif playlist_type == 'long rest':
-            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths, playlist_type='long_rest')
-            self.ids['lf_long_rest'].ids['scrollable_label'].text = self.get_playlist_song_titles(file_paths=new_playlist_file_paths)
+            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
+                                                               playlist_type='long_rest')
+            self.ids['lf_long_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
 
         # Close the window
         self.dismiss_popup()
 
     def update_playlist_label(self):
         pass
-
-    def get_playlist_song_titles(self, file_paths):
-        result = []
-        for p in file_paths:
-            head, tail = path.split(p)
-            result.append(tail)
-        result = '\n'.join(result)
-        return result
 
 
 class SourceScreen(Screen):
@@ -86,7 +89,6 @@ class LoginScreen(Screen):
         if submission_type == 'BrainFM':
             self.parent.session.generate_brain_fm_playlist(username=username, password=password)
             self.parent.session.initialize_session_intervals()
-
 
 
 class LoadingScreen(Screen):
@@ -107,8 +109,6 @@ class SessionScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.tester_text = 2
 
         self.progress_value = 0
         self.progress_max = 100

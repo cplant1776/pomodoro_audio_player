@@ -35,10 +35,15 @@
         StartScreenTextInput:
             id: l_r_i
             text: "15"
+        StartScreenLabel:
+            text: "Work Intervals per Long Rest"
+        StartScreenTextInput:
+            id: i_p_s
+            text: "4"
 
     Button:
         size_hint: 0.2, 0.15
         pos_hint: {'center_x': 0.5, 'top': 0.2}
         text: "Next"
-        on_release: root.update_intervals(work_interval=w_i.text, rest_interval=r_i.text, long_rest_interval=l_r_i.text)
+        on_release: root.update_intervals(work_interval=w_i.text, rest_interval=r_i.text,long_rest_interval=l_r_i.text, num_of_intervals=i_p_s.text)
         on_release: app.root.current = 'SourceScreen'
