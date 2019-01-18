@@ -70,11 +70,12 @@ class BrainFMBrowser:
     """Selenium driver that navigates https://brain.fm/"""
     def __init__(self, username='', password=''):
         self.url = BRAIN_FM_URL
-        # Pull credentials from environmental variables
-        self.username = environ['BRAIN_FM_EMAIL'].strip('"')
-        self.password = environ['BRAIN_FM_PASSWORD'].strip('"')
-        # self.username = username
-        # self.password = password
+        if username == '' and password == '':
+            # Pull credentials from environmental variables
+            self.username = environ['BRAIN_FM_EMAIL'].strip('"')
+            self.password = environ['BRAIN_FM_PASSWORD'].strip('"')
+        else:
+            self.username, self.password = username, password
         # TODO: Add invalid credentials warning
         self.driver = create_headless_driver()
         self.log_in()
@@ -93,6 +94,7 @@ class BrainFMBrowser:
         self.enter_login_credentials()
         self.click_and_wait_for_load(button_selector=CSS_SELECTORS['login_button'],
                                      wait_selector='[class*="focus"]')
+
 
     def enter_login_credentials(self):
         """Fills in username/password fields in login form"""

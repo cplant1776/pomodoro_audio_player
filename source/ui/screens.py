@@ -5,6 +5,7 @@ from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.clock import Clock
 from time import sleep
 import datetime
+from functools import partial
 
 # ====================================
 # CONSTANTS
@@ -84,16 +85,37 @@ class LoginScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.submission_data = {}
 
-    def submit_form(self, submission_type='', username='', password=''):
-        sleep(1)
-        if submission_type == 'BrainFM':
-            self.parent.session.generate_brain_fm_playlist(username=username, password=password)
-            self.parent.session.initialize_session_intervals()
+    def open_load_screen(self, submission_type, username, password):
+        print("open load screen")
+        self.parent.ids['loading_screen'].set_parameters(submission_type, username, password)
+        self.parent.current = 'LoadingScreen'
 
 
 class LoadingScreen(Screen):
-    pass
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.submission_type = None
+        self.username = None
+        self.password = None
+
+    def on_enter(self, *args):
+        self.submit_form()
+
+    def set_parameters(self, submission_type, username, password):
+        self.submission_type = submission_type
+        self.username = username
+        self.password = password
+
+    def submit_form(self):
+        print("Scheduled submit_form")
+        print("Submission type: {}".format(self.submission_type))
+        if self.submission_type == 'BrainFM':
+            self.parent.session.generate_brain_fm_playlist(username=self.username, password=self.password)
+            self.parent.session.initialize_session_intervals()
+            self.parent.current = 'SessionScreen'
 
 
 class BrowseFilesScreen(Screen):
@@ -138,11 +160,7 @@ class SessionScreen(Screen):
 
     def skip_interval_progress(self, *args):
         # Update progress bar for skipped interval
-        print("Timer time_passed_since_start: {}".format(self.parent.session.Timer.time_passed_since_start))
-        print("before: {}".format(self.progress_value))
         self.progress_value = self.parent.session.Timer.time_passed_since_start
-        print("Timer time_passed_since_start: {}".format(self.parent.session.Timer.time_passed_since_start))
-        print("after: {}".format(self.progress_value))
 
 
 class TesterScreen(LocalFilesScreen):

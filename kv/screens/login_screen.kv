@@ -50,6 +50,9 @@
             text: 'Submit'
             pos_hint: {'center_x': 0.5}
             size_hint: 0.4,0.5
-            on_release: root.submit_form(submission_type=app.root.session.style, username=username.text, password=password.text)
-            on_release: app.root.current = 'SessionScreen'
+            on_release: root.open_load_screen(submission_type=str(app.root.session.style), username=username.text, password=password.text)
+#            on_release: app.root.current = 'LoadingScreen'
+#            on_release: root.submit_form(submission_type=str(app.root.session.style), username=username.text, password=password.text)
+
+
 
