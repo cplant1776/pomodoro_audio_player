@@ -132,15 +132,11 @@ class BrowseFilesScreen(Screen):
 
 
 class SessionScreen(Screen):
-    progress_max = NumericProperty(None)
-    progress_value = NumericProperty(None)
+    progress_max = NumericProperty(0)
+    progress_value = NumericProperty(100)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.progress_value = 0
-        self.progress_max = 100
-
         self.progress_value_event = None
 
     def start_session_progress(self):
