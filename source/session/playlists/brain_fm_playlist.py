@@ -80,7 +80,6 @@ class BrainFMBrowser:
         self.driver = create_headless_driver()
         self.log_in()
 
-
     def set_current_mode(self, current_mode=None):
         """Navigate to work/rest page"""
         self.navigate_to_home()
