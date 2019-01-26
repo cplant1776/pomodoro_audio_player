@@ -6,6 +6,7 @@ from kivy.clock import Clock
 from time import sleep
 import datetime
 from functools import partial
+from threading import Thread
 
 # ====================================
 # CONSTANTS
@@ -102,7 +103,9 @@ class LoadingScreen(Screen):
         self.password = None
 
     def on_enter(self, *args):
-        self.submit_form()
+        # Use thread so that loading animation can continue while loading
+        brain_fm_thread = Thread(target=self.submit_form)
+        brain_fm_thread.start()
 
     def set_parameters(self, submission_type, username, password):
         self.submission_type = submission_type
@@ -116,6 +119,8 @@ class LoadingScreen(Screen):
             self.parent.session.generate_brain_fm_playlist(username=self.username, password=self.password)
             self.parent.session.initialize_session_intervals()
             self.parent.current = 'SessionScreen'
+            # Close thread
+            return
 
 
 class BrowseFilesScreen(Screen):

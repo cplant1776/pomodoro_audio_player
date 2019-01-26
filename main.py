@@ -3,6 +3,7 @@ from kivy.lang import Builder
 import os.path
 import source.ui.screens as screens
 from source.session.session import Session
+import source.ui.ui_elements
 
 import tracemalloc
 tracemalloc.start()

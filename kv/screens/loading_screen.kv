@@ -3,5 +3,19 @@
 #===================================
 <LoadingScreen>:
     BoxLayout:
+        orientation: "vertical"
         Label:
-            text: "Loading . . ."
+            text: "Connecting . . ."
+            font_size: 36
+        ConnectingLabel:
+        Widget:
+
+
+<ConnectingLabel@Label>:
+    angle: 0
+    canvas:
+        Color:
+            rgb: 1,0,1
+        Line:
+            circle:self.center_x, self.center_y, 90, 0, self.angle
+            width: 5
