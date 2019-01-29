@@ -1,4 +1,9 @@
+# Standard Library Imports
 from time import strftime
+
+# Third Party Imports
+
+# Local Imports
 
 
 class EventHandler:

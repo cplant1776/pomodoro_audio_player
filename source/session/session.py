@@ -1,14 +1,19 @@
-from .timer import Timer
-from .eventhandler import EventHandler
-from source.session.playlists.local_playlist import LocalPlaylist
-from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
+# Standard Library Imports
 from random import shuffle
+import tracemalloc
+from time import strftime
+
+# Third Party Imports
 from kivy.clock import Clock
 from kivy.properties import StringProperty
-from time import strftime
+
+# Local Imports
+from .eventhandler import EventHandler
+from .timer import Timer
+from source.session.playlists.local_playlist import LocalPlaylist
+from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
 from source.functions import generate_session_structure
 from source.session.interval import Interval
-import tracemalloc
 
 
 # ===========================

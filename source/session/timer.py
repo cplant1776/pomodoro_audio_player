@@ -1,5 +1,9 @@
+# Standard Library Imports
+
+# Third Party Imports
 from kivy.clock import Clock
 
+# Local Imports
 
 class Timer:
     """Handles timing for events"""

@@ -1,16 +1,21 @@
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
-from selenium.common.exceptions import TimeoutException
+# Standard Library Imports
+from itertools import cycle
+from os import environ
+from time import sleep
 
+# Third Party Imports
+from selenium import webdriver
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+
+
+# Local Imports
 from source.session.playlists.playlist import Playlist
 
-from time import sleep
-from os import environ
-from itertools import cycle
 
 # =========================
 # CONSTANTS

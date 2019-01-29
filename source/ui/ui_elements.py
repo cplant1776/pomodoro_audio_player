@@ -1,8 +1,13 @@
+# Standard Library Imports
+
+# Third Party Imports
+from kivy.clock import Clock
+from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
-from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.progressbar import ProgressBar
-from kivy.clock import Clock
+
+# Local Imports
 
 
 class ScrollableLabel(ScrollView):

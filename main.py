@@ -1,14 +1,26 @@
+# Standard Library Imports
+import os.path
+import tracemalloc
+
+# Third Party Imports
 from kivy.app import App
 from kivy.lang import Builder
-import os.path
-import source.ui.screens as screens
+
+# Local Imports
 from source.session.session import Session
 import source.ui.ui_elements
+import source.ui.screens as screens
 
-import tracemalloc
-tracemalloc.start()
+
+# Standard Library Imports
+
+# Third Party Imports
+
+# Local Imports
+
 
 KV_FILE = 'pomodoro.kv'
+tracemalloc.start()
 
 
 def load_kv_file(kv):

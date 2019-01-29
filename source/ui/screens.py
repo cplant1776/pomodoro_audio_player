@@ -1,12 +1,15 @@
+# Standard Library Imports
+import datetime
+from threading import Thread
+
+# Third Party Imports
+from kivy.clock import Clock
+from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.popup import Popup
+
+# Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
-from kivy.properties import NumericProperty, StringProperty, ObjectProperty
-from kivy.clock import Clock
-from time import sleep
-import datetime
-from functools import partial
-from threading import Thread
 
 # ====================================
 # CONSTANTS

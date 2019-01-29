@@ -1,10 +1,15 @@
-from source.session.timer import Timer
-from source.session.eventhandler import EventHandler
+# Standard Library Imports
 from random import shuffle
+from time import strftime
+
+# Third Party Imports
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-from time import strftime
+
+# Local Imports
+from source.session.eventhandler import EventHandler
 from source.session.playlists.playlist import Playlist
+from source.session.timer import Timer
 
 
 class LocalPlaylist(Playlist):

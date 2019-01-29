@@ -1,6 +1,11 @@
+# Standard Library Imports
 import os.path
-from random import shuffle
 from os.path import split
+from random import shuffle
+
+# Third Party Imports
+
+# Local Imports
 
 
 def get_playlist_song_titles(file_paths):
