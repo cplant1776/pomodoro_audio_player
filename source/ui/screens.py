@@ -154,7 +154,6 @@ class SessionScreen(Screen):
         self.ids.interval_time_remaining.text = str(
             datetime.timedelta(seconds=self.parent.session.Timer.get_event_time_remaining()))
 
-
     def pause_session_progress(self):
         # Stop counting
         self.progress_value_event.cancel()
@@ -165,6 +164,17 @@ class SessionScreen(Screen):
     def skip_interval_progress(self, *args):
         # Update progress bar for skipped interval
         self.progress_value = self.parent.session.Timer.time_passed_since_start
+
+    def suspend_buttons(self):
+        buttons = self.ids.button_box.children
+        for button in buttons:
+            button.disabled = True
+        Clock.schedule_once(self.resume_buttons, 0.3)
+
+    def resume_buttons(self, *args):
+        buttons = self.ids.button_box.children
+        for button in buttons:
+            button.disabled = False
 
 
 class TesterScreen(LocalFilesScreen):

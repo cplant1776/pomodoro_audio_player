@@ -29,34 +29,35 @@
 
 
         BoxLayout:
+            id: button_box
             pos_hint_y: 0.4
             padding: "100dp"
             spacing: "20dp"
             orientation: 'horizontal'
 
-            Button:
+            SessionScreenButton:
                 pos_hint_x: 0.25
                 id: pause
-                text: "pause"
-                on_release: app.root.session.pause_interval()
-                on_release: root.pause_session_progress()
-            Button:
+                text: "Pause"
+                on_press: app.root.session.pause_interval()
+                on_press: root.pause_session_progress()
+            SessionScreenButton:
                 pos_hint_x: 0.25
                 id: resume
-                text: "resume"
-                on_release: app.root.session.resume_interval()
-                on_release: root.start_session_progress()
-            Button:
+                text: "Resume"
+                on_press: app.root.session.resume_interval()
+                on_press: root.start_session_progress()
+            SessionScreenButton:
                 pos_hint_x: 0.25
                 id: skip_interval
-                text: "skip interval"
-                on_release: app.root.session.skip_interval()
-                on_release: root.schedule_skip_interval_progress()
-            Button:
+                text: "Skip Interval"
+                on_press: app.root.session.skip_interval()
+                on_press: root.schedule_skip_interval_progress()
+            SessionScreenButton:
                 pos_hint_x: 0.25
                 id: skip_interval
-                text: "skip track"
-                on_release: app.root.session.skip_track()
+                text: "Skip Track"
+                on_press: app.root.session.skip_track()
 
 
 #        canvas.before:

@@ -3,6 +3,7 @@
 # Third Party Imports
 from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty
+from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.progressbar import ProgressBar
@@ -38,3 +39,8 @@ class ConnectingLabel(Label):
         if self.count > 0:
             Clock.schedule_once(self.set_Circle, 1.0/360)
 
+
+class SessionScreenButton(Button):
+
+    def on_release(self):
+        self.parent.parent.parent.suspend_buttons()
