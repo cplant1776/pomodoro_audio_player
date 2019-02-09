@@ -5,6 +5,7 @@ import tracemalloc
 # Third Party Imports
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.resources import resource_add_path
 
 # Local Imports
 from source.session.session import Session
@@ -40,6 +41,7 @@ class PomodoroApp(App):
 
     def build(self):
         """Start main loop"""
+        resource_add_path('assets/ui/buttons')
         session = Session()
         load_kv_file(KV_FILE)
         return screens.RootScreen(session=session)
