@@ -13,13 +13,6 @@ import source.ui.ui_elements
 import source.ui.screens as screens
 
 
-# Standard Library Imports
-
-# Third Party Imports
-
-# Local Imports
-
-
 KV_FILE = 'pomodoro.kv'
 tracemalloc.start()
 

@@ -11,8 +11,14 @@
         height: self.texture_size[1]
 
 <LocalFilesScreenSection@BoxLayout>:
-    size_hint: 0.8, 1
-    pos_hint: {'center_x': 0.5}
+    canvas.before:
+        Color:
+            rgba: 1,0,0,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    size_hint: 1, 0.1
+#    pos_hint: {'center_x': 0.5}
     text: "I am a placeholder"
     BoxLayout:
         orientation: "vertical"
@@ -46,24 +52,37 @@
         font_size: "65dp"
 
     BoxLayout:
-        orientation: "vertical"
-        padding: "60dp"
-        spacing: "60dp"
-        size_hint: 1, 0.9
+        BoxLayout:
+            size_hint: 0.2, 1
+            padding: "15dp"
+            Button:
+                size_hint: None, None
+                width: "65dp"
+                height: "65dp"
+                pos_hint: {'top': 0.5, 'x': 0.5}
+                text: "Back"
+                on_press: app.root.current = 'SourceScreen'
+        BoxLayout:
+            orientation: "vertical"
+#            padding: "60dp"
+            spacing: "20dp"
+            size_hint: 1, 0.85
 
-        LocalFilesScreenSection:
-            id: lf_work
-            text: 'Work'
-        LocalFilesScreenSection:
-            id: lf_rest
-            text: 'Rest'
-        LocalFilesScreenSection:
-            id: lf_long_rest
-            text: 'Long Rest'
+            LocalFilesScreenSection:
+                id: lf_work
+                text: 'Work'
+            LocalFilesScreenSection:
+                id: lf_rest
+                text: 'Rest'
+            LocalFilesScreenSection:
+                id: lf_long_rest
+                text: 'Long Rest'
 
-    Button:
-        text: "Start!"
-        pos_hint: {'center_x': 0.5, 'top': 0.05}
-        size_hint: 0.3, 0.05
-        on_release: app.root.session.initialize_session_intervals()
-        on_release: app.root.current = 'SessionScreen'
+            Button:
+                text: "Start!"
+                pos_hint: {'center_x': 0.5, 'top': 0.2}
+                size_hint: 0.3, 0.05
+                on_release: app.root.session.initialize_session_intervals()
+                on_release: app.root.current = 'SessionScreen'
+        Widget:
+            size_hint: 0.2, 1

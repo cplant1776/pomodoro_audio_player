@@ -3,6 +3,8 @@
 # Third Party Imports
 from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
