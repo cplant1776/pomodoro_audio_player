@@ -56,8 +56,10 @@
         size_hint: 0.2, 0.05
         pos_hint: {'center_x': 0.5, 'top': 0.35}
         text: "Next"
-        on_release: root.update_intervals(work_interval=w_i.text, rest_interval=r_i.text,long_rest_interval=l_r_i.text, num_of_intervals=i_p_s.text)
-        on_release: app.root.current = 'SourceScreen'
+        on_release:
+            app.root.transition.direction = 'left'
+            root.update_intervals(work_interval=w_i.text, rest_interval=r_i.text,long_rest_interval=l_r_i.text, num_of_intervals=i_p_s.text)
+            app.root.current = 'SourceScreen'
 
 
 #canvas.before:

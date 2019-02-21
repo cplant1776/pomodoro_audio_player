@@ -11,12 +11,6 @@
         height: self.texture_size[1]
 
 <LocalFilesScreenSection@BoxLayout>:
-    canvas.before:
-        Color:
-            rgba: 1,0,0,1
-        Rectangle:
-            pos: self.pos
-            size: self.size
     size_hint: 1, 0.1
 #    pos_hint: {'center_x': 0.5}
     text: "I am a placeholder"
@@ -61,7 +55,9 @@
                 height: "65dp"
                 pos_hint: {'top': 0.5, 'x': 0.5}
 #                text: "Back"
-                on_press: app.root.current = 'SourceScreen'
+                on_press:
+                    app.root.transition.direction = 'right'
+                    app.root.current = 'SourceScreen'
                 Image:
                     source: './assets/icons/back-white.png'
                     y: self.parent.y + 10
@@ -89,7 +85,9 @@
                 text: "Start!"
                 pos_hint: {'center_x': 0.5, 'top': 0.2}
                 size_hint: 0.3, 0.05
-                on_release: app.root.session.initialize_session_intervals()
-                on_release: app.root.current = 'SessionScreen'
+                on_release:
+                    app.root.transition.direction = 'left'
+                    app.root.session.initialize_session_intervals()
+                    app.root.current = 'SessionScreen'
         Widget:
             size_hint: 0.2, 1

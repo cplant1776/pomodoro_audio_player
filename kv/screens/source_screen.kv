@@ -30,7 +30,9 @@
                 height: "65dp"
                 pos_hint: {'top': 0.5, 'x': 0.5}
 #                text: "Back"
-                on_press: app.root.current = 'StartScreen'
+                on_press:
+                    app.root.transition.direction = 'right'
+                    app.root.current = 'StartScreen'
                 Image:
                     source: './assets/icons/back-white.png'
                     y: self.parent.y + 10
@@ -46,12 +48,16 @@
                 spacing: "25dp"
                 SourceScreenButton:
                     text: "Local Playlist File"
-                    on_release: app.root.session.style = 'Local'
-                    on_release: app.root.current = 'LocalFilesScreen'
+                    on_release:
+                        app.root.transition.direction = 'left'
+                        app.root.session.style = 'Local'
+                        app.root.current = 'LocalFilesScreen'
                 SourceScreenButton
                     text: "Brain.fm"
-                    on_release: app.root.session.style = 'BrainFM'
-                    on_release: app.root.current = 'LoginScreen'
+                    on_release:
+                        app.root.transition.direction = 'left'
+                        app.root.session.style = 'BrainFM'
+                        app.root.current = 'LoginScreen'
                 SourceScreenButton
         #        TODO: Look into adding this feature
                     text: "Spotify  - NOT ADDED YET"

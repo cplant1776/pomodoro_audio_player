@@ -43,9 +43,9 @@ class ConnectingLabel(Label):
 
 
 class SessionScreenButton(Button):
-    background_normal = "normal.png"
-    background_down = "pressed.png"
-    background_disabled_normal = "normal.png"
+    # background_normal = "normal.png"
+    # background_down = "pressed.png"
+    # background_disabled_normal = "normal.png"
 
     def on_release(self):
         self.parent.parent.parent.suspend_buttons()
