@@ -13,8 +13,15 @@
                 width: "65dp"
                 height: "65dp"
                 pos_hint: {'top': 0.5, 'x': 0.5}
-                text: "Back"
+#                text: "Back"
                 on_press: app.root.current = 'SourceScreen'
+                Image:
+                    source: './assets/icons/back-white.png'
+                    y: self.parent.y + 10
+                    x: self.parent.x
+                    allow_stretch: True
+                    width: self.parent.width
+                    height: self.parent.height - 20
         BoxLayout
             id: login_layout
             orientation: 'vertical'
