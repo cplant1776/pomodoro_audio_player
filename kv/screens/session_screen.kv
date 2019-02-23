@@ -38,26 +38,54 @@
             SessionScreenButton:
                 pos_hint_x: 0.25
                 id: pause
-                text: "Pause"
-                on_press: app.root.session.pause_interval()
-                on_press: root.pause_session_progress()
+                on_press:
+                    app.root.session.pause_interval()
+                    root.pause_session_progress()
+                Image:
+                    source: './assets/icons/pause-white.png'
+                    y: self.parent.y + 10
+                    x: self.parent.x
+                    allow_stretch: True
+                    width: self.parent.width
+                    height: self.parent.height - 20
             SessionScreenButton:
                 pos_hint_x: 0.25
                 id: resume
                 text: "Resume"
-                on_press: app.root.session.resume_interval()
-                on_press: root.start_session_progress()
+                on_press:
+                    app.root.session.resume_interval()
+                    root.start_session_progress()
+                Image:
+                    source: './assets/icons/play-white.png'
+                    y: self.parent.y + 10
+                    x: self.parent.x
+                    allow_stretch: True
+                    width: self.parent.width
+                    height: self.parent.height - 20
             SessionScreenButton:
                 pos_hint_x: 0.25
-                id: skip_interval
-                text: "Skip Interval"
-                on_press: app.root.session.skip_interval()
-                on_press: root.schedule_skip_interval_progress()
-            SessionScreenButton:
-                pos_hint_x: 0.25
-                id: skip_interval
-                text: "Skip Track"
+                id: skip_track
                 on_press: app.root.session.skip_track()
+                Image:
+                    source: './assets/icons/fast-forward-white.png'
+                    y: self.parent.y + 10
+                    x: self.parent.x
+                    allow_stretch: True
+                    width: self.parent.width
+                    height: self.parent.height - 20
+            SessionScreenButton:
+                pos_hint_x: 0.25
+                id: skip_interval
+                on_press:
+                    app.root.session.skip_interval()
+                    root.schedule_skip_interval_progress()
+                Image:
+                    source: './assets/icons/skip-white.png'
+                    y: self.parent.y + 10
+                    x: self.parent.x
+                    allow_stretch: True
+                    width: self.parent.width
+                    height: self.parent.height - 20
 
 
 #        canvas.before:
