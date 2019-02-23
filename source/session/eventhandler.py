@@ -20,3 +20,8 @@ class EventHandler:
         """Unschedules event in events dict with key event_name"""
         print("{} - Canceled: {} ==> {}".format(strftime('%X'), event_name, self.events[event_name]))
         self.events[event_name].cancel()
+
+    def clear_all_events(self):
+        """Clear all current events"""
+        for event_name in self.events.keys():
+            self.events[event_name].cancel()

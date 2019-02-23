@@ -10,6 +10,7 @@ from kivy.uix.popup import Popup
 
 # Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
+from source.session.session import Session
 
 # ====================================
 # CONSTANTS
@@ -23,9 +24,9 @@ TIME_UNIT = 'MINUTES'
 
 
 class RootScreen(ScreenManager):
-    def __init__(self, session, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.session = session
+        self.session = Session(self)
 
 
 class StartScreen(Screen):
@@ -175,6 +176,15 @@ class SessionScreen(Screen):
         buttons = self.ids.button_box.children
         for button in buttons:
             button.disabled = False
+
+    def end_current_session(self):
+        self.reset_values()
+        print("end")
+        quit()
+
+    def reset_values(self):
+        progress_max = 0
+        progress_value = 100
 
 
 class TesterScreen(LocalFilesScreen):

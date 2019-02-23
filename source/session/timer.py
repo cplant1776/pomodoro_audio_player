@@ -5,6 +5,7 @@ from kivy.clock import Clock
 
 # Local Imports
 
+
 class Timer:
     """Handles timing for events"""
     def __init__(self):
@@ -50,3 +51,12 @@ class Timer:
         """Returns seconds remaining in the current event"""
         print("="*20 + "\n" + "EVENT DURATION: {}\nEVENT TIME PASSED: {}\n".format(self.event_duration, self.event_time_passed) + "="*20)
         return self.event_duration - self.event_time_passed
+
+    def reset_values(self):
+        self.total_time = 0
+        self.time_passed_since_start = 0
+
+        self.event_duration = 0
+        self.event_time_passed = 0
+
+        self.time_passed_update_event = None

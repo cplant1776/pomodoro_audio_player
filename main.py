@@ -34,15 +34,11 @@ class PomodoroApp(App):
 
     def build(self):
         """Start main loop"""
-        resource_add_path('assets/ui/buttons')
-        session = Session()
         load_kv_file(KV_FILE)
-        return screens.RootScreen(session=session)
+        return screens.RootScreen()
 
 
 if __name__ == "__main__":
     PomodoroApp().run()
 
-# TODO: Add protections for user's incorrect use
 # TODO: Create load queue to reduce memory usage for local playlists
-# TODO: Look into spotify API

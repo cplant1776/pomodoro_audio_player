@@ -29,12 +29,13 @@ class Session:
     Session will last until all Intervals are completed. Session also controls starting/stopping/skipping Intervals.
     It generates the playlist objects and passes them to each Interval when initializing the Intervals
     """
-    def __init__(self):
+    def __init__(self, parent):
         # Initialize session empty
         self.interval_duration = {'work': -1, 'rest': -1, 'long_rest': -1}
         self.playlist = {'work': None, 'rest': None, 'long_rest': None}
         self.num_of_work_intervals = None
         self.Intervals = {}
+        self.parent = parent
 
         # Initialize timers and eventhandlers
         self.Timer = Timer()
@@ -128,9 +129,13 @@ class Session:
 
     def end_session(self):
         """Exits on session end"""
-        print("SESSION END")
-        print("Current: %d, Peak %d" % tracemalloc.get_traced_memory())
-        quit()
+        self.reset_values()
+        self.parent.ids['session_screen'].end_current_session()
+
+    def reset_values(self):
+        self.Timer.reset_values()
+        self.EventHandler.clear_all_events()
+        self.interval_loop = 0
 
     def get_session_total_time(self):
         """Returns the total duration (in seconds) of the session"""
