@@ -67,8 +67,11 @@ class Session:
         print("{} - Execute: {} ==> {}".format(strftime('%X'), "change_interval",
                                                self.EventHandler.events['change_interval']))
         self.end_interval()
-        self.check_for_session_end()
-        self.start_next_interval()
+        if self.is_final_interval():
+            self.end_session()
+        else:
+            self.interval_loop += 1
+            self.start_next_interval()
 
     def end_interval(self):
         """End current interval"""
@@ -111,14 +114,6 @@ class Session:
         self.Timer.start()
         print("RESUME INTERVAL")
 
-    def check_for_session_end(self):
-        """Ends session if final interval is complete"""
-        # If final interval, end the session
-        if self.is_final_interval():
-            self.end_session()
-        else:
-            self.interval_loop += 1
-
     def is_final_interval(self):
         """Returns True if current intervla is the last one of the session"""
         return True if self.interval_loop == (self.num_of_work_intervals * 2 - 1) else False
@@ -128,7 +123,7 @@ class Session:
         self.Intervals[self.interval_loop].skip_track()
 
     def end_session(self):
-        """Exits on session end"""
+        """Resets values for session object"""
         self.reset_values()
         self.parent.ids['session_screen'].end_current_session()
 

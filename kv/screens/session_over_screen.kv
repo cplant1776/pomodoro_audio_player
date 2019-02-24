@@ -1,0 +1,36 @@
+#===================================
+# Session Over Screen
+#===================================
+<SessionOverScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            text: "Repeat session?"
+            font_size: 36
+        Widget:
+        ConnectingLabel:
+        Widget:
+        Widget:
+        BoxLayout:
+            size_hint_x: 0.5
+            pos_hint: {"center_x": 0.5}
+            orientation: "horizontal"
+            Button:
+                text: "Yes"
+                on_press:
+                    app.root.current = 'SessionScreen'
+            Button:
+                text: "No"
+                on_press:
+                    app.root.end_app()
+        Widget:
+
+
+<ConnectingLabel@Label>:
+    angle: 0
+    canvas:
+        Color:
+            rgb: 1,0,1
+        Line:
+            circle:self.center_x, self.center_y, 90, 0, self.angle
+            width: 5

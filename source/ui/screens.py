@@ -28,6 +28,10 @@ class RootScreen(ScreenManager):
         super().__init__(**kwargs)
         self.session = Session(self)
 
+    @staticmethod
+    def end_app():
+        quit()
+
 
 class StartScreen(Screen):
     # Fires on move to next screen - default intervals: 25/5/15 minutesS
@@ -164,7 +168,10 @@ class SessionScreen(Screen):
 
     def skip_interval_progress(self, *args):
         # Update progress bar for skipped interval
-        self.progress_value = self.parent.session.Timer.time_passed_since_start
+        try:
+            self.progress_value = self.parent.session.Timer.time_passed_since_start
+        except AttributeError:
+            print("Error A")
 
     def suspend_buttons(self):
         buttons = self.ids.button_box.children
@@ -179,13 +186,16 @@ class SessionScreen(Screen):
 
     def end_current_session(self):
         self.reset_values()
-        print("end")
-        quit()
+        self.pause_session_progress()
+        self.parent.current = 'SessionOverScreen'
 
     def reset_values(self):
-        progress_max = 0
-        progress_value = 100
+        self.progress_max = 0
+        self.progress_value = 100
 
+
+class SessionOverScreen(Screen):
+    pass
 
 class TesterScreen(LocalFilesScreen):
     pass
