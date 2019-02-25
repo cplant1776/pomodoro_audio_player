@@ -66,10 +66,10 @@ class Session:
         """Scheduled event that ends current interval and starts next"""
         print("{} - Execute: {} ==> {}".format(strftime('%X'), "change_interval",
                                                self.EventHandler.events['change_interval']))
-        self.end_interval()
         if self.is_final_interval():
             self.end_session()
         else:
+            self.end_interval()
             self.interval_loop += 1
             self.start_next_interval()
 
@@ -124,6 +124,7 @@ class Session:
 
     def end_session(self):
         """Resets values for session object"""
+        self.end_interval()
         self.reset_values()
         self.parent.ids['session_screen'].end_current_session()
 

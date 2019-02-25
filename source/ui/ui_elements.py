@@ -48,4 +48,4 @@ class SessionScreenButton(Button):
     # background_disabled_normal = "normal.png"
 
     def on_release(self):
-        self.parent.parent.parent.suspend_buttons()
+        self.parent.parent.parent.parent.suspend_buttons()

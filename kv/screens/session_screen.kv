@@ -12,80 +12,106 @@
     on_enter: self.start_session_progress()
 
     BoxLayout:
-        orientation: 'vertical'
-
-        Label:
-            id: interval_time_remaining
-            text: '00:00:00'
-            font_size: "200dp"
-            pos_hint_y: 0.5
-            pos_hint: {"top": 1}
-
-        SessionScreenProgressBar:
-            size_hint: 0.8, None
-            height: "20dp"
-            max: root.progress_max
-            value: root.progress_value
-
-
+        orientation: 'horizontal'
         BoxLayout:
-            id: button_box
-            pos_hint_y: 0.4
-            padding: "100dp"
-            spacing: "20dp"
-            orientation: 'horizontal'
+            size_hint: 0.2, 1
+            padding: "15dp"
+            Button:
+                size_hint: None, None
+                width: "65dp"
+                height: "65dp"
+                pos_hint: {'top': 0.5, 'x': 0.5}
+#                text: "Back"
+                on_press:
+                    app.root.session.end_interval()
+                    app.root.session.end_session()
+                    app.root.transition.direction = 'right'
+                    app.root.current = 'StartScreen'
 
-            SessionScreenButton:
-                pos_hint_x: 0.25
-                id: pause
-                on_press:
-                    app.root.session.pause_interval()
-                    root.pause_session_progress()
                 Image:
-                    source: './assets/icons/pause-white.png'
+                    source: './assets/icons/back-white.png'
                     y: self.parent.y + 10
                     x: self.parent.x
                     allow_stretch: True
                     width: self.parent.width
                     height: self.parent.height - 20
-            SessionScreenButton:
-                pos_hint_x: 0.25
-                id: resume
-                text: "Resume"
-                on_press:
-                    app.root.session.resume_interval()
-                    root.start_session_progress()
-                Image:
-                    source: './assets/icons/play-white.png'
-                    y: self.parent.y + 10
-                    x: self.parent.x
-                    allow_stretch: True
-                    width: self.parent.width
-                    height: self.parent.height - 20
-            SessionScreenButton:
-                pos_hint_x: 0.25
-                id: skip_track
-                on_press: app.root.session.skip_track()
-                Image:
-                    source: './assets/icons/fast-forward-white.png'
-                    y: self.parent.y + 10
-                    x: self.parent.x
-                    allow_stretch: True
-                    width: self.parent.width
-                    height: self.parent.height - 20
-            SessionScreenButton:
-                pos_hint_x: 0.25
-                id: skip_interval
-                on_press:
-                    app.root.session.skip_interval()
-                    root.schedule_skip_interval_progress()
-                Image:
-                    source: './assets/icons/skip-white.png'
-                    y: self.parent.y + 10
-                    x: self.parent.x
-                    allow_stretch: True
-                    width: self.parent.width
-                    height: self.parent.height - 20
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                id: interval_time_remaining
+                text: '00:00:00'
+                font_size: "200dp"
+                pos_hint_y: 0.5
+                pos_hint: {"top": 1}
+
+            SessionScreenProgressBar:
+                size_hint: 0.8, None
+                height: "20dp"
+                max: root.progress_max
+                value: root.progress_value
+
+
+            BoxLayout:
+                id: button_box
+                pos_hint_y: 0.4
+                padding: "100dp"
+                spacing: "20dp"
+                orientation: 'horizontal'
+
+                SessionScreenButton:
+                    pos_hint_x: 0.25
+                    id: pause
+                    on_press:
+                        app.root.session.pause_interval()
+                        root.pause_session_progress()
+                    Image:
+                        source: './assets/icons/pause-white.png'
+                        y: self.parent.y + 10
+                        x: self.parent.x
+                        allow_stretch: True
+                        width: self.parent.width
+                        height: self.parent.height - 20
+                SessionScreenButton:
+                    pos_hint_x: 0.25
+                    id: resume
+                    text: "Resume"
+                    on_press:
+                        app.root.session.resume_interval()
+                        root.start_session_progress()
+                    Image:
+                        source: './assets/icons/play-white.png'
+                        y: self.parent.y + 10
+                        x: self.parent.x
+                        allow_stretch: True
+                        width: self.parent.width
+                        height: self.parent.height - 20
+                SessionScreenButton:
+                    pos_hint_x: 0.25
+                    id: skip_track
+                    on_press: app.root.session.skip_track()
+                    Image:
+                        source: './assets/icons/fast-forward-white.png'
+                        y: self.parent.y + 10
+                        x: self.parent.x
+                        allow_stretch: True
+                        width: self.parent.width
+                        height: self.parent.height - 20
+                SessionScreenButton:
+                    pos_hint_x: 0.25
+                    id: skip_interval
+                    on_press:
+                        app.root.session.skip_interval()
+                        root.schedule_skip_interval_progress()
+                    Image:
+                        source: './assets/icons/skip-white.png'
+                        y: self.parent.y + 10
+                        x: self.parent.x
+                        allow_stretch: True
+                        width: self.parent.width
+                        height: self.parent.height - 20
+        Widget:
+            size_hint: 0.2, 1
 
 
 #        canvas.before:
