@@ -36,21 +36,29 @@
         StartScreenTextInput:
             id: w_i
             text: "25"
+            input_filter: 'int'
+            on_text: self.text = self.text and self.text[:2] or ''
         StartScreenLabel:
             text: "Rest Interval Duration:"
         StartScreenTextInput:
             id: r_i
             text: "5"
+            input_filter: 'int'
+            on_text: self.text = self.text and self.text[:2] or ''
         StartScreenLabel:
             text: "Long Rest Duration:"
         StartScreenTextInput:
             id: l_r_i
             text: "15"
+            input_filter: 'int'
+            on_text: self.text = self.text and self.text[:2] or ''
         StartScreenLabel:
             text: "Work Intervals per Long Rest:"
         StartScreenTextInput:
             id: i_p_s
             text: "4"
+            input_filter: 'int'
+            on_text: self.text = self.text and self.text[:2] or ''
 
     Button:
         size_hint: 0.2, 0.05
