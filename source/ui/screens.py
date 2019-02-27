@@ -11,6 +11,7 @@ from kivy.uix.popup import Popup
 # Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
 from source.session.session import Session
+from source.ui.ui_elements import FailedSubmissionPopup
 
 # ====================================
 # CONSTANTS
@@ -34,13 +35,57 @@ class RootScreen(ScreenManager):
 
 
 class StartScreen(Screen):
-    # Fires on move to next screen - default intervals: 25/5/15 minutesS
-    def update_intervals(self, work_interval, rest_interval, long_rest_interval, num_of_intervals):
+    # Transition to source selection screen
+    def change_screen(self):
+        self.update_intervals()
+        self.parent.transition.direction = 'left'
+        self.parent.current = 'SourceScreen'
+
+    # Set interval duration and number per session
+    def update_intervals(self):
+        work_interval, rest_interval, long_rest_interval, num_of_intervals = self.values
         # Update intervals with duration
-        self.parent.session.interval_duration['work'] = int(work_interval) * TIME_MULTIPLIER[TIME_UNIT]
-        self.parent.session.interval_duration['rest'] = int(rest_interval) * TIME_MULTIPLIER[TIME_UNIT]
-        self.parent.session.interval_duration['long_rest'] = int(long_rest_interval) * TIME_MULTIPLIER[TIME_UNIT]
+        self.parent.session.interval_duration['work'] = work_interval * TIME_MULTIPLIER[TIME_UNIT]
+        self.parent.session.interval_duration['rest'] = rest_interval * TIME_MULTIPLIER[TIME_UNIT]
+        self.parent.session.interval_duration['long_rest'] = long_rest_interval * TIME_MULTIPLIER[TIME_UNIT]
         self.parent.session.set_intervals_per_session(num_of_intervals)
+
+    #
+    def check_values_validity(self, work_interval, rest_interval, long_rest_interval, num_of_intervals):
+        # Store values as ints
+        self.values = [work_interval, rest_interval, long_rest_interval, num_of_intervals]
+        self.values = [int(n) for n in self.values]
+        # Get warnings about the user's settings
+        warning_message = self.find_warnings()
+        if warning_message:
+            # Open a warning popup
+            self.pop_warning(warning_message)
+        else:
+            self.change_screen()
+
+    def pop_warning(self, message):
+        self.popup = FailedSubmissionPopup(message=message)
+        self.popup.open()
+
+    def find_warnings(self):
+        """
+        Check the validity of values the user is setting
+
+        w_i: work interval
+        r_i: rest interval
+        lr_i: long-rest interval
+        n_o_i: number of work intervals per session
+        """
+        w_i, r_i, lr_i, n_o_i = self.values
+        if w_i < r_i:
+            return "Work interval is shorter than rest interval. "
+        elif r_i > lr_i:
+            return "Rest interval is longer than long rest interval. "
+        elif r_i > w_i * 0.5:
+            return "Rest interval is too long for your chosen work interval. "
+        elif n_o_i < 4:
+            return "The number of work intervals per session is too low. "
+        return False
 
 
 class LocalFilesScreen(Screen):

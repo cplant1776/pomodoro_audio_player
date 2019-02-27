@@ -7,6 +7,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.modalview import ModalView
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.progressbar import ProgressBar
 
@@ -49,3 +50,9 @@ class SessionScreenButton(Button):
 
     def on_release(self):
         self.parent.parent.parent.parent.suspend_buttons()
+
+
+class FailedSubmissionPopup(ModalView):
+    def __init__(self, message, **kwargs):
+        super(ModalView, self).__init__(**kwargs)
+        self.ids.failed_submission_label.text = message + "Are you sure you wish to continue?"
