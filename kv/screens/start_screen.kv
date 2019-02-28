@@ -76,27 +76,35 @@
     BoxLayout:
         orientation: 'vertical'
         spacing: '10dp'
+        Widget:
+            size_hint_y: 0.1
         Label:
             id: failed_submission_label
+            pos_hint: {'top': 0.5}
             text: "failedsubmissionpopup placeholder"
+            halign: 'center'
 
-        Button:
-            pos_hint: {'center_x': 0.5}
-            size_hint_x: 0.3
-            size_hint_y: 0.25
-            id: dismiss_failed_popup
-            text: "Yes"
-            on_press:
-                app.root.ids.start_screen.change_screen()
-                root.dismiss()
-
-        Button:
-            pos_hint: {'center_x': 0.5}
-            size_hint_x: 0.3
-            size_hint_y: 0.25
-            id: accept_failed_popup
-            text: "Cancel"
-            on_press: root.dismiss()
+        BoxLayout:
+            orientation: 'horizontal'
+            Widget:
+            Button:
+                pos_hint: {'center_x': 0.5}
+                size_hint: 1, 0.5
+                id: dismiss_failed_popup
+                text: "Yes"
+                on_press:
+                    app.root.ids.start_screen.change_screen()
+                    root.dismiss()
+            Widget:
+            Button:
+                pos_hint: {'center_x': 0.5}
+                size_hint: 1, 0.5
+                id: accept_failed_popup
+                text: "Cancel"
+                on_press: root.dismiss()
+            Widget:
+        Widget:
+            size_hint_y: 0.1
 
 #canvas.before:
 #    Color:

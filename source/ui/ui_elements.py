@@ -55,4 +55,4 @@ class SessionScreenButton(Button):
 class FailedSubmissionPopup(ModalView):
     def __init__(self, message, **kwargs):
         super(ModalView, self).__init__(**kwargs)
-        self.ids.failed_submission_label.text = message + "Are you sure you wish to continue?"
+        self.ids.failed_submission_label.text = message + "\nAre you sure you wish to continue?"
