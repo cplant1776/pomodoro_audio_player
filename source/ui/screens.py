@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 # Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
 from source.session.session import Session
-from source.ui.ui_elements import FailedSubmissionPopup
+from source.ui.ui_elements import FailedSubmissionPopup, HelpPopup
 
 # ====================================
 # CONSTANTS
@@ -86,6 +86,10 @@ class StartScreen(Screen):
         elif n_o_i < 4:
             return "The number of work intervals per session is too low. "
         return False
+
+    def pop_help(self):
+        self.popup = HelpPopup()
+        self.popup.open()
 
 
 class LocalFilesScreen(Screen):

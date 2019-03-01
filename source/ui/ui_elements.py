@@ -56,3 +56,9 @@ class FailedSubmissionPopup(ModalView):
     def __init__(self, message, **kwargs):
         super(ModalView, self).__init__(**kwargs)
         self.ids.failed_submission_label.text = message + "\nAre you sure you wish to continue?"
+
+
+class HelpPopup(ModalView):
+    def __init__(self, **kwargs):
+        super(ModalView, self).__init__(**kwargs)
+        self.ids.help_label.text = "HELP TEXT TO GO HERE"

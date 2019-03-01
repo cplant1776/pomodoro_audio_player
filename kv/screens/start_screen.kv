@@ -67,6 +67,20 @@
         on_release:
             root.check_values_validity(work_interval=w_i.text, rest_interval=r_i.text,long_rest_interval=l_r_i.text, num_of_intervals=i_p_s.text)
 
+    Button:
+        pos_hint: {"center_x": 0.9, "center_y": 0.1}
+        size_hint: 0.1, 0.1
+        background_color: 0, 0, 0, 0
+        on_press:
+            root.pop_help()
+        Image:
+            source: './assets/icons/help.png'
+            y: self.parent.y
+            x: self.parent.x
+            allow_stretch: True
+            width: self.parent.width
+            height: self.parent.height
+
 
 <FailedSubmissionPopup@ModalView>:
     size_hint: 0.75, 0.2
@@ -105,6 +119,21 @@
             Widget:
         Widget:
             size_hint_y: 0.1
+
+
+<HelpPopup@ModalView>:
+    size_hint: 0.75, 0.2
+    pos_hint: {'top': 0.7}
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '10dp'
+        Label:
+            id: help_label
+            pos_hint: {'top': 0.5}
+            text: "helppopup placeholder"
+            halign: 'center'
 
 #canvas.before:
 #    Color:
