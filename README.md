@@ -63,11 +63,8 @@ See requirements.txt
 ## Upcoming Changes/Fixes
 
 * Merge Play/Resume buttons into a single toggle playback button
-* Make all buttons unclickable for a short period of time after a button press
 * Add a path for if user inputs invalid brain.fm credentials
-* At the end of the Pomodoro, prepare for another session rather than close
 * Add option to securely locally store user's Pomodoro preferences and credentials for easier login
 * Add protections for if network connection drops during brain.fm session
 * Explore viability of Spotify as a source
-* Test deployment on Android
 * General UI prettifying
