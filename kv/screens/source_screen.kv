@@ -7,6 +7,8 @@
     pos_hint: {"center_x": 0.5}
     height: "30dp"
     width: "200dp"
+    outline_color: 0,0,0,1
+    outline_width: 1
 
 <SourceScreen>:
     Label:
@@ -19,8 +21,6 @@
     BoxLayout:
         orientation: "horizontal"
         size_hint: 1, 1
-#        pos_hint: {'center_x': 0.5, 'top': 0.8}
-#        spacing: "25dp"
 
         BoxLayout:
             padding: "15dp"
@@ -29,7 +29,6 @@
                 width: "65dp"
                 height: "65dp"
                 pos_hint: {'top': 0.5, 'x': 0.5}
-#                text: "Back"
                 on_press:
                     app.root.transition.direction = 'right'
                     app.root.current = 'StartScreen'

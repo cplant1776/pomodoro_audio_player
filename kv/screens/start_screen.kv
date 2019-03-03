@@ -1,6 +1,7 @@
 #===================================
 # START SCREEN
 #===================================
+#: import C kivy.utils.get_color_from_hex
 
 <StartScreenLabel@Label>:
     size_hint_y: None
@@ -8,6 +9,9 @@
     width: "100dp"
     text_size: self.size
     halign: 'left'
+    outline_width: 1
+    outline_color: 0,0,0,1
+
 
 <StartScreenTextInput@TextInput>:
     size_hint: (None, None)
@@ -16,10 +20,11 @@
     write_tab: False
 
 <StartScreen>:
-
     Label:
         id: start_banner
-        text: "PomodoroTimer"
+        text: "Pomodoro Timer"
+        outline_color: (0, 0, 0)
+        outline_width: 3
         size_hint_y: None
         pos_hint: {'top': 1, 'center_x': 0.5}
         font_size: "65dp"
@@ -27,7 +32,7 @@
     GridLayout:
         cols: 2
         pos_hint: {'top': 0.8, 'center_x': 0.5}
-        size_hint: 0.4, 0.75
+        size_hint: 0.4, 0.55
         spacing: "25dp"
         padding: "25dp"
 
@@ -64,6 +69,8 @@
         size_hint: 0.2, 0.05
         pos_hint: {'center_x': 0.5, 'top': 0.35}
         text: "Next"
+        outline_color: 0,0,0,1
+        outline_width: 1
         on_release:
             root.check_values_validity(work_interval=w_i.text, rest_interval=r_i.text,long_rest_interval=l_r_i.text, num_of_intervals=i_p_s.text)
 
@@ -97,6 +104,8 @@
             pos_hint: {'top': 0.5}
             text: "failedsubmissionpopup placeholder"
             halign: 'center'
+            outline_color: 0,0,0,1
+            outline_width: 1
 
         BoxLayout:
             orientation: 'horizontal'
@@ -106,6 +115,8 @@
                 size_hint: 1, 0.5
                 id: dismiss_failed_popup
                 text: "Yes"
+                outline_color: 0,0,0,1
+                outline_width: 1
                 on_press:
                     app.root.ids.start_screen.change_screen()
                     root.dismiss()
@@ -115,7 +126,10 @@
                 size_hint: 1, 0.5
                 id: accept_failed_popup
                 text: "Cancel"
+                outline_color: 0,0,0,1
+                outline_width: 1
                 on_press: root.dismiss()
+
             Widget:
         Widget:
             size_hint_y: 0.1
@@ -139,6 +153,7 @@
             readonly: True
         Button:
             text: "Close"
+            border: 25, 25, 25, 25
             size_hint: 0.2, 0.1
             pos_hint: {"center_x": 0.5, "center_y": 0.1}
             on_press: root.dismiss()

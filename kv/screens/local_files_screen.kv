@@ -5,6 +5,8 @@
 <ScrollableLabel@ScrollView>:
     Label:
         text: root.text
+        outline_color: 0,0,0,1
+        outline_width: 1
         font_size: 12
         text_size: self.width, None
         size_hint_y: None
@@ -12,7 +14,6 @@
 
 <LocalFilesScreenSection@BoxLayout>:
     size_hint: 1, 0.1
-#    pos_hint: {'center_x': 0.5}
     text: "I am a placeholder"
     BoxLayout:
         orientation: "vertical"
@@ -24,6 +25,8 @@
             font_size: "20dp"
             size_hint: 1, 0.2
             text: root.text + " Playlist"
+            outline_color: 0,0,0,1
+            outline_width: 1
 
         ScrollableLabel:
             id: scrollable_label
@@ -34,6 +37,8 @@
         size_hint: 0.2, 0.2
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         text: "Browse"
+        outline_color: 0,0,0,1
+        outline_width: 1
         on_release: app.root.session.current_type = root.text
         on_release: app.root.ids.local_files_screen.show_load()
 
@@ -54,7 +59,6 @@
                 width: "65dp"
                 height: "65dp"
                 pos_hint: {'top': 0.5, 'x': 0.5}
-#                text: "Back"
                 on_press:
                     app.root.transition.direction = 'right'
                     app.root.current = 'SourceScreen'

@@ -13,7 +13,6 @@
                 width: "65dp"
                 height: "65dp"
                 pos_hint: {'top': 0.5, 'x': 0.5}
-#                text: "Back"
                 on_press:
                     app.root.transition.direction = 'right'
                     app.root.current = 'SourceScreen'
@@ -43,6 +42,8 @@
 
                 Label:
                     text: 'Username/Email'
+                    outline_color: 0,0,0,1
+                    outline_width: 1
                     font_size: "30dp"
 
                 TextInput:
@@ -58,6 +59,8 @@
 
                 Label:
                     text: 'Password'
+                    outline_color: 0,0,0,1
+                    outline_width: 1
                     font_size: "30dp"
 
                 TextInput:
@@ -70,9 +73,12 @@
 
             Button:
                 text: 'Submit'
+                outline_color: 0,0,0,1
+                outline_width: 1
                 pos_hint: {'center_x': 0.5}
                 size_hint: 0.4,0.5
                 on_release: root.open_load_screen(submission_type=str(app.root.session.style), username=username.text, password=password.text)
+
         Widget:
             size_hint: 0.2, 1
 
