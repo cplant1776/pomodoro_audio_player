@@ -35,6 +35,13 @@
         size_hint: 0.4, 0.55
         spacing: "25dp"
         padding: "25dp"
+        canvas.before:
+            Color:
+                rgba: 45/255, 45/255, 45/255, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [50,]
 
         StartScreenLabel:
             text: "Work Interval Duration:"

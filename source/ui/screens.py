@@ -246,6 +246,6 @@ class SessionScreen(Screen):
 class SessionOverScreen(Screen):
     pass
 
-class TesterScreen(LocalFilesScreen):
+class TesterScreen(Screen):
     pass
 
