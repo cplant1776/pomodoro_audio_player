@@ -3,95 +3,109 @@
 #===================================
 
 <ScrollableLabel@ScrollView>:
+    bar_width: 4
+    bar_inactive_color: 0/255, 140/255, 145/255, 1
     Label:
         text: root.text
         outline_color: 0,0,0,1
         outline_width: 1
         font_size: 12
         text_size: self.width, None
+        pos_hint: {'center_x': 1}
         size_hint_y: None
         height: self.texture_size[1]
 
 <LocalFilesScreenSection@BoxLayout>:
-    size_hint: 1, 0.1
+    size_hint: 1, 1
     text: "I am a placeholder"
     BoxLayout:
         orientation: "vertical"
 
-        Label:
-            id: title_label
-            text_size: self.size
-            halign: 'left'
-            font_size: "20dp"
-            size_hint: 1, 0.2
-            text: root.text + " Playlist"
-            outline_color: 0,0,0,1
-            outline_width: 1
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+            Label:
+                id: title_label
+                text_size: self.size
+                halign: 'center'
+                font_size: "20dp"
+#                size_hint: 1, 0.2
+#                text: root.text + " Playlist"
+                text: root.text
+                outline_color: 0,0,0,1
+                outline_width: 1
+            Button:
+                id: browse_button
+                size_hint: 0.5, 0.55
+#                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                text: "Browse"
+                outline_color: 0,0,0,1
+                outline_width: 1
+                on_release: app.root.session.current_type = root.text
+                on_release: app.root.ids.local_files_screen.show_load()
+        Widget:
+            size_hint: 1, 0.05
 
         ScrollableLabel:
             id: scrollable_label
             text: ''
-            size_hint: 1, 0.8
-    Button:
-        id: browse_button
-        size_hint: 0.2, 0.2
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        text: "Browse"
-        outline_color: 0,0,0,1
-        outline_width: 1
-        on_release: app.root.session.current_type = root.text
-        on_release: app.root.ids.local_files_screen.show_load()
+            size_hint: 1, 1
+
 
 <LocalFilesScreen>:
-    Label:
-        id: local_banner
-        text: "Select Playlist Locations"
-        size_hint_y: None
-        pos_hint: {'top': 1, 'center_x': 0.5}
-        font_size: "65dp"
-
     BoxLayout:
-        BoxLayout:
-            size_hint: 0.2, 1
-            padding: "15dp"
-            Button:
-                size_hint: None, None
-                width: "65dp"
-                height: "65dp"
-                pos_hint: {'top': 0.5, 'x': 0.5}
-                on_press:
-                    app.root.transition.direction = 'right'
-                    app.root.current = 'SourceScreen'
-                Image:
-                    source: './assets/icons/back-white.png'
-                    y: self.parent.y + 10
-                    x: self.parent.x
-                    allow_stretch: True
-                    width: self.parent.width
-                    height: self.parent.height - 20
-        BoxLayout:
-            orientation: "vertical"
-#            padding: "60dp"
-            spacing: "20dp"
-            size_hint: 1, 0.85
+        orientation: 'vertical'
+        Label:
+            id: local_banner
+            text: "Select Playlist Locations"
+            size_hint_y: None
+#            pos_hint: {'top': 1, 'center_x': 0.5}
+            font_size: "65dp"
 
-            LocalFilesScreenSection:
-                id: lf_work
-                text: 'Work'
-            LocalFilesScreenSection:
-                id: lf_rest
-                text: 'Rest'
-            LocalFilesScreenSection:
-                id: lf_long_rest
-                text: 'Long Rest'
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+                size_hint: 0.2, 1
+                padding: "15dp"
+                Button:
+                    size_hint: None, None
+                    width: "65dp"
+                    height: "65dp"
+                    pos_hint: {'top': 0.5, 'x': 0.5}
+                    on_press:
+                        app.root.transition.direction = 'right'
+                        app.root.current = 'SourceScreen'
+                    Image:
+                        source: './assets/icons/back-white.png'
+                        y: self.parent.y + 10
+                        x: self.parent.x
+                        allow_stretch: True
+                        width: self.parent.width
+                        height: self.parent.height - 20
+            BoxLayout:
+                orientation: "horizontal"
+                spacing: "10dp"
 
-            Button:
-                text: "Start!"
-                pos_hint: {'center_x': 0.5, 'top': 0.2}
-                size_hint: 0.3, 0.05
-                on_release:
-                    app.root.transition.direction = 'left'
-                    app.root.session.initialize_session_intervals()
-                    app.root.current = 'SessionScreen'
+                LocalFilesScreenSection:
+                    id: lf_work
+                    text: 'Work'
+                LocalFilesScreenSection:
+                    id: lf_rest
+                    text: 'Rest'
+                LocalFilesScreenSection:
+                    id: lf_long_rest
+                    text: 'Long Rest'
+
+
+            Widget:
+                size_hint: 0.2, 1
+        Button:
+            text: "Start!"
+            pos_hint: {'center_x': 0.5}
+            size_hint: 0.1, 0.1
+            on_release:
+                app.root.transition.direction = 'left'
+                app.root.session.initialize_session_intervals()
+                app.root.current = 'SessionScreen'
         Widget:
-            size_hint: 0.2, 1
+            size_hint: 1, 0.05
