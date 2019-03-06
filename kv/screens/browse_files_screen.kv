@@ -1,6 +1,7 @@
 #===================================
 # BROWSE FILES SCREEN
 #===================================
+#: import os os
 
 <BrowseFilesScreen>:
     BoxLayout:
@@ -10,7 +11,7 @@
         orientation: "vertical"
         FileChooserIconView:
             id: filechooser
-
+            path: app.root.ids.local_files_screen.saved_directory if app.root else ''
         BoxLayout:
             size_hint_y: None
             height: 30

@@ -1,5 +1,6 @@
 # Standard Library Imports
 import datetime
+import os
 from threading import Thread
 
 # Third Party Imports
@@ -95,6 +96,7 @@ class StartScreen(Screen):
 class LocalFilesScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.saved_directory = os.path.abspath(os.sep)
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -112,16 +114,20 @@ class LocalFilesScreen(Screen):
         # Get current_playlist type (work/rest/long_rest)
         playlist_type = str(self.parent.session.current_type).lower()
 
+        self.saved_directory = path
+
         if playlist_type == 'work':
             # Generate playlist
             self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
                                                                playlist_type='work')
             # Update label text on screen to show songs in playlist
             self.ids['lf_work'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
+
         elif playlist_type == 'rest':
             self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
                                                                playlist_type='rest')
             self.ids['lf_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
+
         elif playlist_type == 'long rest':
             self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
                                                                playlist_type='long_rest')
@@ -245,6 +251,7 @@ class SessionScreen(Screen):
 
 class SessionOverScreen(Screen):
     pass
+
 
 class TesterScreen(Screen):
     pass
