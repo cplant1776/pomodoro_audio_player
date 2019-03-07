@@ -5,6 +5,7 @@
 
 <StartScreenLabel@Label>:
     size_hint_y: None
+    pos_hint: {'center_x': 0.5}
     height: "30dp"
     width: "100dp"
     text_size: self.size
@@ -12,12 +13,18 @@
     outline_width: 1
     outline_color: 0,0,0,1
 
-
 <StartScreenTextInput@TextInput>:
     size_hint: (None, None)
     height: "30dp"
     width: "30dp"
     write_tab: False
+    input_filter: 'int'
+    on_text: self.text = self.text and self.text[:2] or ''
+
+<StartScreenSlider@Slider>:
+    orientation: 'horizontal'
+    min: 0
+    max: 60
 
 <StartScreen>:
     Label:
@@ -29,12 +36,12 @@
         pos_hint: {'top': 1, 'center_x': 0.5}
         font_size: "65dp"
 
-    GridLayout:
-        cols: 2
+    BoxLayout:
+        orientation: 'vertical'
         pos_hint: {'top': 0.8, 'center_x': 0.5}
-        size_hint: 0.4, 0.55
-        spacing: "25dp"
-        padding: "25dp"
+        size_hint: 0.4, 0.65
+        spacing: "20dp"
+        padding: "10dp"
         canvas.before:
             Color:
                 rgba: 45/255, 45/255, 45/255, 1
@@ -44,42 +51,67 @@
                 radius: [50,]
 
         StartScreenLabel:
-            text: "Work Interval Duration:"
-        StartScreenTextInput:
-            id: w_i
-            text: "25"
-            input_filter: 'int'
-            on_text: self.text = self.text and self.text[:2] or ''
+            id: w_i_label
+            text: "Work Interval Duration"
+            halign: 'center'
+        BoxLayout:
+            orientation: 'horizontal'
+            StartScreenSlider:
+                id: w_i_slider
+                value: 25
+            Label:
+                id: w_i_textinput
+                text: str(int(root.ids.w_i_slider.value))
+                size_hint: 0.1, 1
         StartScreenLabel:
-            text: "Rest Interval Duration:"
-        StartScreenTextInput:
-            id: r_i
-            text: "5"
-            input_filter: 'int'
-            on_text: self.text = self.text and self.text[:2] or ''
+            id: r_i_label
+            text: "Rest Interval Duration"
+            halign: 'center'
+        BoxLayout:
+            orientation: 'horizontal'
+            StartScreenSlider:
+                id: r_i_slider
+                value: 5
+            Label:
+                id: r_i_textinput
+                text: str(int(root.ids.r_i_slider.value))
+                size_hint: 0.1, 1
         StartScreenLabel:
-            text: "Long Rest Duration:"
-        StartScreenTextInput:
-            id: l_r_i
-            text: "15"
-            input_filter: 'int'
-            on_text: self.text = self.text and self.text[:2] or ''
+            id: l_r_label
+            text: "Long Rest Interval Duration"
+            halign: 'center'
+        BoxLayout:
+            orientation: 'horizontal'
+            StartScreenSlider:
+                id: l_r_i_slider
+                value: 15
+            Label:
+                id: l_r_i_textinput
+                text: str(int(root.ids.l_r_i_slider.value))
+                size_hint: 0.1, 1
         StartScreenLabel:
-            text: "Work Intervals per Long Rest:"
-        StartScreenTextInput:
-            id: i_p_s
-            text: "4"
-            input_filter: 'int'
-            on_text: self.text = self.text and self.text[:2] or ''
+            id: num_of_intervals_label
+            text: "Work Intervals per Long Rest"
+            halign: 'center'
+        BoxLayout:
+            orientation: 'horizontal'
+            StartScreenSlider:
+                id: num_of_intervals_slider
+                value: 4
+                range: (1, 10)
+            Label:
+                id: num_of_intervals_textinput
+                text: str(int(root.ids.num_of_intervals_slider.value))
+                size_hint: 0.1, 1
 
     Button:
         size_hint: 0.2, 0.05
-        pos_hint: {'center_x': 0.5, 'top': 0.35}
+        pos_hint: {'center_x': 0.5, 'top': 0.1}
         text: "Next"
         outline_color: 0,0,0,1
         outline_width: 1
         on_release:
-            root.check_values_validity(work_interval=w_i.text, rest_interval=r_i.text,long_rest_interval=l_r_i.text, num_of_intervals=i_p_s.text)
+            root.check_values_validity(work_interval=w_i_textinput.text,rest_interval=r_i_textinput.text,long_rest_interval=l_r_i_textinput.text, num_of_intervals=num_of_intervals_textinput.text)
 
     Button:
         pos_hint: {"center_x": 0.9, "center_y": 0.1}
