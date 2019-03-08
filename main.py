@@ -40,5 +40,3 @@ class PomodoroApp(App):
 
 if __name__ == "__main__":
     PomodoroApp().run()
-
-# TODO: Create load queue to reduce memory usage for local playlists

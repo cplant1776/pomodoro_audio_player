@@ -1,31 +1,6 @@
 #===================================
 # START SCREEN
 #===================================
-#: import C kivy.utils.get_color_from_hex
-
-<StartScreenLabel@Label>:
-    size_hint_y: None
-    pos_hint: {'center_x': 0.5}
-    height: "30dp"
-    width: "100dp"
-    text_size: self.size
-    halign: 'left'
-    outline_width: 1
-    outline_color: 0,0,0,1
-
-<StartScreenTextInput@TextInput>:
-    size_hint: (None, None)
-    height: "30dp"
-    width: "30dp"
-    write_tab: False
-    input_filter: 'int'
-    on_text: self.text = self.text and self.text[:2] or ''
-
-<StartScreenSlider@Slider>:
-    orientation: 'horizontal'
-    min: 0
-    max: 60
-
 <StartScreen>:
     Label:
         id: start_banner
@@ -37,11 +12,13 @@
         font_size: "65dp"
 
     BoxLayout:
+        id: start_container
         orientation: 'vertical'
         pos_hint: {'top': 0.8, 'center_x': 0.5}
-        size_hint: 0.4, 0.65
+        size_hint: 0.45, 0.65
         spacing: "20dp"
         padding: "10dp"
+#        Paints a round background
         canvas.before:
             Color:
                 rgba: 45/255, 45/255, 45/255, 1
@@ -50,70 +27,43 @@
                 size: self.size
                 radius: [50,]
 
-        StartScreenLabel:
-            id: w_i_label
-            text: "Work Interval Duration"
-            halign: 'center'
-        BoxLayout:
-            orientation: 'horizontal'
-            StartScreenSlider:
-                id: w_i_slider
-                value: 25
-            Label:
-                id: w_i_textinput
-                text: str(int(root.ids.w_i_slider.value))
-                size_hint: 0.1, 1
-        StartScreenLabel:
-            id: r_i_label
-            text: "Rest Interval Duration"
-            halign: 'center'
-        BoxLayout:
-            orientation: 'horizontal'
-            StartScreenSlider:
-                id: r_i_slider
-                value: 5
-            Label:
-                id: r_i_textinput
-                text: str(int(root.ids.r_i_slider.value))
-                size_hint: 0.1, 1
-        StartScreenLabel:
-            id: l_r_label
-            text: "Long Rest Interval Duration"
-            halign: 'center'
-        BoxLayout:
-            orientation: 'horizontal'
-            StartScreenSlider:
-                id: l_r_i_slider
-                value: 15
-            Label:
-                id: l_r_i_textinput
-                text: str(int(root.ids.l_r_i_slider.value))
-                size_hint: 0.1, 1
-        StartScreenLabel:
-            id: num_of_intervals_label
-            text: "Work Intervals per Long Rest"
-            halign: 'center'
-        BoxLayout:
-            orientation: 'horizontal'
-            StartScreenSlider:
-                id: num_of_intervals_slider
-                value: 4
-                range: (1, 10)
-            Label:
-                id: num_of_intervals_textinput
-                text: str(int(root.ids.num_of_intervals_slider.value))
-                size_hint: 0.1, 1
+        StartScreenRow:
+            id: work_row
+            display_text: "Work Interval Duration"
+            initial_value: 25
+            out_value: 25
+        StartScreenRow:
+            id: rest_row
+            display_text: "Rest Interval Duration"
+            initial_value: 5
+            out_value: 5
+        StartScreenRow:
+            id: long_rest_row
+            display_text: "Long Rest Interval Duration"
+            initial_value: 15
+            out_value: 15
+        StartScreenRow:
+            id: num_of_intervals_row
+            display_text: "Work Intervals Per Long Rest"
+            initial_value: 4
+            out_value: 4
+            slider_max: 10
+        Widget:
+            size_hint: 1, 0.3
 
     Button:
+        id: start_submit_button
         size_hint: 0.2, 0.05
         pos_hint: {'center_x': 0.5, 'top': 0.1}
         text: "Next"
         outline_color: 0,0,0,1
         outline_width: 1
         on_release:
-            root.check_values_validity(work_interval=w_i_textinput.text,rest_interval=r_i_textinput.text,long_rest_interval=l_r_i_textinput.text, num_of_intervals=num_of_intervals_textinput.text)
+            root.check_values_validity(work_interval=work_row.out_value,rest_interval=rest_row.out_value,\
+            long_rest_interval=long_rest_row.out_value, num_of_intervals=num_of_intervals_row.out_value)
 
     Button:
+        id: start_help_button
         pos_hint: {"center_x": 0.9, "center_y": 0.1}
         size_hint: 0.1, 0.1
         background_color: 0, 0, 0, 0
@@ -126,6 +76,74 @@
             allow_stretch: True
             width: self.parent.width
             height: self.parent.height
+
+<StartScreenRow>:
+    orientation: 'vertical'
+    spacing: "20dp"
+    StartScreenLabel:
+        halign: 'center'
+        text: root.display_text
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: "10dp"
+        Slider:
+            size_hint: 0.5, 1
+            orientation: 'horizontal'
+            value: root.out_value
+            on_value: root.out_value = int(self.value)
+            min: 1
+            max: root.slider_max
+        StartScreenTextInput:
+            text: str(root.out_value)
+            on_text: self.validate_text(root)
+        Widget:
+            size_hint: 0.01, 1
+
+<StartScreenLabel@Label>:
+    size_hint_y: None
+    pos_hint: {'center_x': 0.5}
+    height: "30dp"
+    width: "120dp"
+    text_size: self.size
+    halign: 'left'
+    outline_width: 1
+    outline_color: 0,0,0,1
+
+<StartScreenTextInput>:
+    font_size: '14dp'
+    size_hint: 0.05, None
+    height: "30dp"
+    write_tab: False
+    input_filter: 'int'
+#    Paints rounded background with border
+    background_color: 15/255, 25/255, 46/255, 1
+    cursor_color: 1,1,1,1
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+    canvas.after:
+        Color:
+            rgba: 15/255, 25/255, 46/255, 1
+        Ellipse:
+            angle_start:180
+            angle_end:360
+            pos:(self.pos[0] - self.size[1]/2.0, self.pos[1])
+            size: (self.size[1], self.size[1])
+        Ellipse:
+            angle_start:360
+            angle_end:540
+            pos: (self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1])
+            size: (self.size[1], self.size[1])
+        Color:
+            rgba: 63/255, 146/255, 219/255, 1
+        Line:
+            points: self.pos[0] , self.pos[1], self.pos[0] + self.size[0], self.pos[1]
+        Line:
+            points: self.pos[0], self.pos[1] + self.size[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1]
+        Line:
+            ellipse: self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 180, 360
+        Line:
+            ellipse: self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 360, 540
 
 
 <FailedSubmissionPopup@ModalView>:

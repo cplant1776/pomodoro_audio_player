@@ -1,14 +1,18 @@
 # Standard Library Imports
 
 # Third Party Imports
+from kivy.app import App
 from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.bubble import Bubble
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.modalview import ModalView
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.textinput import TextInput
 from kivy.uix.progressbar import ProgressBar
 
 # Local Imports
@@ -66,3 +70,28 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consectetur
 
 Vestibulum sed nulla commodo, posuere velit id, semper turpis. Donec facilisis interdum ex, eget lacinia magna. Quisque eros mauris, hendrerit elementum condimentum pellentesque, condimentum rhoncus elit. Fusce finibus rutrum posuere. Aenean augue ante, bibendum sed quam eget, consectetur hendrerit enim. Nulla condimentum sagittis tortor sed volutpat. Integer dapibus iaculis neque, ut volutpat mi venenatis id. Aenean ut ex diam. Integer fringilla condimentum enim, eu suscipit velit egestas a. Nulla a rhoncus diam.
         """
+
+
+class StartScreenRow(BoxLayout):
+    out_value = NumericProperty(0)
+    initial_value = NumericProperty(0)
+    display_text = StringProperty('')
+    slider_max = NumericProperty(60)
+
+
+class StartScreenTextInput(TextInput):
+    def __init__(self, **kwargs):
+        super(StartScreenTextInput, self).__init__(**kwargs)
+
+    def validate_text(self, root):
+        if int(self.text) < root.slider_max + 1:
+            self.text = self.text and self.text[:2]
+        else:
+            self.text = str(root.initial_value)
+        root.out_value = int(self.text)
+
+    # def show_error_bubble(self):
+    #     self.add_widget(self.error_bubble)
+    #
+    # def hide_error_bubble(self):
+    #     self.remove_widget(self.error_bubble)
