@@ -92,6 +92,12 @@ class StartScreen(Screen):
         self.popup = HelpPopup()
         self.popup.open()
 
+    def show_textinput_error_label(self):
+        self.ids.error_label.color = (1, 0, 0, 1)
+
+    def hide_textinput_error_label(self):
+        self.ids.error_label.color = (1, 0, 0, 0)
+
 
 class LocalFilesScreen(Screen):
     def __init__(self, **kwargs):

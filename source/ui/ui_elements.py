@@ -86,12 +86,10 @@ class StartScreenTextInput(TextInput):
     def validate_text(self, root):
         if int(self.text) < root.slider_max + 1:
             self.text = self.text and self.text[:2]
+            # StartScreen function
+            root.parent.parent.hide_textinput_error_label()
         else:
             self.text = str(root.initial_value)
+            # StartScreen function
+            root.parent.parent.show_textinput_error_label()
         root.out_value = int(self.text)
-
-    # def show_error_bubble(self):
-    #     self.add_widget(self.error_bubble)
-    #
-    # def hide_error_bubble(self):
-    #     self.remove_widget(self.error_bubble)

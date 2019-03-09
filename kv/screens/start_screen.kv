@@ -48,8 +48,13 @@
             initial_value: 4
             out_value: 4
             slider_max: 10
-        Widget:
-            size_hint: 1, 0.3
+        Label:
+            id: error_label
+            size_hint: 1, 1
+            halign: 'center'
+            text: "Please enter a value in range."
+            color: 1,0,0,0
+            font_size: "20dp"
 
     Button:
         id: start_submit_button
@@ -98,6 +103,7 @@
             on_text: self.validate_text(root)
         Widget:
             size_hint: 0.01, 1
+
 
 <StartScreenLabel@Label>:
     size_hint_y: None
