@@ -67,21 +67,10 @@
             BoxLayout:
                 size_hint: 0.2, 1
                 padding: "15dp"
-                Button:
-                    size_hint: None, None
-                    width: "65dp"
-                    height: "65dp"
-                    pos_hint: {'top': 0.5, 'x': 0.5}
+                UniversalBackButton:
                     on_press:
                         app.root.transition.direction = 'right'
                         app.root.current = 'SourceScreen'
-                    Image:
-                        source: './assets/icons/back-white.png'
-                        y: self.parent.y + 10
-                        x: self.parent.x
-                        allow_stretch: True
-                        width: self.parent.width
-                        height: self.parent.height - 20
             BoxLayout:
                 orientation: "horizontal"
                 spacing: "10dp"
