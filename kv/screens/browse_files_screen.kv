@@ -10,7 +10,7 @@
 
         FileChooserIconView:
             id: file_chooser
-            path: app.root.ids.local_files_screen.saved_directory if app.root else ''
+            path: app.root.ids.local_files_screen.saved_directory if app.root else os.getcwd()
 
         BoxLayout:
             id: button_box
