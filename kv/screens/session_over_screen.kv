@@ -3,28 +3,32 @@
 #===================================
 <SessionOverScreen>:
     BoxLayout:
+        id: content_container
         orientation: "vertical"
-        Label:
+        spacing: "100dp"
+
+        UniversalBanner:
+            id: banner
             text: "Repeat session?"
-            font_size: 36
-        Widget:
+
         ConnectingLabel:
-        Widget:
-        Widget:
+            id: wait_animation
+
         BoxLayout:
-            size_hint_x: 0.5
-            pos_hint: {"center_x": 0.5}
+            id: button_box
             orientation: "horizontal"
-            Button:
+            size_hint_x: 0.5
+            spacing: "50dp"
+            pos_hint: {"center_x": 0.5}
+
+            SessionOverButton:
+                id: yes_button
                 text: "Yes"
-                outline_color: 0,0,0,1
-                outline_width: 1
                 on_press:
                     app.root.current = 'SessionScreen'
-            Button:
+            SessionOverButton:
+                id: no_button
                 text: "No"
-                outline_color: 0,0,0,1
-                outline_width: 1
                 on_press:
                     app.root.end_app()
         Widget:
@@ -38,3 +42,9 @@
         Line:
             circle:self.center_x, self.center_y, 90, 0, self.angle
             width: 5
+
+
+<SessionOverButton@Button>:
+    outline_color: 0,0,0,1
+    outline_width: 1
+    font_size: "40dp"

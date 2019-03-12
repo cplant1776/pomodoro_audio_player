@@ -3,41 +3,48 @@
 #===================================
 <SourceScreen>:
     UniversalBanner:
-        id: source_banner
+        id: banner
         text: "Choose Audio Source"
 
     BoxLayout:
+        id: content_container
         orientation: "horizontal"
-        size_hint: 1, 1
 
         BoxLayout:
+            id: back_box
             padding: "15dp"
+
             UniversalBackButton:
-                on_press:
-                    app.root.transition.direction = 'right'
-                    app.root.current = 'StartScreen'
+                on_press: app.root.current = 'StartScreen'
+
         BoxLayout:
+            id: button_box
             orientation: "vertical"
-            Widget:
-            BoxLayout:
-                orientation: 'vertical'
-                spacing: "25dp"
-                SourceScreenButton:
-                    text: "Local Playlist File"
-                    on_release:
-                        app.root.session.style = 'Local'
-                        app.root.current = 'LocalFilesScreen'
-                SourceScreenButton
-                    text: "Brain.fm"
-                    on_release:
-                        app.root.session.style = 'BrainFM'
-                        app.root.current = 'LoginScreen'
-                SourceScreenButton
-        #        TODO: Look into adding this feature
-                    text: "Spotify  - NOT ADDED YET"
-        #            on_release: app.root.session.style = 'Spotify'
-        #            on_release: app.root.current = 'LoginScreen'
-            Widget:
+            pos_hint: {'top': 0.75}
+            size_hint: 1, 0.25
+            spacing: "25dp"
+
+            SourceScreenButton:
+                id: local_playlist_button
+                text: "Local Playlist File"
+                on_release:
+                    app.root.session.style = 'Local'
+                    app.root.current = 'LocalFilesScreen'
+
+            SourceScreenButton
+                id: brain_fm_playlist_button
+                text: "Brain.fm"
+                on_release:
+                    app.root.session.style = 'BrainFM'
+                    app.root.current = 'LoginScreen'
+
+            SourceScreenButton
+    #        TODO: Look into adding this feature
+                id: spotify_playlist_button
+                text: "Spotify  - NOT ADDED YET"
+    #            on_release: app.root.session.style = 'Spotify'
+    #            on_release: app.root.current = 'LoginScreen'
+
         Widget:
 
 <SourceScreenButton@Button>:

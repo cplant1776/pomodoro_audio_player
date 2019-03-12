@@ -2,32 +2,37 @@
 # SESSION SCREEN
 #===================================
 <SessionScreen>:
-    on_enter: app.root.session.start_next_interval()
-    on_enter: self.start_session_progress()
+    on_enter:
+        app.root.session.start_next_interval()
+        self.start_session_progress()
 
     BoxLayout:
         orientation: 'horizontal'
+
         BoxLayout:
             size_hint: 0.2, 1
             padding: "15dp"
+
             UniversalBackButton:
+                id: back_button
                 on_press:
                     app.root.session.end_interval()
                     app.root.session.end_session()
-                    app.root.transition.direction = 'right'
                     app.root.current = 'StartScreen'
 
         BoxLayout:
+            id: content_container
             orientation: 'vertical'
 
             Label:
                 id: interval_time_remaining
                 text: '00:00:00'
                 font_size: "200dp"
-                pos_hint_y: 0.5
+                pos_hint: 1, 0.5
                 pos_hint: {"top": 1}
 
             SessionScreenProgressBar:
+                id: progress_bar
                 size_hint: 0.8, None
                 height: "20dp"
                 max: root.progress_max
@@ -42,34 +47,37 @@
                 orientation: 'horizontal'
 
                 SessionScreenButton:
-                    pos_hint_x: 0.25
-                    id: pause
+                    id: pause_button
                     on_press:
                         app.root.session.pause_interval()
                         root.pause_session_progress()
+
                     UniversalButtonImage:
                         source: './assets/icons/pause-white.png'
+
                 SessionScreenButton:
-                    pos_hint_x: 0.25
-                    id: resume
+                    id: resume_button
                     text: "Resume"
                     on_press:
                         app.root.session.resume_interval()
                         root.start_session_progress()
+
                     UniversalButtonImage:
                         source: './assets/icons/play-white.png'
+
                 SessionScreenButton:
-                    pos_hint_x: 0.25
-                    id: skip_track
+                    id: skip_track_button
                     on_press: app.root.session.skip_track()
+
                     UniversalButtonImage:
                         source: './assets/icons/fast-forward-white.png'
+
                 SessionScreenButton:
-                    pos_hint_x: 0.25
-                    id: skip_interval
+                    id: skip_interval_button
                     on_press:
                         app.root.session.skip_interval()
                         root.schedule_skip_interval_progress()
+
                     UniversalButtonImage:
                         source: './assets/icons/skip-white.png'
         Widget:
@@ -80,6 +88,9 @@
     pos_hint: {'center_x': 0.5}
     max: 100
     value: 0
+
+<SessionScreenButton>:
+    pos_hint_x: 0.25
 
 #        canvas.before:
 #            Color:

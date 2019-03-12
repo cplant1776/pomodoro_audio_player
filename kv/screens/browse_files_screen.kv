@@ -5,25 +5,29 @@
 
 <BrowseFilesScreen>:
     BoxLayout:
-#        size: root.size
-#        pos: root.pos
-        size_hint: 1, 1
+        id: content_container
         orientation: "vertical"
+
         FileChooserIconView:
-            id: filechooser
+            id: file_chooser
             path: app.root.ids.local_files_screen.saved_directory if app.root else ''
+
         BoxLayout:
+            id: button_box
             size_hint_y: None
             height: 30
+
             Button:
+                id: cancel_button
                 text: "Cancel"
                 outline_color: 0,0,0,1
                 outline_width: 1
                 on_release: root.cancel()
 
             Button:
+                id: load_button
                 text: "Load"
                 outline_color: 0,0,0,1
                 outline_width: 1
-                on_release: root.load(filechooser.path, filechooser.selection)
+                on_release: root.load(file_chooser.path, file_chooser.selection)
 

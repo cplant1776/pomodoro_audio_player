@@ -1,76 +1,24 @@
 #===================================
 # LOCAL FILES SCREEN
 #===================================
-
-<ScrollableLabel@ScrollView>:
-    bar_width: 4
-    bar_inactive_color: 0/255, 140/255, 145/255, 1
-    Label:
-        text: root.text
-        outline_color: 0,0,0,1
-        outline_width: 1
-        font_size: 12
-        text_size: self.width, None
-        pos_hint: {'center_x': 1}
-        size_hint_y: None
-        height: self.texture_size[1]
-
-<LocalFilesScreenSection@BoxLayout>:
-    size_hint: 1, 1
-    text: "I am a placeholder"
-    BoxLayout:
-        orientation: "vertical"
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1, 0.1
-            Label:
-                id: title_label
-                text_size: self.size
-                halign: 'center'
-                font_size: "20dp"
-#                size_hint: 1, 0.2
-#                text: root.text + " Playlist"
-                text: root.text
-                outline_color: 0,0,0,1
-                outline_width: 1
-            Button:
-                id: browse_button
-                size_hint: 0.5, 0.55
-#                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                text: "Browse"
-                outline_color: 0,0,0,1
-                outline_width: 1
-                on_release: app.root.session.current_type = root.text
-                on_release: app.root.ids.local_files_screen.show_load()
-        Widget:
-            size_hint: 1, 0.05
-
-        ScrollableLabel:
-            id: scrollable_label
-            text: ''
-            size_hint: 1, 1
-
-
 <LocalFilesScreen>:
     BoxLayout:
         orientation: 'vertical'
-        Label:
-            id: local_banner
+
+        UniversalBanner:
+            id: banner
             text: "Select Playlist Locations"
-            size_hint_y: None
-#            pos_hint: {'top': 1, 'center_x': 0.5}
-            font_size: "65dp"
 
         BoxLayout:
             orientation: 'horizontal'
+
             BoxLayout:
                 size_hint: 0.2, 1
                 padding: "15dp"
+
                 UniversalBackButton:
-                    on_press:
-                        app.root.transition.direction = 'right'
-                        app.root.current = 'SourceScreen'
+                    on_press: app.root.current = 'SourceScreen'
+
             BoxLayout:
                 orientation: "horizontal"
                 spacing: "10dp"
@@ -88,6 +36,7 @@
 
             Widget:
                 size_hint: 0.2, 1
+
         Button:
             text: "Start!"
             pos_hint: {'center_x': 0.5}
@@ -96,5 +45,57 @@
                 app.root.transition.direction = 'left'
                 app.root.session.initialize_session_intervals()
                 app.root.current = 'SessionScreen'
+
         Widget:
             size_hint: 1, 0.05
+
+
+<ScrollableLabel@ScrollView>:
+    bar_width: 4
+    bar_inactive_color: 0/255, 140/255, 145/255, 1
+
+    Label:
+        text: root.text
+        outline_color: 0,0,0,1
+        outline_width: 1
+        font_size: 12
+        text_size: self.width, None
+        pos_hint: {'center_x': 1}
+        size_hint_y: None
+        height: self.texture_size[1]
+
+
+<LocalFilesScreenSection@BoxLayout>:
+    text: "I am a placeholder"
+
+    BoxLayout:
+        orientation: "vertical"
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+
+            Label:
+                id: title_label
+                text_size: self.size
+                halign: 'center'
+                font_size: "20dp"
+                text: root.text
+                outline_color: 0,0,0,1
+                outline_width: 1
+
+            Button:
+                id: browse_button
+                size_hint: 0.5, 0.55
+                text: "Browse"
+                outline_color: 0,0,0,1
+                outline_width: 1
+                on_release:
+                    app.root.session.current_type = root.text
+                    app.root.ids.local_files_screen.show_load()
+        Widget:
+            size_hint: 1, 0.05
+
+        ScrollableLabel:
+            id: scrollable_label
+            text: ''
