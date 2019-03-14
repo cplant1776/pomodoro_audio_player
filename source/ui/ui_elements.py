@@ -48,10 +48,6 @@ class ConnectingLabel(Label):
 
 
 class SessionScreenButton(Button):
-    # background_normal = "normal.png"
-    # background_down = "pressed.png"
-    # background_disabled_normal = "normal.png"
-
     def on_release(self):
         self.parent.parent.parent.parent.suspend_buttons()
 
@@ -62,14 +58,14 @@ class FailedSubmissionPopup(ModalView):
         self.ids.failed_submission_label.text = message + "\nAre you sure you wish to continue?"
 
 
-class HelpPopup(ModalView):
-    def __init__(self, **kwargs):
+class UniversalHelpPopup(ModalView):
+    def __init__(self, display_text, **kwargs):
         super(ModalView, self).__init__(**kwargs)
-        self.ids.help_label.text = """
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consectetur eget nunc eget maximus. Nam condimentum porta lacinia. Pellentesque ultrices nisi quis volutpat iaculis. Quisque dictum sem nec dignissim auctor. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce velit augue, eleifend a accumsan ut, pretium non augue. Praesent id imperdiet lectus, vel suscipit elit. Pellentesque ut neque ante. Mauris a turpis ullamcorper arcu facilisis cursus in pretium purus. Proin luctus a arcu eu cursus. Aenean congue ultrices commodo.
-
-Vestibulum sed nulla commodo, posuere velit id, semper turpis. Donec facilisis interdum ex, eget lacinia magna. Quisque eros mauris, hendrerit elementum condimentum pellentesque, condimentum rhoncus elit. Fusce finibus rutrum posuere. Aenean augue ante, bibendum sed quam eget, consectetur hendrerit enim. Nulla condimentum sagittis tortor sed volutpat. Integer dapibus iaculis neque, ut volutpat mi venenatis id. Aenean ut ex diam. Integer fringilla condimentum enim, eu suscipit velit egestas a. Nulla a rhoncus diam.
-        """
+        self.ids.help_label.text = display_text
+        # Hide black background
+        self.background_color = (0, 0, 0, 0)
+        # Make invisible
+        self.opacity = 0
 
 
 class StartScreenRow(BoxLayout):
@@ -93,9 +89,3 @@ class StartScreenTextInput(TextInput):
             # StartScreen function
             root.parent.parent.show_textinput_error_label()
         root.out_value = int(self.text)
-
-
-class UniversalHelpPopup(ModalView):
-    def __init__(self, display_text, **kwargs):
-        super(ModalView, self).__init__(**kwargs)
-        self.ids.help_label.text = display_text

@@ -24,12 +24,14 @@
                 source: './assets/icons/back-white.png'
 
 <UniversalHelpPopup>:
+        id: help_popup
         size_hint: 0.75, 0.8
         pos_hint: {'top': 0.85}
         auto_dismiss: False
         display_text: ''
 
         BoxLayout:
+                id: content_container
                 orientation: 'vertical'
 
                 TextInput:
@@ -43,6 +45,7 @@
                         readonly: True
 
                 Button:
+                        id: close_button
                         text: "Close"
                         border: 25, 25, 25, 25
                         size_hint: 0.2, 0.1
