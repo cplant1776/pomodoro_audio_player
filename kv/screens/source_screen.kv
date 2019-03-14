@@ -45,7 +45,25 @@
     #            on_release: app.root.session.style = 'Spotify'
     #            on_release: app.root.current = 'LoginScreen'
 
-        Widget:
+        BoxLayout:
+
+            Widget:
+
+            Button:
+                id: help_button
+                pos_hint: {"center_y": 0.1}
+#                size_hint: 0.1, 0.1
+                size_hint: None, None
+                width: "65dp"
+                height: "65dp"
+                background_color: 0, 0, 0, 0
+                on_press: root.pop_help()
+
+                UniversalButtonImage:
+                    id: help_image
+                    source: './assets/icons/help.png'
+
+            Widget:
 
 <SourceScreenButton@Button>:
     size_hint: None, None

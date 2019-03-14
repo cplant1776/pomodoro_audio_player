@@ -12,7 +12,7 @@ from kivy.uix.popup import Popup
 # Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
 from source.session.session import Session
-from source.ui.ui_elements import FailedSubmissionPopup, HelpPopup
+from source.ui.ui_elements import FailedSubmissionPopup, UniversalHelpPopup
 
 # ====================================
 # CONSTANTS
@@ -89,7 +89,12 @@ class StartScreen(Screen):
         return False
 
     def pop_help(self):
-        self.popup = HelpPopup()
+        help_text = """
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consectetur eget nunc eget maximus. Nam condimentum porta lacinia. Pellentesque ultrices nisi quis volutpat iaculis. Quisque dictum sem nec dignissim auctor. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce velit augue, eleifend a accumsan ut, pretium non augue. Praesent id imperdiet lectus, vel suscipit elit. Pellentesque ut neque ante. Mauris a turpis ullamcorper arcu facilisis cursus in pretium purus. Proin luctus a arcu eu cursus. Aenean congue ultrices commodo.
+        
+    Vestibulum sed nulla commodo, posuere velit id, semper turpis. Donec facilisis interdum ex, eget lacinia magna. Quisque eros mauris, hendrerit elementum condimentum pellentesque, condimentum rhoncus elit. Fusce finibus rutrum posuere. Aenean augue ante, bibendum sed quam eget, consectetur hendrerit enim. Nulla condimentum sagittis tortor sed volutpat. Integer dapibus iaculis neque, ut volutpat mi venenatis id. Aenean ut ex diam. Integer fringilla condimentum enim, eu suscipit velit egestas a. Nulla a rhoncus diam.'
+        """
+        self.popup = UniversalHelpPopup(help_text)
         self.popup.open()
 
     def show_textinput_error_label(self):
@@ -147,7 +152,14 @@ class LocalFilesScreen(Screen):
 
 
 class SourceScreen(Screen):
-    pass
+    def pop_help(self):
+        help_text = """
+        Different Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dapibus faucibus ultrices. Nam convallis neque sed enim dignissim commodo. Vivamus nisi erat, euismod viverra nunc id, efficitur sollicitudin massa. Cras sagittis nibh eget sapien lacinia malesuada. Vivamus at nisi et leo efficitur ornare vitae et lorem. Praesent dapibus maximus sapien vel accumsan. Vivamus pretium tellus a vulputate finibus.
+
+Curabitur non tortor pretium, sodales ipsum non, feugiat leo. Sed velit risus, varius sed enim at, fermentum rhoncus augue. In vestibulum elit id cursus posuere. In mattis elementum neque, quis feugiat erat pretium in. Cras quis urna quis massa iaculis viverra. Fusce posuere, lacus eu fermentum placerat, sapien nisi gravida ipsum, nec ullamcorper enim ex a lorem. Proin gravida elementum dolor, sodales porta mi suscipit nec. Fusce velit tortor, semper vel egestas quis, lobortis a dui. 
+        """
+        self.popup = UniversalHelpPopup(help_text)
+        self.popup.open()
 
 
 class LoginScreen(Screen):

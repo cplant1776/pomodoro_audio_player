@@ -22,3 +22,32 @@
         on_press: app.root.transition.direction = 'right'
         UniversalButtonImage:
                 source: './assets/icons/back-white.png'
+
+<UniversalHelpPopup>:
+        size_hint: 0.75, 0.8
+        pos_hint: {'top': 0.85}
+        auto_dismiss: False
+        display_text: ''
+
+        BoxLayout:
+                orientation: 'vertical'
+
+                TextInput:
+                        id: help_label
+                        background_color: (0,0,0,0)
+                        foreground_color: (1,1,1,1)
+                        size_hint: 0.8, 0.75
+                        pos_hint: {'center_x': 0.5}
+                        text_size: self.width, None
+                        use_bubble: True
+                        readonly: True
+
+                Button:
+                        text: "Close"
+                        border: 25, 25, 25, 25
+                        size_hint: 0.2, 0.1
+                        pos_hint: {"center_x": 0.5, "center_y": 0.1}
+                        on_press: root.dismiss()
+
+                Widget:
+                        size_hint: 1, 0.025

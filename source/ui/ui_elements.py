@@ -93,3 +93,9 @@ class StartScreenTextInput(TextInput):
             # StartScreen function
             root.parent.parent.show_textinput_error_label()
         root.out_value = int(self.text)
+
+
+class UniversalHelpPopup(ModalView):
+    def __init__(self, display_text, **kwargs):
+        super(ModalView, self).__init__(**kwargs)
+        self.ids.help_label.text = display_text
