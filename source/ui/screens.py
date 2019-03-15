@@ -1,6 +1,5 @@
 # Standard Library Imports
 import datetime
-from math import isclose
 import os
 from threading import Thread
 
@@ -97,16 +96,7 @@ class StartScreen(Screen):
         """
         self.popup = UniversalHelpPopup(help_text)
         self.popup.open()
-        self.fade_in_help_pop()
-
-    def fade_in_help_pop(self):
-        self.fade_tick_event = Clock.schedule_interval(self.fade_tick, 1/50)
-
-    def fade_tick(self, *args):
-        if isclose(self.popup.opacity, 1, abs_tol=10**-2):
-            self.fade_tick_event.cancel()
-        else:
-            self.popup.opacity += 1/25
+        self.popup.fade_in_help_pop()
 
     def show_textinput_error_label(self):
         self.ids.error_label.color = (1, 0, 0, 1)
@@ -171,6 +161,7 @@ Curabitur non tortor pretium, sodales ipsum non, feugiat leo. Sed velit risus, v
         """
         self.popup = UniversalHelpPopup(help_text)
         self.popup.open()
+        self.popup.fade_in_help_pop()
 
 
 class LoginScreen(Screen):

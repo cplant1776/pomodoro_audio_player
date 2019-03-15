@@ -1,4 +1,5 @@
 # Standard Library Imports
+from math import isclose
 
 # Third Party Imports
 from kivy.app import App
@@ -66,6 +67,15 @@ class UniversalHelpPopup(ModalView):
         self.background_color = (0, 0, 0, 0)
         # Make invisible
         self.opacity = 0
+
+    def fade_in_help_pop(self):
+        self.fade_tick_event = Clock.schedule_interval(self.fade_tick, 1 / 50)
+
+    def fade_tick(self, *args):
+        if isclose(self.opacity, 1, abs_tol=10**-2):
+            self.fade_tick_event.cancel()
+        else:
+            self.opacity += 1/15
 
 
 class StartScreenRow(BoxLayout):
