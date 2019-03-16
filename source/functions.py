@@ -1,4 +1,5 @@
 # Standard Library Imports
+import mutagen
 import os.path
 from os.path import split
 from random import shuffle
@@ -11,8 +12,14 @@ from random import shuffle
 def get_playlist_song_titles(file_paths):
     result = []
     for p in file_paths:
-        head, tail = split(p)
-        result.append(tail)
+        file = mutagen.File(p, easy=True)
+        if 'title' in file:
+            # Append title if exists
+            result.append(file['title'][0])
+        else:
+            # Append filename
+            head, tail = split(p)
+            result.append(tail)
     result = '\n'.join(result)
     return result
 
