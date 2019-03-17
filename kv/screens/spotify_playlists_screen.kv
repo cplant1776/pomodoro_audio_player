@@ -1,0 +1,85 @@
+#====================================================
+# SPOTIFY PLAYLISTS SCREEN - select spotify playlists
+#====================================================
+<SpotifyPlaylistsScreen>:
+    UniversalBanner:
+        id: banner
+        text: "Choose Spotify Playlists"
+
+    BoxLayout:
+        id: content_container
+        orientation: "horizontal"
+
+        BoxLayout:
+            id: back_box
+            padding: "15dp"
+
+            UniversalBackButton:
+                on_press: app.root.current = 'StartScreen'
+
+        BoxLayout:
+            id: playlist_select_container
+            orientation: "horizontal"
+            pos_hint: {'top': 0.75}
+            size_hint: 1, 1
+            spacing: "25dp"
+
+            SelectedSpotifyPlaylistBox:
+                id: work_playlist_name
+                display_title: 'Work'
+
+            SelectedSpotifyPlaylistBox:
+                id: rest_playlist_name
+                display_title: 'Rest'
+
+            SelectedSpotifyPlaylistBox:
+                id: long_rest_playlist_name
+                display_title: 'Long Rest'
+
+
+        Widget:
+
+
+<SelectedSpotifyPlaylistBox@BoxLayout>:
+    orientation: 'vertical'
+    canvas.before:
+        Color:
+            rgba: 1,0,0,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        SelectPlaylistLabel:
+            text: root.display_title
+        SelectPlaylistButton:
+            text: 'Search'
+
+    SpotifyImage:
+        id: spotify_img
+        source: root.selected_playlist_img_url
+
+    SelectPlaylistLabel:
+        id: playlist_name
+        text: root.selected_playlist_name
+
+
+<SelectPlaylistButton@Button>:
+    size_hint: None, None
+    pos_hint: {"center_x": 0.5}
+    height: "30dp"
+    width: "200dp"
+    outline_color: 0,0,0,1
+    outline_width: 1
+    on_release: app.root.transition.direction = 'left'
+
+
+<SpotifyImage@Image>:
+    width: 300
+    height: 300
+    source: ''
+
+<SelectPlaylistLabel@Label>:
+

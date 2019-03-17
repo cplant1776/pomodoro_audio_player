@@ -99,3 +99,12 @@ class StartScreenTextInput(TextInput):
             # StartScreen function
             root.parent.parent.show_textinput_error_label()
         root.out_value = int(self.text)
+
+
+class SelectedSpotifyPlaylistBox(BoxLayout):
+    display_title = StringProperty('display title')
+    selected_playlist_name = StringProperty('playlist name')
+    selected_playlist_img_url = StringProperty('./assets/images/placeholder.jpg')
+
+    def __init__(self, **kwargs):
+        super(SelectedSpotifyPlaylistBox, self).__init__(**kwargs)

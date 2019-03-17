@@ -276,6 +276,10 @@ class SessionOverScreen(Screen):
     pass
 
 
+class SpotifyPlaylistsScreen(Screen):
+    pass
+
+
 class TesterScreen(Screen):
     pass
 

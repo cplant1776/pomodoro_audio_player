@@ -1,6 +1,6 @@
 ## Pomodoro Audio Assistant
 
-A simple GUI-based Python program that handles music playback while practicing [the Pomodoro Technique® by Francesco Cirillo](https://en.wikipedia.org/wiki/Pomodoro_Technique). The program first lets the user set up their Pomodoro (how long is each work/rest interval, and how many). Next, the user selects audio sources to play during the different types of intervals (local playlist, [brain.fm](https://brain.fm/). Finally, the session screen will automatically shuffle the appropriate playlist for the interval and transition between intervals. The GUI is based on Kivy, so the app can be ported to Android and iPhone.
+A simple GUI-based Python program that handles music playback while practicing [the Pomodoro Technique® by Francesco Cirillo](https://en.wikipedia.org/wiki/Pomodoro_Technique). The program first lets the user set up their Pomodoro (how long is each work/rest interval, and how many). Next, the user selects audio sources to play during the different types of intervals (local playlist, [brain.fm](https://brain.fm/), soon spotify playlist). Finally, the session screen will automatically shuffle the appropriate playlist for the interval and transition between intervals. The GUI is based on Kivy, so the app can be ported to Android and iPhone.
 
 ## Motivation
 
@@ -18,13 +18,15 @@ Pomodoro session screen:
 
 ![Pomodoro session screen](screenshots/pomodoro_session.png?raw=true "Pomodoro session screen")
 
-Selecting audio style:
 
-![selecting source](screenshots/pomodoro_source.png?raw=true "selecting source")
-
-Browsing local files:
+Browsing for a local playlist:
 
 ![browsing for local playlist](screenshots/pomodoro_local_source.png?raw=true "browsing for local playlist")
+
+
+Choosing session settings
+
+![choosing_session_settings](screenshots/pomodoro_settings.png?raw=true "Choosing session settings")
 
 ## Current Features
 
@@ -38,7 +40,7 @@ Browsing local files:
 
 #### Clone the Repo:
 ```shell
-git clone https://github.com/cplant1776/pomodoro_audio_player
+git clone https://github.com/cplant1776/pomodoro_audio_player.git
 ```
 #### Running
 
@@ -62,9 +64,7 @@ See requirements.txt
 
 ## Upcoming Changes/Fixes
 
-* Merge Play/Resume buttons into a single toggle playback button
-* Add a path for if user inputs invalid brain.fm credentials
-* Add option to securely locally store user's Pomodoro preferences and credentials for easier login
-* Add protections for if network connection drops during brain.fm session
-* Explore viability of Spotify as a source
+* Finish implementing Spotify playlists
+* Handle mid-session network drops
+* Add ability to securely store user's preferences and credentials
 * General UI prettifying

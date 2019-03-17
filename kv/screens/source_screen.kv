@@ -39,11 +39,10 @@
                     app.root.current = 'LoginScreen'
 
             SourceScreenButton
-    #        TODO: Look into adding this feature
                 id: spotify_playlist_button
-                text: "Spotify  - NOT ADDED YET"
-    #            on_release: app.root.session.style = 'Spotify'
-    #            on_release: app.root.current = 'LoginScreen'
+                text: "Spotify"
+                on_release: app.root.session.style = 'Spotify'
+                on_release: app.root.current = 'SpotifyPlaylistsScreen'
 
         BoxLayout:
 
