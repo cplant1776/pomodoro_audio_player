@@ -4,6 +4,7 @@ import os
 from threading import Thread
 
 # Third Party Imports
+from kivy.app import App
 from kivy.clock import Clock
 from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.uix.screenmanager import Screen, ScreenManager
@@ -210,8 +211,10 @@ class BrowseFilesScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def cancel(self):
-        self.parent.root.dismiss_popup()
+    @staticmethod
+    def cancel():
+        app = App.get_running_app()
+        app.root.ids['local_files_screen'].dismiss_popup()
 
 
 class SessionScreen(Screen):
