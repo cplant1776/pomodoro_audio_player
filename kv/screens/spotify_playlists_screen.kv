@@ -11,51 +11,61 @@
         orientation: "horizontal"
 
         BoxLayout:
-            id: back_box
+            id: left_section
+            size_hint: 0.2, 1
             padding: "15dp"
 
             UniversalBackButton:
-                on_press: app.root.current = 'StartScreen'
+                on_press: app.root.current = 'SourceScreen'
 
         BoxLayout:
-            id: playlist_select_container
-            orientation: "horizontal"
-            pos_hint: {'top': 0.75}
-            size_hint: 1, 1
-            spacing: "25dp"
+            id: center_section
+            orientation: 'vertical'
 
-            SelectedSpotifyPlaylistBox:
-                id: work_playlist_name
-                display_title: 'Work'
+            Widget:
+                size_hint: 1, 0.2
 
-            SelectedSpotifyPlaylistBox:
-                id: rest_playlist_name
-                display_title: 'Rest'
+            BoxLayout:
+                id: playlist_select_container
+                orientation: "horizontal"
+                size_hint: 1, 0.3
+                pos_hint: {'center_y': 0.5}
+                spacing: "25dp"
 
-            SelectedSpotifyPlaylistBox:
-                id: long_rest_playlist_name
-                display_title: 'Long Rest'
+                SelectedSpotifyPlaylistBox:
+                    id: work_playlist_name
+                    display_title: 'Work'
 
+                SelectedSpotifyPlaylistBox:
+                    id: rest_playlist_name
+                    display_title: 'Rest'
+
+                SelectedSpotifyPlaylistBox:
+                    id: long_rest_playlist_name
+                    display_title: 'Long Rest'
+
+            SubmitButtonBox:
+                id: submit_button_box
 
         Widget:
+            id: right_section
+            size_hint: 0.2, 1
 
 
 <SelectedSpotifyPlaylistBox@BoxLayout>:
     orientation: 'vertical'
-    canvas.before:
-        Color:
-            rgba: 1,0,0,1
-        Rectangle:
-            pos: self.pos
-            size: self.size
 
     BoxLayout:
         orientation: 'horizontal'
+        size_hint: 1, 0.1
+        spacing: "10dp"
 
-        SelectPlaylistLabel:
+        Label:
+            id: display_title
             text: root.display_title
+
         SelectPlaylistButton:
-            text: 'Search'
+            id: select_button
 
     SpotifyImage:
         id: spotify_img
@@ -64,22 +74,52 @@
     SelectPlaylistLabel:
         id: playlist_name
         text: root.selected_playlist_name
+        size_hint: 1, 0.15
+
+        canvas.before:
+            Color:
+                rgba: 0/255, 140/255, 145/255, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [10,]
 
 
 <SelectPlaylistButton@Button>:
-    size_hint: None, None
-    pos_hint: {"center_x": 0.5}
-    height: "30dp"
-    width: "200dp"
     outline_color: 0,0,0,1
     outline_width: 1
+    text: 'Search'
     on_release: app.root.transition.direction = 'left'
 
 
 <SpotifyImage@Image>:
-    width: 300
-    height: 300
     source: ''
+    allow_stretch: True
 
 <SelectPlaylistLabel@Label>:
+    size_hint: 1, 0.15
+    outline_color: 0,0,0,1
+    outline_width: 1
+
+    canvas.before:
+        Color:
+            rgba: 0/255, 140/255, 145/255, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10,]
+
+<SubmitButtonBox@BoxLayout>:
+    orientation: 'vertical'
+    size_hint: 1, 0.2
+
+    Widget:
+
+    Button:
+        id: submit_button
+        text: "Next"
+        pos_hint: {'center_x': 0.5}
+        size_hint: 0.3, 0.7
+
+    Widget:
 
