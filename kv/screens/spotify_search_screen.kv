@@ -1,0 +1,88 @@
+#===================================
+# SPOTIFY SEARCH SCREEN
+#===================================
+<SpotifySearchScreen>:
+    BoxLayout:
+        id: content_container
+        orientation: 'vertical'
+        spacing: "30dp"
+
+        Searchbar:
+            size_hint: 0.8, 0.1
+            pos_hint: {'center_x': 0.5}
+
+        SearchResults:
+            size_hint: 1, 0.8
+
+        SubmissionBox:
+            size_hint: 1, 0.1
+
+
+<Searchbar@BoxLayout>:
+    BoxLayout:
+        id: search_container
+        orientation: 'vertical'
+
+        Widget:
+            size_hint: 1, 0.4
+
+        BoxLayout:
+            id: search_bar
+            orientation: 'horizontal'
+            spacing: "10dp"
+
+            TextInput:
+                id: search_input
+                hint_text: 'Search for playlists'
+                font_size: 24
+
+            Button:
+                id: search_button
+                size_hint: 0.1, 1
+                UniversalButtonImage:
+                    source: './assets/icons/search-white.png'
+
+
+<SearchResults>:
+    bar_width: 4
+    bar_inactive_color: 0/255, 140/255, 145/255, 1
+
+    Label:
+        text: "blabla"
+        outline_color: 0,0,0,1
+        outline_width: 1
+        font_size: 12
+        text_size: self.width, None
+        pos_hint: {'center_x': 1}
+        size_hint_y: None
+        height: self.texture_size[1]
+
+
+<SubmissionBox@BoxLayout>:
+    orientation: 'vertical'
+
+    BoxLayout:
+        id: content_box
+        size_hint: 1, 0.2
+        orientation: 'horizontal'
+        spacing: "20dp"
+
+        Widget:
+
+        SearchScreenButton:
+            id: submit_button
+            text: 'Submit'
+
+        SearchScreenButton:
+            id: cancel_button
+            text: 'Cancel'
+
+        Widget:
+
+    Widget:
+        size_hint: 1, 0.1
+
+
+<SearchScreenButton@Button>:
+    outline_width: 1
+    outline_color: 0, 0, 0, 1

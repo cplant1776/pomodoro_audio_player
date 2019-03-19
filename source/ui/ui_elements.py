@@ -108,3 +108,10 @@ class SelectedSpotifyPlaylistBox(BoxLayout):
 
     def __init__(self, **kwargs):
         super(SelectedSpotifyPlaylistBox, self).__init__(**kwargs)
+
+
+class SearchResults(ScrollView):
+    text = StringProperty('')
+
+    def __init__(self, **kwargs):
+        super(SearchResults, self).__init__(**kwargs)

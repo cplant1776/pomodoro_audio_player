@@ -283,3 +283,13 @@ class SpotifyPlaylistsScreen(Screen):
 class TesterScreen(Screen):
     pass
 
+
+class SpotifySearchScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def cancel():
+        app = App.get_running_app()
+        app.root.ids['spotify_search_screen'].dismiss_popup()
+
