@@ -288,6 +288,12 @@ class SpotifySearchScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
+    def send_search_query(self, term):
+        # TODO: Run a search with spotify api
+        results = []
+        self.ids.results_scrollview.populate_thumbnails(results)
+
     @staticmethod
     def cancel():
         app = App.get_running_app()

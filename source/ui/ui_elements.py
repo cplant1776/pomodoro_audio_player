@@ -17,6 +17,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.progressbar import ProgressBar
 
 # Local Imports
+from source.functions import download_temporary_image
 
 
 class ScrollableLabel(ScrollView):
@@ -110,8 +111,59 @@ class SelectedSpotifyPlaylistBox(BoxLayout):
         super(SelectedSpotifyPlaylistBox, self).__init__(**kwargs)
 
 
-class SearchResults(ScrollView):
+class SearchResultsView(ScrollView):
     text = StringProperty('')
 
     def __init__(self, **kwargs):
-        super(SearchResults, self).__init__(**kwargs)
+        super(SearchResultsView, self).__init__(**kwargs)
+        self.thumbnails = []
+        self.rows = []
+
+    def populate_thumbnails(self, results):
+        # Remove any thumbnails from a previous search
+        self.clear_previous_results()
+        # Generate thumbnails
+        self.generate_new_thumbnails(results=results)
+        # TODO: Generate rows of thumbnails
+        self.generate_thumbnail_rows()
+        # TODO: Add rows to the scrollview
+        pass
+
+    def clear_previous_results(self):
+        if self.thumbnails:
+            # Empty previous lists
+            del self.thumbnails[:]
+            del self.rows[:]
+            # Remove rows from scrollview
+            self.clear_widgets()
+
+    def generate_new_thumbnails(self, results):
+        # Clear current thumbnails if any exist
+        self.thumbnails = []
+        # Iterate through all search results
+        for entry in results['playlists']['items']:
+            playlist_name = entry['name']
+            img_url = entry['images'][0]['url']
+            # TODO: Download playlist cover and get its path
+            img_path = download_temporary_image(img_url)
+            # Add thumbnail
+            self.thumbnails.append(SearchResultsThumbnail(img_path=img_path, playlist_name=playlist_name))
+
+    def generate_thumbnail_rows(self):
+        # iterate through enumerate(thumbnails)
+        #   if 4 thumbnails already in row
+        #     Move to next row
+        #   else
+        #       add row to view
+        pass
+
+class SearchResultsRow(BoxLayout):
+    def __init__(self, **kwargs):
+        super(SearchResultsRow, self).__init__(**kwargs)
+
+
+class SearchResultsThumbnail(BoxLayout):
+    def __init__(self, img_path, playlist_name, **kwargs):
+        super(SearchResultsThumbnail, self).__init__(**kwargs)
+        self.img_path = img_path
+        self.playlist_name = playlist_name

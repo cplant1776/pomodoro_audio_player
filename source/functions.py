@@ -55,3 +55,10 @@ def generate_session_structure(num_of_work_intervals=4):
     interval_sequence[-1] = 'long_rest'
     return interval_sequence
 
+
+def download_temporary_image(url):
+    # Send request to url
+    # Check for valid response
+    # Download image to temporary directory
+    # return path to image
+    return 1

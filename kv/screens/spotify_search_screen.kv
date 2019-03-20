@@ -11,7 +11,8 @@
             size_hint: 0.8, 0.1
             pos_hint: {'center_x': 0.5}
 
-        SearchResults:
+        SearchResultsView:
+            id: results_scrollview
             size_hint: 1, 0.8
 
         SubmissionBox:
@@ -43,19 +44,33 @@
                     source: './assets/icons/search-white.png'
 
 
-<SearchResults>:
+<SearchResultsView>:
     bar_width: 4
     bar_inactive_color: 0/255, 140/255, 145/255, 1
 
+
+<SearchResultsRow>:
+    orientation: 'horizontal'
+
+
+
+
+<SearchResultsThumbnail>:
+    orientation: 'vertical'
+
+    BoxLayout:
+        id: image_box
+        size_hint: 1, 0.9
+
+        Image:
+            source: root.img_path
+
     Label:
-        text: "blabla"
-        outline_color: 0,0,0,1
-        outline_width: 1
-        font_size: 12
-        text_size: self.width, None
-        pos_hint: {'center_x': 1}
-        size_hint_y: None
-        height: self.texture_size[1]
+        id: playlist_name
+        size_hint: 1, 0.1
+        pos_hint: {'center_x': 0.5}
+        text: root.playlist_name
+
 
 
 <SubmissionBox@BoxLayout>:
