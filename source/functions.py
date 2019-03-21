@@ -3,6 +3,7 @@ import mutagen
 import os.path
 from os.path import split
 from random import shuffle
+import requests
 
 # Third Party Imports
 
@@ -57,8 +58,21 @@ def generate_session_structure(num_of_work_intervals=4):
 
 
 def download_temporary_image(url):
+    # Generate temporary file path
+    path = get_temp_file_path(url)
     # Send request to url
-    # Check for valid response
-    # Download image to temporary directory
+    res = requests.get(url, stream=True)
+    # Check for valid response then download to temp directory
+    if res.status_code == 200:
+        with open(path, 'wb') as f:
+            for chunk in res:
+                f.write(chunk)
     # return path to image
-    return 1
+        return path
+    else:
+        return None
+
+
+def get_temp_file_path(url):
+    name = url.split("/")[-1]
+    return os.path.join("tmp", name + ".jpg")

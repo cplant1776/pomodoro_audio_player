@@ -124,10 +124,11 @@ class SearchResultsView(ScrollView):
         self.clear_previous_results()
         # Generate thumbnails
         self.generate_new_thumbnails(results=results)
-        # TODO: Generate rows of thumbnails
+        # Generate rows of thumbnails
         self.generate_thumbnail_rows()
-        # TODO: Add rows to the scrollview
-        pass
+        # Add rows to the scrollview content container
+        for row in self.rows:
+            self.ids.content_box.add_widget(row)
 
     def clear_previous_results(self):
         if self.thumbnails:
@@ -144,25 +145,33 @@ class SearchResultsView(ScrollView):
         for entry in results['playlists']['items']:
             playlist_name = entry['name']
             img_url = entry['images'][0]['url']
-            # TODO: Download playlist cover and get its path
+            # Download playlist cover and get its path
             img_path = download_temporary_image(img_url)
             # Add thumbnail
             self.thumbnails.append(SearchResultsThumbnail(img_path=img_path, playlist_name=playlist_name))
 
     def generate_thumbnail_rows(self):
-        # iterate through enumerate(thumbnails)
-        #   if 4 thumbnails already in row
-        #     Move to next row
-        #   else
-        #       add row to view
-        pass
+        row = []
+        # Iterate through thumbnails
+        for n, thumbnail in enumerate(self.thumbnails):
+            # if 4 thumbnails already in row, move to next row
+            if n % 4 == 0 and n != 0:
+                self.rows.append(SearchResultsRow(contents=row))
+                row = []
+            #     else, add thumbnail to current row
+            else:
+                row.append(thumbnail)
+
 
 class SearchResultsRow(BoxLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, contents, **kwargs):
         super(SearchResultsRow, self).__init__(**kwargs)
 
 
 class SearchResultsThumbnail(BoxLayout):
+    img_path = StringProperty('')
+    playlist_name = StringProperty('')
+
     def __init__(self, img_path, playlist_name, **kwargs):
         super(SearchResultsThumbnail, self).__init__(**kwargs)
         self.img_path = img_path

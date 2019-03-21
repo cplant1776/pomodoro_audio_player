@@ -40,6 +40,9 @@
             Button:
                 id: search_button
                 size_hint: 0.1, 1
+
+                on_release: root.parent.parent.send_search_query(root.ids.search_input.text)
+
                 UniversalButtonImage:
                     source: './assets/icons/search-white.png'
 
@@ -48,15 +51,37 @@
     bar_width: 4
     bar_inactive_color: 0/255, 140/255, 145/255, 1
 
+    BoxLayout:
+        id: content_box
+        orientation: 'vertical'
+
+        canvas.before:
+            Color:
+                rgba: 1,0,0,1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [0,]
+
 
 <SearchResultsRow>:
     orientation: 'horizontal'
-
-
+    size_hint: 1, None
+    height: 40
+    spacing: 40
 
 
 <SearchResultsThumbnail>:
     orientation: 'vertical'
+    size_hint: 0.25, 1
+
+    canvas.before:
+        Color:
+            rgba: 0,1,0,1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [0,]
 
     BoxLayout:
         id: image_box
