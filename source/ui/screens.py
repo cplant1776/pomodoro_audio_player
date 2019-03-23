@@ -9,16 +9,20 @@ from kivy.clock import Clock
 from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.popup import Popup
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
 # Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
 from source.session.session import Session
-from source.ui.ui_elements import FailedSubmissionPopup, UniversalHelpPopup
+from source.ui.ui_elements import FailedSubmissionPopup, UniversalHelpPopup, SearchResultsThumbnail
 
 # ====================================
 # CONSTANTS
 # ====================================
 TIME_MULTIPLIER = {'SECONDS': 1, 'MINUTES': 60, 'HOURS': 3600}
+PUBLIC_SPOTIFY_CLIENT_ID = 'fda8d241ac5f41d18df47391d853accb'
+PUBLIC_SPOTIFY_CLIENT_SECRET = '3c30c5317e5a4b9398f599a26e9ac428'
 
 # ====================================
 # PARAMETERS
@@ -288,11 +292,16 @@ class SpotifySearchScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-
-    def send_search_query(self, term):
-        # TODO: Run a search with spotify api
-        results = []
+    def send_search_query(self, search_string):
+        # Connect to spotify API
+        client_credentials_manager = SpotifyClientCredentials(client_id=PUBLIC_SPOTIFY_CLIENT_ID,
+                                                              client_secret=PUBLIC_SPOTIFY_CLIENT_SECRET)
+        sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        # Run playlist search with search_string
+        results = sp.search(q=search_string, limit=20, type='playlist')
+        # Create thumbnails from the results
         self.ids.results_scrollview.populate_thumbnails(results)
+
 
     @staticmethod
     def cancel():
