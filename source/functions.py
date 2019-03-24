@@ -57,20 +57,14 @@ def generate_session_structure(num_of_work_intervals=4):
     return interval_sequence
 
 
-def download_temporary_image(url):
-    # Generate temporary file path
-    path = get_temp_file_path(url)
+def download_temporary_image(url, destination):
     # Send request to url
     res = requests.get(url, stream=True)
     # Check for valid response then download to temp directory
     if res.status_code == 200:
-        with open(path, 'wb') as f:
+        with open(destination, 'wb') as f:
             for chunk in res:
                 f.write(chunk)
-    # return path to image
-        return path
-    else:
-        return None
 
 
 def get_temp_file_path(url):

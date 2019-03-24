@@ -1,5 +1,6 @@
 # Standard Library Imports
 from math import isclose
+from threading import Thread
 
 # Third Party Imports
 from kivy.app import App
@@ -18,7 +19,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.progressbar import ProgressBar
 
 # Local Imports
-from source.functions import download_temporary_image
+from source.functions import download_temporary_image, get_temp_file_path
 
 
 class ScrollableLabel(ScrollView):
@@ -119,35 +120,46 @@ class SearchResultsView(ScrollView):
         super(SearchResultsView, self).__init__(**kwargs)
         self.thumbnails = []
         self.rows = []
-        self.num_of_rows = 0
+        self.download_threads = []
 
     def populate_thumbnails(self, results):
         # Remove any thumbnails from a previous search
         self.clear_previous_results()
+        # Get args to pass to thumbnails
+        thumbnail_info = self.get_thumbnail_info(results=results)
+        # Start downloading images
+        self.download_images(thumbnail_info)
+        # Wait for download finish
+        for thread in self.download_threads:
+            thread.join()
         # Generate thumbnails
-        self.generate_new_thumbnails(results=results)
+        self.generate_thumbnail_objects(args=thumbnail_info)
         # Add thumbnails to screen
         for thumbnail in self.thumbnails:
             self.ids.content_box.add_widget(thumbnail)
+
+    def download_images(self, thumbnail_info):
+        del self.download_threads[:]
+        # Download all images simultaneously
+        for entry in thumbnail_info:
+            self.download_threads.append(Thread(target=download_temporary_image,
+                                                args=(entry['img_url'], entry['img_path'])))
+            self.download_threads[-1].start()
 
     def clear_previous_results(self):
         if self.thumbnails:
             # Empty previous lists
             del self.thumbnails[:]
             del self.rows[:]
-            self.num_of_rows = 0
             # Remove rows from scrollview
             self.clear_widgets()
 
-    def generate_new_thumbnails(self, results):
-        # Iterate through all search results
-        for entry in results['playlists']['items']:
-            playlist_name = entry['name']
-            img_url = entry['images'][0]['url']
-            # Download playlist cover and get its path
-            img_path = download_temporary_image(img_url)
-            # Add thumbnail
-            self.thumbnails.append(SearchResultsThumbnail(img_path=img_path, playlist_name=playlist_name))
+    def generate_thumbnail_objects(self, args):
+        # Generate thumbnail object for each entry
+        for entry in args:
+            self.thumbnails.append(SearchResultsThumbnail(img_path=entry['img_path'],
+                                                          playlist_name=entry['playlist_name'],
+                                                          playlist_url=entry['playlist_url']))
 
     def clear_current_selection(self):
         for thumbnail in self.ids.content_box.children:
@@ -155,10 +167,26 @@ class SearchResultsView(ScrollView):
                 thumbnail.canvas.before.remove(thumbnail.rect)
                 del thumbnail.rect
 
+    def get_thumbnail_info(self, results):
+        thumbnail_args = []
+        for entry in results['playlists']['items']:
+            entry_info = {}
+            # Get playlist name and url
+            entry_info['playlist_name'] = entry['name']
+            entry_info['playlist_url'] = entry['external_urls']['spotify']
+            # Generate image path from url name and get it
+            entry_info['img_url'] = entry['images'][0]['url']
+            entry_info['img_path'] = get_temp_file_path(entry_info['img_url'])
+            # Add thumbnail info to result
+            thumbnail_args.append(entry_info)
+
+        return thumbnail_args
+
 
 class SearchResultsThumbnail(ButtonBehavior, BoxLayout):
     img_path = StringProperty('')
     playlist_name = StringProperty('')
+    playlist_url = StringProperty('')
 
     def __init__(self, **kwargs):
         super(SearchResultsThumbnail, self).__init__(**kwargs)
