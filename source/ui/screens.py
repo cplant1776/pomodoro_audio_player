@@ -302,7 +302,6 @@ class SpotifySearchScreen(Screen):
         # Create thumbnails from the results
         self.ids.results_scrollview.populate_thumbnails(results)
 
-
     @staticmethod
     def cancel():
         app = App.get_running_app()

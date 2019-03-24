@@ -4,6 +4,7 @@ from math import isclose
 # Third Party Imports
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.graphics import Rectangle, Color
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
@@ -148,17 +149,21 @@ class SearchResultsView(ScrollView):
             # Add thumbnail
             self.thumbnails.append(SearchResultsThumbnail(img_path=img_path, playlist_name=playlist_name))
 
+    def clear_current_selection(self):
+        for thumbnail in self.ids.content_box.children:
+            if hasattr(thumbnail, 'rect'):
+                thumbnail.canvas.before.remove(thumbnail.rect)
+                del thumbnail.rect
 
-class SearchResultsRow(BoxLayout):
-    def __init__(self, contents, **kwargs):
-        super(SearchResultsRow, self).__init__(**kwargs)
-        for thumbnail in contents:
-            self.add_widget(thumbnail)
 
-
-class SearchResultsThumbnail(BoxLayout):
-    img_path = StringProperty('./assets/images/placeholder.jpg')
-    playlist_name = StringProperty('PLAYLIST NAME')
+class SearchResultsThumbnail(ButtonBehavior, BoxLayout):
+    img_path = StringProperty('')
+    playlist_name = StringProperty('')
 
     def __init__(self, **kwargs):
         super(SearchResultsThumbnail, self).__init__(**kwargs)
+
+    def draw_select(self):
+        with self.canvas.before:
+            Color(0/255, 140/255, 145/255, 1)
+            self.rect = Rectangle(pos=self.pos, size=(self.width, self.height))

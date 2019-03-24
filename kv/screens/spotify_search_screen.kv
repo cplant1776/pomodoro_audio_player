@@ -54,30 +54,19 @@
     GridLayout:
         id: content_box
         cols: 4
-#        orientation: 'vertical'
         size_hint_y: None
         height: self.minimum_height
-
-
-<SearchResultsRow>:
-    orientation: 'horizontal'
-#    size_hint: 1, None
-#    height: 200
+        spacing: 20
 
 
 <SearchResultsThumbnail>:
     orientation: 'vertical'
-#    size_hint: 0.25, 1
     size_hint_y: None
     height: 200
 
-#    canvas.before:
-#        Color:
-#            rgba: 0,1,0,1
-#        RoundedRectangle:
-#            pos: self.pos
-#            size: self.size
-#            radius: [0,]
+    on_press:
+        root.parent.parent.clear_current_selection()
+        self.draw_select()
 
     BoxLayout:
         id: image_box
