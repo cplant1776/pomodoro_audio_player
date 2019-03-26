@@ -35,7 +35,7 @@
             TextInput:
                 id: search_input
                 hint_text: 'Search for playlists'
-                font_size: 24
+                font_size: 20
 
             Button:
                 id: search_button
@@ -77,9 +77,11 @@
 
     Label:
         id: playlist_name
-        size_hint: 1, 0.1
-        pos_hint: {'center_x': 0.5}
         text: root.playlist_name
+        halign: 'center'
+        size_hint_y: None
+        text_size: self.width, None
+        height: self.texture_size[1]
 
 
 
@@ -97,10 +99,13 @@
         SearchScreenButton:
             id: submit_button
             text: 'Select'
+            on_release:
+                root.parent.parent.submit_selection()
 
         SearchScreenButton:
             id: cancel_button
             text: 'Cancel'
+            on_release: root.dismiss_popup()
 
         Widget:
 

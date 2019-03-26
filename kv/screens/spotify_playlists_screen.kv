@@ -89,7 +89,8 @@
     outline_color: 0,0,0,1
     outline_width: 1
     text: 'Search'
-    on_release: app.root.transition.direction = 'left'
+    on_release:
+        app.root.ids.spotify_playlist_screen.show_load(root.parent.parent.display_title)
 
 
 <SpotifyImage@Image>:

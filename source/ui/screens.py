@@ -281,7 +281,31 @@ class SessionOverScreen(Screen):
 
 
 class SpotifyPlaylistsScreen(Screen):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def show_load(self, playlist_type):
+        content = SpotifySearchScreen(playlist_type=playlist_type, load=self.load)
+        # Popup a file browser to select current_playlist
+        self._popup = Popup(title="Select a Playlist", content=content)
+        self._popup.open()
+
+    def load(self, playlist_type, playlist_info):
+        if playlist_type.lower() == 'work':
+            # TODO: Generate spotify playlist with playlist_info
+            pass
+        elif playlist_type.lower() == 'work':
+            # TODO: Generate spotify playlist with playlist_info
+            pass
+        elif playlist_type.lower() == 'work':
+            # TODO: Generate spotify playlist with playlist_info
+            pass
+
+        # Close the window
+        self.dismiss_popup()
 
 
 class TesterScreen(Screen):
@@ -289,8 +313,14 @@ class TesterScreen(Screen):
 
 
 class SpotifySearchScreen(Screen):
-    def __init__(self, **kwargs):
+    playlist_type = StringProperty('')
+
+    def __init__(self, playlist_type=None, load=None, **kwargs):
         super().__init__(**kwargs)
+        if playlist_type:
+            self.playlist_type = playlist_type
+        if load:
+            self.load = load
 
     def send_search_query(self, search_string):
         # Connect to spotify API
@@ -298,9 +328,21 @@ class SpotifySearchScreen(Screen):
                                                               client_secret=PUBLIC_SPOTIFY_CLIENT_SECRET)
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
         # Run playlist search with search_string
-        results = sp.search(q=search_string, limit=40, type='playlist')
+        results = sp.search(q=search_string, limit=10, type='playlist')
         # Create thumbnails from the results
         self.ids.results_scrollview.populate_thumbnails(results)
+
+    def submit_selection(self):
+        # Find selected thumbnail
+        for thumbnail in self.ids.results_scrollview.ids.content_box.children:
+            if hasattr(thumbnail, 'rect'):
+                # Capture thumbnail data
+                app = App.get_running_app()
+                data = {'img_path': thumbnail.img_path,
+                        'playlist_name': thumbnail.playlist_name,
+                        'playlist_url': thumbnail.playlist_url}
+                app.root.ids['spotify_playlist_screen'].load(self.playlist_type, data)
+                break
 
     @staticmethod
     def cancel():
