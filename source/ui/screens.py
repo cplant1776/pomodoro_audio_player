@@ -306,6 +306,7 @@ class SpotifyPlaylistsScreen(Screen):
     def update_box_info(self, box, playlist_info):
         box.selected_playlist_img_path = playlist_info['img_path']
         box.selected_playlist_name = playlist_info['playlist_name']
+        box.draw_playlist_label_background()
 
 
 

@@ -5,7 +5,7 @@ from threading import Thread
 # Third Party Imports
 from kivy.app import App
 from kivy.clock import Clock
-from kivy.graphics import Rectangle, Color
+from kivy.graphics import Color, Rectangle, RoundedRectangle
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
@@ -105,12 +105,20 @@ class StartScreenTextInput(TextInput):
 
 
 class SelectedSpotifyPlaylistBox(BoxLayout):
-    display_title = StringProperty('display title')
-    selected_playlist_name = StringProperty('playlist name')
-    selected_playlist_img_path = StringProperty('./assets/images/placeholder.jpg')
+    display_title = StringProperty('')
+    selected_playlist_name = StringProperty('')
+    selected_playlist_img_path = StringProperty('./assets/images/blank.png')
 
     def __init__(self, **kwargs):
         super(SelectedSpotifyPlaylistBox, self).__init__(**kwargs)
+
+    def draw_playlist_label_background(self):
+        label = self.ids['playlist_name']
+        with label.canvas.before:
+            Color(0/255, 140/255, 145/255, 1)
+            label.rect = RoundedRectangle(pos=label.pos,
+                                         size=label.size,
+                                         radius=[10, ])
 
 
 class SearchResultsView(ScrollView):
@@ -152,7 +160,7 @@ class SearchResultsView(ScrollView):
             del self.thumbnails[:]
             del self.rows[:]
             # Remove rows from scrollview
-            self.clear_widgets()
+            self.ids.content_box.clear_widgets()
 
     def generate_thumbnail_objects(self, args):
         # Generate thumbnail object for each entry

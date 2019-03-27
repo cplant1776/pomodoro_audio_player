@@ -76,14 +76,6 @@
         text: root.selected_playlist_name
         size_hint: 1, 0.15
 
-        canvas.before:
-            Color:
-                rgba: 0/255, 140/255, 145/255, 1
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [10,]
-
 
 <SelectPlaylistButton@Button>:
     outline_color: 0,0,0,1
@@ -102,13 +94,6 @@
     outline_color: 0,0,0,1
     outline_width: 1
 
-    canvas.before:
-        Color:
-            rgba: 0/255, 140/255, 145/255, 1
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [10,]
 
 <SubmitButtonBox@BoxLayout>:
     orientation: 'vertical'

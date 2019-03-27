@@ -36,6 +36,9 @@
                 id: search_input
                 hint_text: 'Search for playlists'
                 font_size: 20
+                multiline: False
+                write_tab: False
+                on_text_validate: root.parent.parent.send_search_query(self.text)
 
             Button:
                 id: search_button
