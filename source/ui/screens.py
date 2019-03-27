@@ -294,18 +294,19 @@ class SpotifyPlaylistsScreen(Screen):
         self._popup.open()
 
     def load(self, playlist_type, playlist_info):
-        if playlist_type.lower() == 'work':
-            # TODO: Generate spotify playlist with playlist_info
-            pass
-        elif playlist_type.lower() == 'work':
-            # TODO: Generate spotify playlist with playlist_info
-            pass
-        elif playlist_type.lower() == 'work':
-            # TODO: Generate spotify playlist with playlist_info
-            pass
+        box_id_selector = {'work': 'work_playlist_name',
+                           'rest': 'rest_playlist_name',
+                           'long rest': 'long_rest_playlist_name'}
+        box_id = box_id_selector[playlist_type.lower()]
+        self.update_box_info(self.ids[box_id], playlist_info)
 
         # Close the window
         self.dismiss_popup()
+
+    def update_box_info(self, box, playlist_info):
+        box.selected_playlist_img_path = playlist_info['img_path']
+        box.selected_playlist_name = playlist_info['playlist_name']
+
 
 
 class TesterScreen(Screen):
@@ -337,10 +338,10 @@ class SpotifySearchScreen(Screen):
         for thumbnail in self.ids.results_scrollview.ids.content_box.children:
             if hasattr(thumbnail, 'rect'):
                 # Capture thumbnail data
-                app = App.get_running_app()
                 data = {'img_path': thumbnail.img_path,
                         'playlist_name': thumbnail.playlist_name,
                         'playlist_url': thumbnail.playlist_url}
+                app = App.get_running_app()
                 app.root.ids['spotify_playlist_screen'].load(self.playlist_type, data)
                 break
 
