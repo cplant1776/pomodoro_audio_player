@@ -106,8 +106,9 @@ class StartScreenTextInput(TextInput):
 
 class SelectedSpotifyPlaylistBox(BoxLayout):
     display_title = StringProperty('')
-    selected_playlist_name = StringProperty('')
     selected_playlist_img_path = StringProperty('./assets/images/blank.png')
+    selected_playlist_name = StringProperty('')
+    selected_playlist_url = StringProperty('')
 
     def __init__(self, **kwargs):
         super(SelectedSpotifyPlaylistBox, self).__init__(**kwargs)

@@ -31,6 +31,8 @@ TIME_UNIT = 'MINUTES'
 
 
 class RootScreen(ScreenManager):
+    previous_screen = StringProperty("SourceScreen")
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.session = Session(self)
@@ -192,8 +194,8 @@ class LoadingScreen(Screen):
 
     def on_enter(self, *args):
         # Use thread so that loading animation can continue while loading
-        brain_fm_thread = Thread(target=self.submit_form)
-        brain_fm_thread.start()
+        submission_thread = Thread(target=self.submit_form)
+        submission_thread.start()
 
     def set_parameters(self, submission_type, username, password):
         self.submission_type = submission_type
@@ -203,12 +205,17 @@ class LoadingScreen(Screen):
     def submit_form(self):
         print("Scheduled submit_form")
         print("Submission type: {}".format(self.submission_type))
+
         if self.submission_type == 'BrainFM':
             self.parent.session.generate_brain_fm_playlist(username=self.username, password=self.password)
-            self.parent.session.initialize_session_intervals()
-            self.parent.current = 'SessionScreen'
-            # Close thread
-            return
+        elif self.submission_type == 'Spotify':
+            # TODO: Implement this function
+            self.parent.session.generate_spotify_playlist(username=self.username, password=self.password)
+
+        self.parent.session.initialize_session_intervals()
+        self.parent.current = 'SessionScreen'
+        # Close thread
+        return
 
 
 class BrowseFilesScreen(Screen):
@@ -306,8 +313,25 @@ class SpotifyPlaylistsScreen(Screen):
     def update_box_info(self, box, playlist_info):
         box.selected_playlist_img_path = playlist_info['img_path']
         box.selected_playlist_name = playlist_info['playlist_name']
+        box.selected_playlist_url = playlist_info['playlist_url']
         box.draw_playlist_label_background()
 
+    def submit_playlists(self):
+        if self.all_playlists_selected():
+            app = App.get_running_app()
+            root_screen = app.root
+            root_screen.transition_direction = 'left'
+            root_screen.previous_screen = 'SpotifyPlaylistsScreen'
+            root_screen.current = 'LoginScreen'
+        else:
+            # TODO: Add error popup
+            print("Not all playlists selected!")
+
+    def all_playlists_selected(self):
+        for thumbnail_box in self.ids.playlist_select_container.children:
+            if thumbnail_box.selected_playlist_url == '':
+                return False
+        return True
 
 
 class TesterScreen(Screen):
@@ -345,6 +369,7 @@ class SpotifySearchScreen(Screen):
                 app = App.get_running_app()
                 app.root.ids['spotify_playlist_screen'].load(self.playlist_type, data)
                 break
+
 
     @staticmethod
     def cancel():
