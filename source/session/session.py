@@ -1,6 +1,5 @@
 # Standard Library Imports
 from random import shuffle
-import tracemalloc
 from time import strftime
 
 # Third Party Imports
@@ -12,6 +11,7 @@ from .eventhandler import EventHandler
 from .timer import Timer
 from source.session.playlists.local_playlist import LocalPlaylist
 from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
+from source.session.playlists.spotify_playlist import SpotifyPlaybackDevice, SpotifyPlaylist
 from source.functions import generate_session_structure
 from source.session.interval import Interval
 
@@ -147,6 +147,11 @@ class Session:
         """Adds BrainFM Playlists to the sessions playlist list"""
         brain_fm_browser = BrainFMBrowser(username=username, password=password)
         self.playlist = dict.fromkeys(self.playlist, BrainFMPlaylist(browser=brain_fm_browser))
+
+    def generate_spotify_playlist(self, username='', password=''):
+        """Adds Spotify Playlists to the session playlist list"""
+        spotify_playback_device = SpotifyPlaybackDevice(username=username, password=password)
+        self.playlist = SpotifyPlaylist(spotify_playback_device)
 
     def set_intervals_per_session(self, num_of_intervals):
         """Sets value of the number of intervals in the session"""
