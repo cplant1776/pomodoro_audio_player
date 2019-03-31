@@ -1,5 +1,7 @@
 # Standard Library Imports
-
+import re
+from os import remove
+from shutil import move
 
 # Third Party Imports
 from selenium import webdriver
@@ -51,6 +53,8 @@ class SpotifyPlaybackDevice:
         # TODO: implement these functions
         # Get auth token from Spotify1 Authorization API
         self.authenticator = SpotifyAuthenticator(username, password)
+        # Edit html file to include generated authentication code
+        device_file = self.generate_device_html()
         # Launch playlist device in headless browser
         pass
 
@@ -73,6 +77,23 @@ class SpotifyPlaybackDevice:
     def set_current_mode(self):
         pass
 
+    def generate_device_html(self, new_code):
+        pattern = "(const token = ')(.*)(';)"
+
+        # Copy line by line to temporary files
+        with open("tmp.html", "w+") as out:
+            for line in open('spotify_playback_device.html', 'r'):
+                search_result = re.search(pattern, line)
+                # If it's the line setting the auth code
+                if search_result:
+                    old_code = search_result.group(2)
+                    out.write(line.replace(old_code, self.authenticator.auth_token))
+                else:
+                    out.write(line)
+        # Replace old file
+        remove('spotify_playback_device.html')
+        move('tmp.html', 'spotify_playback_device.html')
+
 
 def create_headless_driver():
     """Returns a headless Firefox webdriver"""
@@ -81,3 +102,8 @@ def create_headless_driver():
     options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
     return driver
+
+
+def insert_auth_code_to_driver_html(auth_code):
+    with open('spotify_playback_device.html', "r+") as f:
+        pass
