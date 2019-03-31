@@ -11,7 +11,7 @@ from .eventhandler import EventHandler
 from .timer import Timer
 from source.session.playlists.local_playlist import LocalPlaylist
 from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
-from source.session.playlists.spotify_playlist import SpotifyPlaybackDevice, SpotifyPlaylist
+from source.session.playlists.spotify_playlist.spotify_playlist import SpotifyPlaybackDevice, SpotifyPlaylist
 from source.functions import generate_session_structure
 from source.session.interval import Interval
 

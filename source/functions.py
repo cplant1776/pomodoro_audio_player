@@ -6,6 +6,8 @@ from random import shuffle
 import requests
 
 # Third Party Imports
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
 # Local Imports
 
@@ -70,3 +72,12 @@ def download_temporary_image(url, destination):
 def get_temp_file_path(url):
     name = url.split("/")[-1]
     return os.path.join("tmp", name + ".jpg")
+
+
+def create_headless_driver():
+    """Returns a headless Firefox webdriver"""
+    options = Options()
+    # Set browser to headless mode
+    options.add_argument("--headless")
+    driver = webdriver.Firefox(options=options)
+    return driver

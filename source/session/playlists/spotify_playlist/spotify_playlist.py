@@ -4,10 +4,12 @@
 # Third Party Imports
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from spotipy import util
 
 
 # Local Imports
 from source.session.playlists.playlist import Playlist
+from source.session.playlists.spotify_playlist.spotify_authentication import SpotifyAuthenticator
 
 
 # =========================
@@ -70,15 +72,6 @@ class SpotifyPlaybackDevice:
 
     def set_current_mode(self):
         pass
-
-
-class SpotifyAuthenticator:
-    """Gets an authentication token from the Spotify Authentication API"""
-
-    def __init__(self, username, password):
-        # TODO: Get auth token from Spotify1 Authorization API
-        pass
-
 
 
 def create_headless_driver():

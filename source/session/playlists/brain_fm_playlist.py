@@ -4,16 +4,14 @@ from os import environ
 from time import sleep
 
 # Third Party Imports
-from selenium import webdriver
 from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-
 # Local Imports
+from source.functions import create_headless_driver
 from source.session.playlists.playlist import Playlist
 
 
@@ -66,7 +64,7 @@ class BrainFMPlaylist(Playlist):
         self.browser.click_skip_button()
 
     def toggle_mode(self):
-        """Swaps browser between res/twork modes"""
+        """Swaps browser between rest/work modes"""
         self.current_mode = alternate_mode()
         self.browser.set_current_mode(self.current_mode)
 
@@ -184,12 +182,3 @@ class BrainFMBrowser:
         except ElementClickInterceptedException:
             sleep(0.5)
             self.protected_click(button)
-
-
-def create_headless_driver():
-    """Returns a headless Firefox webdriver"""
-    options = Options()
-    # Set browser to headless mode
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
-    return driver
