@@ -58,9 +58,25 @@ The UI is quite basic and self explanatory.
 version 3.X
 ```
 ##### Packages
+
 ```
 See requirements.txt
 ```
+
+##### Browser
+
+```
+Mozilla Firefox
+or
+Google Chrome
+```
+
+##### Webdriver
+
+To use Brain.fm as a source, you will need either Mozilla Firefox or Google Chrome and its accompanying webdriver. [More info here.](https://selenium-python.readthedocs.io/installation.html#drivers) You can find links to the drivers below:
+
+* [Mozilla Firefox - geckodriver](https://github.com/mozilla/geckodriver/releases)
+* [Google Chrome - ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 
 ## Upcoming Changes/Fixes
 

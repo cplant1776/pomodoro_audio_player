@@ -19,7 +19,7 @@ from source.functions import create_headless_driver
 # =========================
 PUBLIC_CLIENT_ID = 'fda8d241ac5f41d18df47391d853accb'
 PUBLIC_CLIENT_SECRET = '3c30c5317e5a4b9398f599a26e9ac428'
-SPOTIFY_SCOPE = "streaming user-read-birthdate user-read-email user-read-private"
+SPOTIFY_SCOPE = "streaming user-read-birthdate user-read-email user-read-private user-modify-playback-state"
 REDIRECT_URI = 'http://localhost/'
 CSS_SELECTORS = {'username': '#login-username',
                  'password': '#login-password',
@@ -107,6 +107,8 @@ class SpotifyAuthenticator:
             print("Opened %s in your browser" % auth_url)
 
             response = driver.current_url
+
+            driver.close()
 
             code = sp_oauth.parse_response_code(response)
             token_info = sp_oauth.get_access_token(code)

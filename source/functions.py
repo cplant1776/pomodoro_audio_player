@@ -7,7 +7,8 @@ import requests
 
 # Third Party Imports
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # Local Imports
 
@@ -75,9 +76,21 @@ def get_temp_file_path(url):
 
 
 def create_headless_driver():
-    """Returns a headless Firefox webdriver"""
-    options = Options()
-    # Set browser to headless mode
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
-    return driver
+    """Returns a headless Firefox or Chrome webdriver"""
+
+    try:
+        options = ChromeOptions()
+        options.headless = True
+        return webdriver.Chrome(options=options)
+    #     TODO: Add specific exceptions: no driver, no browser
+    except:
+        print("Chrome launch failed. Trying Firefox . . .")
+
+    try:
+        options = FirefoxOptions()
+        options.headless = True
+        return webdriver.Firefox(options=options)
+    #     TODO: Add specific exceptions: no driver, no browser
+    except:
+        print("Firefox launch failed. . .")
+        # TODO: Add popup for user with what caused the error
