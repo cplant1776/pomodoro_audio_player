@@ -108,7 +108,7 @@ class SelectedSpotifyPlaylistBox(BoxLayout):
     display_title = StringProperty('')
     selected_playlist_img_path = StringProperty('./assets/images/blank.png')
     selected_playlist_name = StringProperty('')
-    selected_playlist_url = StringProperty('')
+    selected_playlist_uri = StringProperty('')
 
     def __init__(self, **kwargs):
         super(SelectedSpotifyPlaylistBox, self).__init__(**kwargs)
@@ -168,7 +168,7 @@ class SearchResultsView(ScrollView):
         for entry in args:
             self.thumbnails.append(SearchResultsThumbnail(img_path=entry['img_path'],
                                                           playlist_name=entry['playlist_name'],
-                                                          playlist_url=entry['playlist_url']))
+                                                          playlist_uri=entry['playlist_uri']))
 
     def clear_current_selection(self):
         for thumbnail in self.ids.content_box.children:
@@ -182,7 +182,7 @@ class SearchResultsView(ScrollView):
             entry_info = {}
             # Get playlist name and url
             entry_info['playlist_name'] = entry['name']
-            entry_info['playlist_url'] = entry['external_urls']['spotify']
+            entry_info['playlist_uri'] = entry['uri']
             # Generate image path from url name and get it
             entry_info['img_url'] = entry['images'][0]['url']
             entry_info['img_path'] = get_temp_file_path(entry_info['img_url'])
@@ -195,7 +195,7 @@ class SearchResultsView(ScrollView):
 class SearchResultsThumbnail(ButtonBehavior, BoxLayout):
     img_path = StringProperty('')
     playlist_name = StringProperty('')
-    playlist_url = StringProperty('')
+    playlist_uri = StringProperty('')
 
     def __init__(self, **kwargs):
         super(SearchResultsThumbnail, self).__init__(**kwargs)

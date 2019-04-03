@@ -48,7 +48,7 @@ class BrainFMPlaylist(Playlist):
         self.browser = browser
         self.current_mode = 'rest'
 
-    def start(self):
+    def start(self, style=""):
         self.toggle_mode()
 
     def stop(self):

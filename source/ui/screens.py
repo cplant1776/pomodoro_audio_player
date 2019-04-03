@@ -313,7 +313,7 @@ class SpotifyPlaylistsScreen(Screen):
     def update_box_info(self, box, playlist_info):
         box.selected_playlist_img_path = playlist_info['img_path']
         box.selected_playlist_name = playlist_info['playlist_name']
-        box.selected_playlist_url = playlist_info['playlist_url']
+        box.selected_playlist_url = playlist_info['playlist_uri']
         box.draw_playlist_label_background()
 
     def submit_playlists(self):
@@ -329,7 +329,7 @@ class SpotifyPlaylistsScreen(Screen):
 
     def all_playlists_selected(self):
         for thumbnail_box in self.ids.playlist_select_container.children:
-            if thumbnail_box.selected_playlist_url == '':
+            if thumbnail_box.selected_playlist_uri == '':
                 return False
         return True
 
@@ -365,7 +365,7 @@ class SpotifySearchScreen(Screen):
                 # Capture thumbnail data
                 data = {'img_path': thumbnail.img_path,
                         'playlist_name': thumbnail.playlist_name,
-                        'playlist_url': thumbnail.playlist_url}
+                        'playlist_uri': thumbnail.playlist_uri}
                 app = App.get_running_app()
                 app.root.ids['spotify_playlist_screen'].load(self.playlist_type, data)
                 break

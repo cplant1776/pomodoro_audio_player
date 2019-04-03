@@ -8,7 +8,7 @@ class Interval:
 
     def start(self):
         # Start next song
-        self.playlist.start()
+        self.playlist.start(style=self.style)
         print("Start interval")
 
     def stop(self):

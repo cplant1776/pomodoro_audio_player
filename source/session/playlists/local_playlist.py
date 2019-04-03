@@ -24,7 +24,7 @@ class LocalPlaylist(Playlist):
         self.Timer = Timer()
         self.EventHandler = EventHandler()
 
-    def start(self):
+    def start(self, style=""):
         # Start the song timer
         self.Timer.start()
         self.next_song_sequence()

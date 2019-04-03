@@ -1,10 +1,8 @@
 # Standard Library Imports
-from random import shuffle
 from time import strftime
 
 # Third Party Imports
 from kivy.clock import Clock
-from kivy.properties import StringProperty
 
 # Local Imports
 from .eventhandler import EventHandler
@@ -151,7 +149,7 @@ class Session:
     def generate_spotify_playlist(self, username='', password=''):
         """Adds Spotify Playlists to the session playlist list"""
         spotify_playback_device = SpotifyPlaybackDevice(username=username, password=password)
-        self.playlist = SpotifyPlaylist(spotify_playback_device)
+        self.playlist = dict.fromkeys(self.playlist, SpotifyPlaylist(spotify_playback_device))
 
     def set_intervals_per_session(self, num_of_intervals):
         """Sets value of the number of intervals in the session"""
@@ -168,5 +166,3 @@ class Session:
                                              style=interval_type)
         # Set duration of session
         self.Timer.set_total_time(self.get_session_total_time())
-
-
