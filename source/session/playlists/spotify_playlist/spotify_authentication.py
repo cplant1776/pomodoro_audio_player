@@ -6,6 +6,8 @@ import time
 # Third Party Imports
 from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, WebDriverException
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.expected_conditions import url_contains
 import spotipy
 from spotipy import oauth2
 
@@ -19,7 +21,7 @@ from source.functions import create_headless_driver
 # =========================
 PUBLIC_CLIENT_ID = 'fda8d241ac5f41d18df47391d853accb'
 PUBLIC_CLIENT_SECRET = '3c30c5317e5a4b9398f599a26e9ac428'
-SPOTIFY_SCOPE = "streaming user-read-birthdate user-read-email user-read-private user-modify-playback-state"
+SPOTIFY_SCOPE = "streaming user-read-birthdate user-read-email user-read-private user-modify-playback-state user-read-playback-state"
 REDIRECT_URI = 'http://localhost/'
 CSS_SELECTORS = {'username': '#login-username',
                  'password': '#login-password',
@@ -30,12 +32,12 @@ class SpotifyAuthenticator:
     """Gets an authentication token from the Spotify Authentication API"""
 
     def __init__(self, username, password):
-        # TODO: Get auth token from Spotify Authorization API
         self.username = username
         self.password = password
         self.auth_token = self.generate_authentication_token(scope=SPOTIFY_SCOPE,
                                                              client_id=PUBLIC_CLIENT_ID,
                                                              client_secret=PUBLIC_CLIENT_SECRET,
+                                                             redirect_uri=REDIRECT_URI,
                                                              cache_path=None)
 
     def generate_authentication_token(self, scope=None, client_id=None,
@@ -94,21 +96,24 @@ class SpotifyAuthenticator:
             ''')
             auth_url = sp_oauth.get_authorize_url()
 
-            driver = create_headless_driver()
-            # driver = webdriver.Firefox()
+            # driver = create_headless_driver()
+            driver = webdriver.Chrome()
             driver.get(auth_url)
 
             fill_credentials(driver, self.username, self.password)
             try:
                 submit_credentials(driver)
             except WebDriverException:
-                pass
+                print("Submit credentials failed!")
 
             print("Opened %s in your browser" % auth_url)
 
-            response = driver.current_url
-
-            driver.close()
+            try:
+                WebDriverWait(driver, 10).until(url_contains("http://localhost/?code="))
+                response = driver.current_url
+            except:
+                print("Never redirected to token!")
+                response = None
 
             code = sp_oauth.parse_response_code(response)
             token_info = sp_oauth.get_access_token(code)

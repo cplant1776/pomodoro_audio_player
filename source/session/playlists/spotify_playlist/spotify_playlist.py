@@ -1,5 +1,6 @@
 # Standard Library Imports
 from os import getcwd, remove
+import os.path
 import re
 import requests
 from shutil import move
@@ -20,7 +21,8 @@ from source.session.playlists.spotify_playlist.spotify_authentication import Spo
 # =========================
 # CONSTANTS
 # =========================
-PLAYBACK_DEVICE_FILE = 'spotify_playback_device.html'
+ROOT = os.path.dirname(os.path.realpath(__file__))
+PLAYBACK_DEVICE_FILE = os.path.join(ROOT, 'spotify_playback_device.html')
 
 
 class SpotifyPlaylist(Playlist):
@@ -37,8 +39,8 @@ class SpotifyPlaylist(Playlist):
     def generate_uris():
         app = App.get_running_app()
         result = {'work': app.root.ids['spotify_playlist_screen'].ids['work_playlist_name'].selected_playlist_uri,
-                  'rest': app.root.ids['spotify_playlist_screen'].ids['work_playlist_name'].selected_playlist_uri,
-                  'long_rest': app.root.ids['spotify_playlist_screen'].ids['work_playlist_name'].selected_playlist_uri}
+                  'rest': app.root.ids['spotify_playlist_screen'].ids['rest_playlist_name'].selected_playlist_uri,
+                  'long_rest': app.root.ids['spotify_playlist_screen'].ids['long_rest_playlist_name'].selected_playlist_uri}
         return result
 
     def get_device_id(self):
@@ -48,6 +50,7 @@ class SpotifyPlaylist(Playlist):
                 return device['id']
 
     def start(self, style=""):
+        print("style: {} - {}".format(style, self.uri[style]))
         self.current_mode = style
         self.player.start_playback(device_id=self.device_id, context_uri=self.uri[style])
         self.player.shuffle(True, device_id=self.device_id)
@@ -84,9 +87,10 @@ class SpotifyPlaybackDevice:
 
     def generate_device_html(self):
         pattern = "(const token = ')(.*)(';)"
+        temp_file = os.path.join(ROOT, 'tmp.html')
 
         # Copy line by line to temporary files
-        with open("tmp.html", "w+") as out:
+        with open(temp_file, "w+") as out:
             for line in open(PLAYBACK_DEVICE_FILE, 'r'):
                 search_result = re.search(pattern, line)
                 # If it's the line setting the auth code
@@ -97,4 +101,4 @@ class SpotifyPlaybackDevice:
                     out.write(line)
         # Replace old file
         remove(PLAYBACK_DEVICE_FILE)
-        move('tmp.html', PLAYBACK_DEVICE_FILE)
+        move(temp_file, PLAYBACK_DEVICE_FILE)
