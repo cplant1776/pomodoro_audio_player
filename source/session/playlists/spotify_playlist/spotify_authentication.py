@@ -4,8 +4,9 @@ import time
 
 
 # Third Party Imports
-from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, WebDriverException
 from selenium import webdriver
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, WebDriverException
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import url_contains
 import spotipy
@@ -34,14 +35,10 @@ class SpotifyAuthenticator:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.auth_token = self.generate_authentication_token(scope=SPOTIFY_SCOPE,
-                                                             client_id=PUBLIC_CLIENT_ID,
-                                                             client_secret=PUBLIC_CLIENT_SECRET,
-                                                             redirect_uri=REDIRECT_URI,
-                                                             cache_path=None)
+        self.auth_token = None
 
-    def generate_authentication_token(self, scope=None, client_id=None,
-                                      client_secret=None, redirect_uri=None, cache_path=None):
+    def generate_authentication_token(self, scope=SPOTIFY_SCOPE, client_id=PUBLIC_CLIENT_ID,
+                                      client_secret=PUBLIC_CLIENT_SECRET, redirect_uri=REDIRECT_URI, cache_path=None):
         """
             modified version of spotipy's util.prompt_for_user_token. This makes it headless.
 
@@ -113,16 +110,21 @@ class SpotifyAuthenticator:
                 response = driver.current_url
             except:
                 print("Never redirected to token!")
-                response = None
+                return None
 
             code = sp_oauth.parse_response_code(response)
             token_info = sp_oauth.get_access_token(code)
 
         # Auth'ed API request
         if token_info:
-            return token_info['access_token']
+            self.auth_token = token_info['access_token']
+            return True
         else:
             return None
+
+    def update_credentials(self, username='', password=''):
+        self.username = username
+        self.password = password
 
 
 def fill_credentials(driver, username, password):
@@ -130,6 +132,9 @@ def fill_credentials(driver, username, password):
     # Find form inputs
     username_input = driver.find_element_by_css_selector(CSS_SELECTORS['username'])
     password_input = driver.find_element_by_css_selector(CSS_SELECTORS['password'])
+    # Clear previous input if present
+    username_input.send_keys(Keys.BACKSPACE * 100)
+    password_input.send_keys(Keys.BACKSPACE * 100)
     # Fill out form
     username_input.send_keys(username)
     password_input.send_keys(password)

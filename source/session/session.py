@@ -3,6 +3,7 @@ from time import strftime
 
 # Third Party Imports
 from kivy.clock import Clock
+from selenium import webdriver
 
 # Local Imports
 from .eventhandler import EventHandler
@@ -34,6 +35,7 @@ class Session:
         self.num_of_work_intervals = None
         self.Intervals = {}
         self.parent = parent
+        self.driver = None
 
         # Initialize timers and eventhandlers
         self.Timer = Timer()
@@ -141,15 +143,13 @@ class Session:
         """Add a LocalPlaylist to the session's playlist list"""
         self.playlist[playlist_type] = LocalPlaylist(paths=file_paths)
 
-    def generate_brain_fm_playlist(self, username='', password=''):
+    def generate_brain_fm_playlist(self):
         """Adds BrainFM Playlists to the sessions playlist list"""
-        brain_fm_browser = BrainFMBrowser(username=username, password=password)
-        self.playlist = dict.fromkeys(self.playlist, BrainFMPlaylist(browser=brain_fm_browser))
+        self.playlist = dict.fromkeys(self.playlist, BrainFMPlaylist(browser=self.driver))
 
     def generate_spotify_playlist(self, username='', password=''):
         """Adds Spotify Playlists to the session playlist list"""
-        spotify_playback_device = SpotifyPlaybackDevice(username=username, password=password)
-        self.playlist = dict.fromkeys(self.playlist, SpotifyPlaylist(spotify_playback_device))
+        self.playlist = dict.fromkeys(self.playlist, SpotifyPlaylist(self.driver))
 
     def set_intervals_per_session(self, num_of_intervals):
         """Sets value of the number of intervals in the session"""
@@ -166,3 +166,20 @@ class Session:
                                              style=interval_type)
         # Set duration of session
         self.Timer.set_total_time(self.get_session_total_time())
+
+    def create_driver(self, submission_type, username, password):
+        if submission_type == 'BrainFM':
+            self.driver = BrainFMBrowser(username=username, password=password)
+        elif submission_type == 'Spotify':
+            self.driver = SpotifyPlaybackDevice(username=username, password=password)
+
+    def has_valid_credentials(self):
+        if isinstance(self.driver, BrainFMBrowser):
+            if self.driver.try_login():
+                return True
+        elif isinstance(self.driver, SpotifyPlaybackDevice):
+            if self.driver.has_valid_credentials():
+                return True
+        return False
+
+

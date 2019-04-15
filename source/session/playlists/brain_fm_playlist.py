@@ -4,8 +4,10 @@ from os import environ
 from time import sleep
 
 # Third Party Imports
-from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException
+from selenium import webdriver
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -20,17 +22,18 @@ from source.session.playlists.playlist import Playlist
 # =========================
 MODE_TOGGLE = cycle(['work', 'rest'])
 BRAIN_FM_URL = "https://brain.fm/login"
-CSS_SELECTORS = {'home_button'             : '[href="/app"] > div',
-                 'focus'            : '[class*="focus"]',
-                 'focus_time'       : ['div[class^=timeOptionNumber]'],
-                 'relax'            : '[class*="relax"]',
-                 'relax_style'      : 'div[class*="optionContainer"]:nth-child(2)',
-                 'relax_duration'   : 'div[class="timeOptionNumber"]',
-                 'playback_toggle'  : '[class*="PlayControl"]',
-                 'login_user'       : '#login-email',
-                 'login_pw'         : '#login-password',
-                 'login_button'     : '#login-confirm-btn',
-                 'skip_track_button': '[class*="Skip"]'
+CSS_SELECTORS = {'home_button'          : '[href="/app"] > div',
+                 'focus'                : '[class*="focus"]',
+                 'focus_time'           : ['div[class^=timeOptionNumber]'],
+                 'relax'                : '[class*="relax"]',
+                 'relax_style'          : 'div[class*="optionContainer"]:nth-child(2)',
+                 'relax_duration'       : 'div[class="timeOptionNumber"]',
+                 'playback_toggle'      : '[class*="PlayControl"]',
+                 'login_user'           : '#login-email',
+                 'login_pw'             : '#login-password',
+                 'login_button'         : '#login-confirm-btn',
+                 'skip_track_button'    : '[class*="Skip"]',
+                 'invalid_credentials': '.Toastify__progress-bar--error'
                  }
 X_PATHS = {'infinity_button'    : '//button[text()="2 hours"]/following-sibling::button',
            }
@@ -72,47 +75,53 @@ class BrainFMPlaylist(Playlist):
 class BrainFMBrowser:
     """Selenium driver that navigates https://brain.fm/"""
     def __init__(self, username='', password=''):
-        self.url = BRAIN_FM_URL
         if username == '' and password == '':
             # Pull credentials from environmental variables
             self.username = environ['BRAIN_FM_EMAIL'].strip('"')
             self.password = environ['BRAIN_FM_PASSWORD'].strip('"')
         else:
             self.username, self.password = username, password
-        # TODO: Add invalid credentials warning
+        # self.driver = webdriver.Chrome()
         self.driver = create_headless_driver()
-        self.log_in()
+        self.driver.get(BRAIN_FM_URL)
 
     def set_current_mode(self, current_mode=None):
         """Navigate to work/rest page"""
         self.navigate_to_home()
         self.start_focus() if current_mode == 'work' else self.start_relax()
 
-    def log_in(self):
-        """Submit credentials to login page"""
-        # Load login page
-        self.driver.get(self.url)
-        # Fill out credentials
+    def try_login(self):
         self.enter_login_credentials()
-        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['login_button'],
-                                     wait_selector='[class*="focus"]')
 
+        # Click submit and watch for invalid credentials popup for 3 sec
+        error_found = self.click_and_wait_for_load(button_selector=CSS_SELECTORS['login_button'],
+                                     wait_selector=CSS_SELECTORS['invalid_credentials'],
+                                     delay=3)
+        print("error found: {}".format(error_found))
+        if error_found:
+            return False
+        else:
+            return True
 
     def enter_login_credentials(self):
         """Fills in username/password fields in login form"""
         # Find form inputs
         user_email_input = self.driver.find_element_by_css_selector(CSS_SELECTORS['login_user'])
         user_password_input = self.driver.find_element_by_css_selector(CSS_SELECTORS['login_pw'])
+        # Clear previous input if exists
+        user_email_input.send_keys(Keys.BACKSPACE * 100)
+        user_password_input.send_keys(Keys.BACKSPACE * 100)
         # Fill out form
         user_email_input.send_keys(self.username)
         user_password_input.send_keys(self.password)
 
-    def click_and_wait_for_load(self, button_selector='', wait_selector=''):
+    def click_and_wait_for_load(self, button_selector='', wait_selector='', delay=10):
         """Clicks an element based on button_selector and waits for full load before continuing"""
         print('click_and_wait')
         button = self.driver.find_element_by_css_selector(button_selector)
         self.protected_click(button)
-        self.wait_for_page_load(selector=wait_selector)
+        was_found = self.wait_for_page_load(delay=delay, selector=wait_selector)
+        return was_found
 
     def start_focus(self):
         """Navigates to page that plays focus audio"""
@@ -146,9 +155,8 @@ class BrainFMBrowser:
     def navigate_to_home(self):
         """Nagivates to home page of site"""
         print('navigate_to_home')
-        home_button = self.driver.find_element_by_css_selector(CSS_SELECTORS['home_button'])
-        self.protected_click(home_button)
-        self.wait_for_page_load(selector='[class*="focus"]')
+        self.click_and_wait_for_load(button_selector=CSS_SELECTORS['home_button'],
+                                     wait_selector=CSS_SELECTORS['focus'])
 
     def toggle_playback(self):
         """Clicks play/pause button"""
@@ -161,11 +169,14 @@ class BrainFMBrowser:
         print('wait_for_page_load')
         try:
             found_element = WebDriverWait(self.driver, delay).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                EC.presence_of_element_located((By.CSS_SELECTOR, str(selector)))
             )
-        finally:
-            print("Page ready!")
-            return True
+        except TimeoutException:
+            print("Timed out!")
+            return False
+
+        print("Page ready!")
+        return True
 
     def protected_click(self, button):
         """Attempts to click an element
@@ -182,3 +193,11 @@ class BrainFMBrowser:
         except ElementClickInterceptedException:
             sleep(0.5)
             self.protected_click(button)
+
+    def update_credentials(self, username='', password=''):
+        self.username = username
+        self.password = password
+
+
+class InvalidCredentials(Exception):
+    pass
