@@ -78,19 +78,10 @@ class SpotifyPlaybackDevice:
     def __init__(self, username='', password=''):
         # Get auth token from Spotify Authorization API
         self.authenticator = SpotifyAuthenticator(username, password)
-        # Launch playlist device in headless browser from generated html file
-        # self.device = create_headless_driver()
-        self.device = webdriver.Chrome()
-
-    def has_valid_credentials(self):
-        if self.authenticator.generate_authentication_token():
-            return True
-        else:
-            return False
-
-    def open_playback_device(self):
         # Edit html file to include generated authentication code
         self.generate_device_html()
+        # Launch playlist device in headless browser from generated html file
+        self.device = create_headless_driver()
         html_file = getcwd() + "//" + PLAYBACK_DEVICE_FILE
         self.device.get("file:///" + html_file)
 
@@ -111,6 +102,3 @@ class SpotifyPlaybackDevice:
         # Replace old file
         remove(PLAYBACK_DEVICE_FILE)
         move(temp_file, PLAYBACK_DEVICE_FILE)
-
-    def update_credentials(self, username='', password=''):
-        self.authenticator.update_credentials(username=username, password=password)
