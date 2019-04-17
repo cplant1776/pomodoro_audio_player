@@ -1,9 +1,13 @@
 # Standard Library Imports
 import mutagen
-import os.path
+import os
 from os.path import split
 from random import shuffle
+import re
 import requests
+import time
+import tkinter
+
 
 # Third Party Imports
 from selenium import webdriver
@@ -81,6 +85,8 @@ def create_headless_driver():
     try:
         options = ChromeOptions()
         options.headless = True
+        # Workaround to set fullscreen since fullscreen argument does not work with headless mode
+        options.add_argument(set_to_fullscreen())
         return webdriver.Chrome(options=options)
     #     TODO: Add specific exceptions: no driver, no browser
     except:
@@ -94,3 +100,23 @@ def create_headless_driver():
     except:
         print("Firefox launch failed. . .")
         # TODO: Add popup for user with what caused the error
+
+
+def set_to_fullscreen():
+    root = tkinter.Tk()
+    return "--window-size=1{},{}".format(root.winfo_screenwidth(), root.winfo_screenheight())
+
+
+def clear_expired_cache():
+    local_files = ' '.join(os.listdir())
+    regex = re.search("(\.cache-\w*)\s", local_files)
+
+    try:
+        cache_path = regex.group(1)
+    except AttributeError:  # cache not found
+        return
+
+    last_modified = int(os.path.getmtime(cache_path))
+    # If cache is more than 1 hour old, delete it
+    if int(time.time()) - last_modified > 3600:
+        os.remove(cache_path)

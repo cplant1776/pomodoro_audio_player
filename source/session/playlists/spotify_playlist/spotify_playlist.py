@@ -1,9 +1,13 @@
 # Standard Library Imports
 from os import getcwd, remove
 import os.path
+from pathlib import Path
 import re
 import requests
 from shutil import move
+from shutil import which
+import socket
+import subprocess
 
 # Third Party Imports
 from kivy.app import App
@@ -31,7 +35,7 @@ class SpotifyPlaylist(Playlist):
         super().__init__()
         self.playback_device = playback_device
         self.player = spotipy.Spotify(auth=self.playback_device.authenticator.auth_token)
-        self.device_id = self.get_device_id()
+        self.device_id = None
         self.uri = self.generate_uris()
         self.current_mode = 'work'
 
@@ -43,15 +47,28 @@ class SpotifyPlaylist(Playlist):
                   'long_rest': app.root.ids['spotify_playlist_screen'].ids['long_rest_playlist_name'].selected_playlist_uri}
         return result
 
-    def get_device_id(self):
+    def set_device_id(self):
+        os_name = socket.gethostname()
         devices = self.player.devices()
+
+        # Return device ID of spotify client on same PC
         for device in devices['devices']:
-            if device['name'] == 'Web Playback SDK Quick Start Player':
-                return device['id']
+            if device['name'] == os_name:
+                self.device_id = device['id']
+                return
+
+        # If client not found, try to open it
+        if self.playback_device.attempt_to_open_client_failed():
+            # TODO: Implement this function
+            self.prompt_user_for_spotify_location()
+
+    def prompt_user_for_spotify_location(self):
+        pass
 
     def start(self, style=""):
         print("style: {} - {}".format(style, self.uri[style]))
         self.current_mode = style
+        self.set_device_id()
         self.player.start_playback(device_id=self.device_id, context_uri=self.uri[style])
         self.player.shuffle(True, device_id=self.device_id)
 
@@ -73,15 +90,23 @@ class SpotifyPlaylist(Playlist):
 
 
 class SpotifyPlaybackDevice:
-    """Spotify playabck device controlled via the Spotify Connect API (spotify_playback_device.html)"""
+    # Spotify playabck device controlled via the Spotify Connect API (spotify_playback_device.html)
 
     def __init__(self, username='', password=''):
         # Get auth token from Spotify Authorization API
         self.authenticator = SpotifyAuthenticator(username, password)
+        # Launch playlist device in headless browser from generated html file
+
+
+    def has_valid_credentials(self):
+        if self.authenticator.generate_authentication_token():
+            return True
+        else:
+            return False
+
+    def open_playback_device(self):
         # Edit html file to include generated authentication code
         self.generate_device_html()
-        # Launch playlist device in headless browser from generated html file
-        self.device = create_headless_driver()
         html_file = getcwd() + "//" + PLAYBACK_DEVICE_FILE
         self.device.get("file:///" + html_file)
 
@@ -102,3 +127,89 @@ class SpotifyPlaybackDevice:
         # Replace old file
         remove(PLAYBACK_DEVICE_FILE)
         move(temp_file, PLAYBACK_DEVICE_FILE)
+
+    def update_credentials(self, username='', password=''):
+        self.authenticator.update_credentials(username=username, password=password)
+
+    def attempt_to_open_client_failed(self):
+        # Try to find spotify client from PATH
+        path = which('spotify')
+        if path:
+            try:
+                subprocess.call([path])
+                return False
+            except FileNotFoundError:
+                pass
+
+        # Try default install locations
+        user_home = str(Path.home())
+        default_locations = [
+            os.path.join(user_home, 'AppData', 'Local', 'Microsoft', 'WindowsApps', 'Spotify.exe'),  # Window default
+            os.path.join(os.sep, 'snap', 'bin', 'spotify', 'Spotify.sh'),  # Ubuntu/snap default
+            os.path.join(os.sep, 'usr', 'bin', 'spotify', 'Spotify.sh'),  # Debian default
+            os.path.join(os.sep, 'Applications', 'Spotify', 'Spotify.sh'),  # Mac default 1
+            os.path.join(user_home, 'Applications', 'Spotify', 'Spotify.sh')  # Mac default 2
+        ]
+
+        if not self.open_from_default_locations(default_locations):
+            return True
+
+    @staticmethod
+    def open_from_default_locations(default_paths):
+        for path in default_paths:
+            try:
+                subprocess.call([path])
+                return True
+            except FileNotFoundError:
+                pass
+
+        return False
+
+
+"""
+    Depreceated - web-based playback devices proved too unstable when combined with Selenium.
+    Therefore, now using the Spotify Client on the local pc as the playback device.
+    
+class SpotifyPlaybackDevice:
+    # Spotify playabck device controlled via the Spotify Connect API (spotify_playback_device.html)
+
+    def __init__(self, username='', password=''):
+        # Get auth token from Spotify Authorization API
+        self.authenticator = SpotifyAuthenticator(username, password)
+        # Launch playlist device in headless browser from generated html file
+        # self.device = create_headless_driver()
+        self.device = webdriver.Chrome()
+
+    def has_valid_credentials(self):
+        if self.authenticator.generate_authentication_token():
+            return True
+        else:
+            return False
+
+    def open_playback_device(self):
+        # Edit html file to include generated authentication code
+        self.generate_device_html()
+        html_file = getcwd() + "//" + PLAYBACK_DEVICE_FILE
+        self.device.get("file:///" + html_file)
+
+    def generate_device_html(self):
+        pattern = "(const token = ')(.*)(';)"
+        temp_file = os.path.join(ROOT, 'tmp.html')
+
+        # Copy line by line to temporary files
+        with open(temp_file, "w+") as out:
+            for line in open(PLAYBACK_DEVICE_FILE, 'r'):
+                search_result = re.search(pattern, line)
+                # If it's the line setting the auth code
+                if search_result:
+                    old_code = search_result.group(2)
+                    out.write(line.replace(old_code, self.authenticator.auth_token))
+                else:
+                    out.write(line)
+        # Replace old file
+        remove(PLAYBACK_DEVICE_FILE)
+        move(temp_file, PLAYBACK_DEVICE_FILE)
+
+    def update_credentials(self, username='', password=''):
+        self.authenticator.update_credentials(username=username, password=password)
+"""

@@ -8,6 +8,7 @@ from kivy.lang import Builder
 from kivy.resources import resource_add_path
 
 # Local Imports
+from source.functions import clear_expired_cache
 from source.session.session import Session
 import source.ui.ui_elements
 import source.ui.screens as screens
@@ -41,11 +42,14 @@ class PomodoroApp(App):
 
 
 if __name__ == "__main__":
-    # Create temporary directory
+    # Create temporary directory for downloaded images
     try:
         os.mkdir('tmp')
     except OSError:
         rmtree('tmp')
         os.mkdir('tmp')
+
+    clear_expired_cache()
+
     # Launch app
     PomodoroApp().run()
