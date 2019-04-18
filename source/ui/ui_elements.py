@@ -33,22 +33,26 @@ class SessionScreenProgressBar(ProgressBar):
 
 class ConnectingLabel(Label):
     angle = NumericProperty(0)
-    startCount = NumericProperty(20)
+    startCount = NumericProperty(-1)
     count = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super(ConnectingLabel, self).__init__(**kwargs)
-        Clock.schedule_once(self.set_Circle, 0.1)
         self.count = self.startCount
+        self.animation_event = None
         # self.angle = 0
 
-    def set_Circle(self, dt):
+    def start_animation(self):
+        self.animation_event = Clock.schedule_interval(self.set_circle, 1.0/360)
+
+    def stop_animation(self):
+        if self.animation_event:
+            self.animation_event.cancel()
+
+    def set_circle(self, dt):
         self.angle = self.angle + dt*360
         if self.angle >= 360:
             self.angle = 0
-            self.count = self.count - 1
-        if self.count > 0:
-            Clock.schedule_once(self.set_Circle, 1.0/360)
 
 
 class SessionScreenButton(Button):

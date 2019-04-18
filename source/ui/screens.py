@@ -14,6 +14,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 # Local Imports
 from source.functions import extract_file_paths, get_playlist_song_titles
+from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
 from source.session.session import Session
 from source.ui.ui_elements import FailedSubmissionPopup, UniversalHelpPopup, SearchResultsThumbnail
 
@@ -178,6 +179,9 @@ class LoginScreen(Screen):
         super().__init__(**kwargs)
         self.submission_data = {}
 
+    def on_enter(self, *args):
+        self.parent.transition.direction = 'left'
+
     def open_load_screen(self, submission_type, username, password):
         print("open load screen")
         self.parent.ids['loading_screen'].set_parameters(submission_type, username, password)
@@ -192,10 +196,16 @@ class LoadingScreen(Screen):
         self.username = None
         self.password = None
 
-    def on_enter(self, *args):
+    def on_pre_enter(self, *args):
         # Use thread so that loading animation can continue while loading
+        print("entered LoginScreen")
         submission_thread = Thread(target=self.submit_form)
         submission_thread.start()
+        self.ids['connecting_animation'].start_animation()
+
+    def on_leave(self, *args):
+        print("exit LoginScreen")
+        self.ids['connecting_animation'].stop_animation()
 
     def set_parameters(self, submission_type, username, password):
         self.submission_type = submission_type
@@ -206,14 +216,29 @@ class LoadingScreen(Screen):
         print("Scheduled submit_form")
         print("Submission type: {}".format(self.submission_type))
 
-        if self.submission_type == 'BrainFM':
-            self.parent.session.generate_brain_fm_playlist(username=self.username, password=self.password)
-        elif self.submission_type == 'Spotify':
-            # TODO: Implement this function
-            self.parent.session.generate_spotify_playlist(username=self.username, password=self.password)
+        # Change login credentials if driver already exists, else create driver
+        if self.parent.session.driver:
+            print("1")
+            self.parent.session.driver.update_credentials(username=self.username, password=self.password)
+        else:
+            self.parent.session.create_driver(self.submission_type, self.username, self.password)
 
-        self.parent.session.initialize_session_intervals()
-        self.parent.current = 'SessionScreen'
+        # Check for valid credentials. If not found, return to LoginScreen
+        if self.parent.session.has_valid_credentials():
+
+            if self.submission_type == 'BrainFM':
+                self.parent.session.generate_brain_fm_playlist()
+            elif self.submission_type == 'Spotify':
+                self.parent.session.generate_spotify_playlist()
+
+            self.parent.session.initialize_session_intervals()
+            self.parent.current = 'SessionScreen'
+
+        else:
+            print("Invalid credentials given")
+            self.parent.transition.direction = 'right'
+            self.parent.current = 'LoginScreen'
+
         # Close thread
         return
 
@@ -317,15 +342,16 @@ class SpotifyPlaylistsScreen(Screen):
         box.draw_playlist_label_background()
 
     def submit_playlists(self):
-        if self.all_playlists_selected():
-            app = App.get_running_app()
-            root_screen = app.root
-            root_screen.transition_direction = 'left'
-            root_screen.previous_screen = 'SpotifyPlaylistsScreen'
-            root_screen.current = 'LoginScreen'
-        else:
-            # TODO: Add error popup
-            print("Not all playlists selected!")
+        # if self.all_playlists_selected():
+        app = App.get_running_app()
+        root_screen = app.root
+        root_screen.transition_direction = 'left'
+        root_screen.previous_screen = 'SpotifyPlaylistsScreen'
+        root_screen.current = 'LoginScreen'
+        # else:
+        #     # TODO: Add error popup
+        #     print("Not all playlists selected!")
+        pass
 
     def all_playlists_selected(self):
         for thumbnail_box in self.ids.playlist_select_container.children:

@@ -93,8 +93,8 @@ class SpotifyAuthenticator:
             ''')
             auth_url = sp_oauth.get_authorize_url()
 
-            # driver = create_headless_driver()
-            driver = webdriver.Chrome()
+            driver = create_headless_driver()
+            # driver = webdriver.Chrome()
             driver.get(auth_url)
 
             fill_credentials(driver, self.username, self.password)
@@ -102,14 +102,17 @@ class SpotifyAuthenticator:
                 submit_credentials(driver)
             except WebDriverException:
                 print("Submit credentials failed!")
+                quit()
 
             print("Opened %s in your browser" % auth_url)
 
             try:
                 WebDriverWait(driver, 10).until(url_contains("http://localhost/?code="))
                 response = driver.current_url
+                driver.close()
             except:
                 print("Never redirected to token!")
+                driver.close()
                 return None
 
             code = sp_oauth.parse_response_code(response)

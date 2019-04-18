@@ -45,6 +45,11 @@ class SpotifyPlaylist(Playlist):
         result = {'work': app.root.ids['spotify_playlist_screen'].ids['work_playlist_name'].selected_playlist_uri,
                   'rest': app.root.ids['spotify_playlist_screen'].ids['rest_playlist_name'].selected_playlist_uri,
                   'long_rest': app.root.ids['spotify_playlist_screen'].ids['long_rest_playlist_name'].selected_playlist_uri}
+        # Set default playlists if none were selected (debugging purposes)
+        if result['work'] == '':
+            result = {'work': 'spotify:user:spotify:playlist:37i9dQZF1DWWQRwui0ExPn',
+                      'rest': 'spotify:user:spotify:playlist:37i9dQZF1DX3Ogo9pFvBkY',
+                      'long_rest': 'spotify:user:1259054860:playlist:5dEIAWS7FNY5ZKMKPHSQkw'}
         return result
 
     def set_device_id(self):
