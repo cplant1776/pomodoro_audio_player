@@ -5,8 +5,11 @@ from os.path import split
 from random import shuffle
 import re
 import requests
+import sys
 import time
 import tkinter
+import win32con
+import win32gui
 
 
 # Third Party Imports
@@ -15,6 +18,10 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # Local Imports
+
+WINDOWS_OS = ['win32', 'cygwin']
+MAC_OS = ['darwin', 'os2', 'os2emx']
+LINUX_OS = ['linux', 'linux2']
 
 
 def get_playlist_song_titles(file_paths):
@@ -120,3 +127,26 @@ def clear_expired_cache():
     # If cache is more than 1 hour old, delete it
     if int(time.time()) - last_modified > 3600:
         os.remove(cache_path)
+
+
+def hide_spotify_window():
+    user_os = sys.platform
+
+    if user_os in WINDOWS_OS:
+        toplist = []
+        winlist = []
+
+        def enum_callback(window, results):
+            winlist.append((window, win32gui.GetWindowText(window)))
+
+        win32gui.EnumWindows(enum_callback, toplist)
+        spotify = [(window, title) for window, title in winlist if 'spotify' in title.lower()]
+        spotify = spotify[0]
+        win32gui.SetForegroundWindow(spotify[0])
+        win32gui.ShowWindow(spotify[0], win32con.SW_MINIMIZE)
+
+    elif user_os in MAC_OS:
+        pass
+
+    elif user_os in LINUX_OS:
+        pass

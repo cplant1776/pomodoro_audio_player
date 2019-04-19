@@ -17,7 +17,7 @@ import spotipy
 
 
 # Local Imports
-from source.functions import create_headless_driver
+from source.functions import create_headless_driver, hide_spotify_window
 from source.session.playlists.playlist import Playlist
 from source.session.playlists.spotify_playlist.spotify_authentication import SpotifyAuthenticator
 
@@ -37,6 +37,7 @@ class SpotifyPlaylist(Playlist):
         self.player = spotipy.Spotify(auth=self.playback_device.authenticator.auth_token)
         self.device_id = None
         self.uri = self.generate_uris()
+        self.uri_shuffled = {'work': False, 'rest': False, 'long_rest': False}
         self.current_mode = 'work'
 
     @staticmethod
@@ -75,7 +76,9 @@ class SpotifyPlaylist(Playlist):
         self.current_mode = style
         self.set_device_id()
         self.player.start_playback(device_id=self.device_id, context_uri=self.uri[style])
-        self.player.shuffle(True, device_id=self.device_id)
+        hide_spotify_window()
+        if not self.uri_shuffled[style]:
+            self.player.shuffle(True, device_id=self.device_id)
 
     def stop(self):
         self.pause()
@@ -85,13 +88,16 @@ class SpotifyPlaylist(Playlist):
 
     def resume(self):
         self.player.start_playback(device_id=self.device_id)
+        hide_spotify_window()
 
     def skip_track(self):
         self.player.next_track(device_id=self.device_id)
+        hide_spotify_window()
 
     def change_mode(self):
         """Swaps browser between rest/work/long rest modes"""
         self.playback_device.set_current_mode(self.current_mode)
+
 
 
 class SpotifyPlaybackDevice:
