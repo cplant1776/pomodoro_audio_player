@@ -80,47 +80,59 @@ class Session:
         self.Timer.pause()
 
     def skip_interval(self):
-        """Skip remainder of current interval and adjust the timer to reflect this"""
-        # Unschedule current end event
-        self.EventHandler.cancel_event(event_name='change_interval')
-        # Unschedule current session progression
-        self.Timer.pause()
-        # Update time remaining in session w/ remaining interval time
-        self.Timer.update_time_passed_since_start()
+        """Skip remainder of current interval and adjust the timer to reflect this, if playback is active"""
+        if self.Intervals[self.interval_loop].playback_active:
+            # Unschedule current end event
+            self.EventHandler.cancel_event(event_name='change_interval')
+            # Unschedule current session progression
+            self.Timer.pause()
+            # Update time remaining in session w/ remaining interval time
+            self.Timer.update_time_passed_since_start()
 
-        self.change_interval()
-        print("SKIP INTERVAL")
+            self.change_interval()
+            print("SKIP INTERVAL")
+        else:
+            print("skip_interval: Playback not active")
 
     def pause_interval(self):
-        """Pauses timer and interval progress"""
-        # Unschedule current end event
-        self.EventHandler.cancel_event(event_name='change_interval')
-        # Unschedule current session progression
-        self.Timer.pause()
-        # Pause current song
-        self.Intervals[self.interval_loop].pause()
+        """Pauses timer and interval progress if playback is active"""
+        if self.Intervals[self.interval_loop].playback_active:
+            # Unschedule current end event
+            self.EventHandler.cancel_event(event_name='change_interval')
+            # Unschedule current session progression
+            self.Timer.pause()
+            # Pause current song
+            self.Intervals[self.interval_loop].pause()
+        else:
+            print("pause_interval: No active playback")
 
     def resume_interval(self):
-        """Begings timer and interval progress from pause"""
-        # Start song
-        self.Intervals[self.interval_loop].resume()
+        """Begings timer and interval progress from pause if playback NOT active"""
+        if self.Intervals[self.interval_loop].playback_active:
+            print("resume_interval: Playback already active")
+        else:
+            # Start song
+            self.Intervals[self.interval_loop].resume()
 
-        # Reschedule interval transition
-        change_interval_event = Clock.schedule_once(self.change_interval, self.Timer.get_event_time_remaining())
-        print("INTERVAL TIME REMAINING: {}".format(self.Timer.get_event_time_remaining()))
-        self.EventHandler.schedule_event(event=change_interval_event, event_name='change_interval')
+            # Reschedule interval transition
+            change_interval_event = Clock.schedule_once(self.change_interval, self.Timer.get_event_time_remaining())
+            print("INTERVAL TIME REMAINING: {}".format(self.Timer.get_event_time_remaining()))
+            self.EventHandler.schedule_event(event=change_interval_event, event_name='change_interval')
 
-        # Reschedule session progress event
-        self.Timer.start()
-        print("RESUME INTERVAL")
+            # Reschedule session progress event
+            self.Timer.start()
+            print("RESUME INTERVAL")
 
     def is_final_interval(self):
         """Returns True if current intervla is the last one of the session"""
         return True if self.interval_loop == (self.num_of_work_intervals * 2 - 1) else False
 
     def skip_track(self):
-        """Skips currently playing track and does not effect timer"""
-        self.Intervals[self.interval_loop].skip_track()
+        """Skips currently playing track and does not effect timer, if playback is active"""
+        if self.Intervals[self.interval_loop].playback_active:
+            self.Intervals[self.interval_loop].skip_track()
+        else:
+            print("skip_track: No playback active")
 
     def end_session(self):
         """Resets values for session object"""

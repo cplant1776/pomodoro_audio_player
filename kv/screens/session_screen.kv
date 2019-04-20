@@ -3,8 +3,8 @@
 #===================================
 <SessionScreen>:
     on_enter:
-        app.root.session.start_next_interval()
         self.start_session_progress()
+        app.root.session.start_next_interval()
 
     BoxLayout:
         orientation: 'horizontal'
@@ -49,8 +49,8 @@
                 SessionScreenButton:
                     id: pause_button
                     on_press:
-                        app.root.session.pause_interval()
                         root.pause_session_progress()
+                        app.root.session.pause_interval()
 
                     UniversalButtonImage:
                         source: './assets/icons/pause-white.png'
@@ -59,8 +59,8 @@
                     id: resume_button
                     text: "Resume"
                     on_press:
-                        app.root.session.resume_interval()
                         root.start_session_progress()
+                        app.root.session.resume_interval()
 
                     UniversalButtonImage:
                         source: './assets/icons/play-white.png'
@@ -75,8 +75,8 @@
                 SessionScreenButton:
                     id: skip_interval_button
                     on_press:
-                        app.root.session.skip_interval()
                         root.schedule_skip_interval_progress()
+                        app.root.session.skip_interval()
 
                     UniversalButtonImage:
                         source: './assets/icons/skip-white.png'

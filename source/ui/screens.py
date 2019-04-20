@@ -260,13 +260,18 @@ class SessionScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.progress_value_event = None
+        self.app = App.get_running_app()
 
     def start_session_progress(self):
-        # Set max progress to total time of session
-        self.progress_max = self.parent.session.get_session_total_time()
-        # Increment progress value every 1 sec
-        self.progress_value_event = Clock.schedule_interval(self.update_session_progress, 1)
-        print("PROGRESS MAX: {}".format(self.progress_max))
+        session = self.parent.session
+        if session.Intervals[session.interval_loop].playback_active:
+            print("state_session_progress: playback already active")
+        else:
+            # Set max progress to total time of session
+            self.progress_max = self.parent.session.get_session_total_time()
+            # Increment progress value every 1 sec
+            self.progress_value_event = Clock.schedule_interval(self.update_session_progress, 1)
+            print("PROGRESS MAX: {}".format(self.progress_max))
 
     def update_session_progress(self, *args):
         self.progress_value += 1
@@ -274,11 +279,15 @@ class SessionScreen(Screen):
             datetime.timedelta(seconds=self.parent.session.Timer.get_event_time_remaining()))
 
     def pause_session_progress(self):
-        # Stop counting
-        self.progress_value_event.cancel()
+        session = self.parent.session
+        if session.Intervals[session.interval_loop].playback_active:
+            # Stop counting
+            self.progress_value_event.cancel()
+        else:
+            print("pause_session_progress: no playback active")
 
     def schedule_skip_interval_progress(self):
-        Clock.schedule_once(self.skip_interval_progress, 0.5)
+            Clock.schedule_once(self.skip_interval_progress, 0.5)
 
     def skip_interval_progress(self, *args):
         # Update progress bar for skipped interval
