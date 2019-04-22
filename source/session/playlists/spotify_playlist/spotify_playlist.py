@@ -57,19 +57,21 @@ class SpotifyPlaylist(Playlist):
         os_name = socket.gethostname()
         devices = self.player.devices()
 
-        # Return device ID of spotify client on same PC
+        # Return device ID of open spotify client on same PC
         for device in devices['devices']:
             if device['name'] == os_name:
                 self.device_id = device['id']
                 return
 
-        # If client not found, try to open it
+        # If device not found, try to find it locally
         if self.playback_device.attempt_to_open_client_failed():
-            # TODO: Implement this function
+            # Finally, prompt user for location
             self.prompt_user_for_spotify_location()
 
-    def prompt_user_for_spotify_location(self):
-        pass
+    @staticmethod
+    def prompt_user_for_spotify_location():
+        app = App.get_running_app()
+        app.root.ids['session_screen'].pop_file_browser()
 
     def start(self, style=""):
         print("style: {} - {}".format(style, self.uri[style]))
@@ -99,45 +101,19 @@ class SpotifyPlaylist(Playlist):
         self.playback_device.set_current_mode(self.current_mode)
 
 
-
 class SpotifyPlaybackDevice:
-    # Spotify playabck device controlled via the Spotify Connect API (spotify_playback_device.html)
+    # Spotify playabck device controlled via the Spotify Connect API
 
     def __init__(self, username='', password=''):
         # Get auth token from Spotify Authorization API
         self.authenticator = SpotifyAuthenticator(username, password)
         # Launch playlist device in headless browser from generated html file
 
-
     def has_valid_credentials(self):
         if self.authenticator.generate_authentication_token():
             return True
         else:
             return False
-
-    def open_playback_device(self):
-        # Edit html file to include generated authentication code
-        self.generate_device_html()
-        html_file = getcwd() + "//" + PLAYBACK_DEVICE_FILE
-        self.device.get("file:///" + html_file)
-
-    def generate_device_html(self):
-        pattern = "(const token = ')(.*)(';)"
-        temp_file = os.path.join(ROOT, 'tmp.html')
-
-        # Copy line by line to temporary files
-        with open(temp_file, "w+") as out:
-            for line in open(PLAYBACK_DEVICE_FILE, 'r'):
-                search_result = re.search(pattern, line)
-                # If it's the line setting the auth code
-                if search_result:
-                    old_code = search_result.group(2)
-                    out.write(line.replace(old_code, self.authenticator.auth_token))
-                else:
-                    out.write(line)
-        # Replace old file
-        remove(PLAYBACK_DEVICE_FILE)
-        move(temp_file, PLAYBACK_DEVICE_FILE)
 
     def update_credentials(self, username='', password=''):
         self.authenticator.update_credentials(username=username, password=password)
@@ -152,7 +128,7 @@ class SpotifyPlaybackDevice:
             except FileNotFoundError:
                 pass
 
-        # Try default install locations
+        # Fall back to default install locations
         user_home = str(Path.home())
         default_locations = [
             os.path.join(user_home, 'AppData', 'Local', 'Microsoft', 'WindowsApps', 'Spotify.exe'),  # Window default

@@ -141,7 +141,10 @@ def hide_spotify_window():
 
         win32gui.EnumWindows(enum_callback, toplist)
         spotify = [(window, title) for window, title in winlist if 'spotify' in title.lower()]
-        spotify = spotify[0]
+        try:
+            spotify = spotify[0]
+        except IndexError:
+            return
         win32gui.SetForegroundWindow(spotify[0])
         win32gui.ShowWindow(spotify[0], win32con.SW_MINIMIZE)
 
