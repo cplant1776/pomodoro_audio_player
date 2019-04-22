@@ -85,6 +85,12 @@ class UniversalHelpPopup(ModalView):
             self.opacity += 1/15
 
 
+class UniversalErrorPopup(ModalView):
+    def __init__(self, display_text, **kwargs):
+        super(ModalView, self).__init__(**kwargs)
+        self.ids.error_label.text = display_text
+
+
 class StartScreenRow(BoxLayout):
     out_value = NumericProperty(0)
     initial_value = NumericProperty(0)

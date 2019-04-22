@@ -52,3 +52,38 @@
 
                 Widget:
                         size_hint: 1, 0.025
+
+<UniversalErrorPopup>:
+        id: help_popup
+        size_hint: 0.5, 0.3
+        pos_hint: {'top': 0.6}
+        auto_dismiss: False
+        display_text: ''
+
+        BoxLayout:
+                id: content_container
+                orientation: 'vertical'
+
+                Widget:
+                        size_hint: 1, 0.05
+
+                TextInput:
+                        id: error_label
+                        background_color: (0,0,0,0)
+                        foreground_color: (1,1,1,1)
+                        size_hint: 0.8, 0.75
+                        pos_hint: {'center_x': 0.5}
+                        text_size: self.width, None
+                        use_bubble: True
+                        readonly: True
+
+                Button:
+                        id: close_button
+                        text: "Close"
+                        border: 25, 25, 25, 25
+                        size_hint: 0.2, 0.1
+                        pos_hint: {"center_x": 0.5, "center_y": 0.9}
+                        on_press: root.dismiss()
+
+                Widget:
+                        size_hint: 1, 0.15

@@ -16,7 +16,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from source.functions import extract_file_paths, get_playlist_song_titles
 from source.session.playlists.brain_fm_playlist import BrainFMBrowser, BrainFMPlaylist
 from source.session.session import Session
-from source.ui.ui_elements import FailedSubmissionPopup, UniversalHelpPopup, SearchResultsThumbnail
+from source.ui.ui_elements import FailedSubmissionPopup, UniversalErrorPopup, UniversalHelpPopup, SearchResultsThumbnail
 
 # ====================================
 # CONSTANTS
@@ -24,6 +24,7 @@ from source.ui.ui_elements import FailedSubmissionPopup, UniversalHelpPopup, Sea
 TIME_MULTIPLIER = {'SECONDS': 1, 'MINUTES': 60, 'HOURS': 3600}
 PUBLIC_SPOTIFY_CLIENT_ID = 'fda8d241ac5f41d18df47391d853accb'
 PUBLIC_SPOTIFY_CLIENT_SECRET = '3c30c5317e5a4b9398f599a26e9ac428'
+PLAYLIST_EXTENSIONS = ['m3u', 'm3u8', 'pls']
 
 # ====================================
 # PARAMETERS
@@ -128,36 +129,41 @@ class LocalFilesScreen(Screen):
                             size_hint=(0.75, 0.75))
         self._popup.open()
 
+    def show_error(self, error_text):
+        self._popup = UniversalErrorPopup(error_text)
+        self._popup.open()
+
     def load(self, path, filename):
-        # Generate list of format [song1, song1 directory, song2, song2 directory,... songN, songN directory]
-        new_playlist_file_paths = extract_file_paths(path, filename)
-        # Get current_playlist type (work/rest/long_rest)
-        playlist_type = str(self.parent.session.current_type).lower()
+        # Check for valid file extension
+        playlist_file = filename[0]
+        if not playlist_file.endswith(tuple(PLAYLIST_EXTENSIONS)):
+            self.dismiss_popup()
+            self.show_error(error_text="Unsupported filetype selected. Please select a M3U, M3U8, or PLS file.")
+            return
+        else:
+            # Generate list of format [song1, song1 directory, song2, song2 directory,... songN, songN directory]
+            new_playlist_file_paths = extract_file_paths(path, filename)
+            # Get current_playlist type (work/rest/long_rest)
+            playlist_type = str(self.parent.session.current_type).lower()
 
-        self.saved_directory = path
+            self.saved_directory = path
 
+            self.generate_local_playlist(playlist_type=playlist_type, file_paths=new_playlist_file_paths)
+            self.update_display_text(playlist_type=playlist_type, file_paths=new_playlist_file_paths)
+
+            # Close the window
+            self.dismiss_popup()
+
+    def generate_local_playlist(self, file_paths, playlist_type):
+        self.parent.session.generate_local_playlist_object(file_paths=file_paths, playlist_type=playlist_type)
+
+    def update_display_text(self, playlist_type, file_paths):
         if playlist_type == 'work':
-            # Generate playlist
-            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
-                                                               playlist_type='work')
-            # Update label text on screen to show songs in playlist
-            self.ids['lf_work'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
-
+            self.ids['lf_work'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=file_paths)
         elif playlist_type == 'rest':
-            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
-                                                               playlist_type='rest')
-            self.ids['lf_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
-
+            self.ids['lf_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=file_paths)
         elif playlist_type == 'long rest':
-            self.parent.session.generate_local_playlist_object(file_paths=new_playlist_file_paths,
-                                                               playlist_type='long_rest')
-            self.ids['lf_long_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=new_playlist_file_paths)
-
-        # Close the window
-        self.dismiss_popup()
-
-    def update_playlist_label(self):
-        pass
+            self.ids['lf_long_rest'].ids['scrollable_label'].text = get_playlist_song_titles(file_paths=file_paths)
 
 
 class SourceScreen(Screen):
@@ -337,7 +343,7 @@ class SpotifyPlaylistsScreen(Screen):
     def load(self, playlist_type, playlist_info):
         box_id_selector = {'work': 'work_playlist_name',
                            'rest': 'rest_playlist_name',
-                           'long rest': 'long_rest_playlist_name'}
+                           'long_rest': 'long_rest_playlist_name'}
         box_id = box_id_selector[playlist_type.lower()]
         self.update_box_info(self.ids[box_id], playlist_info)
 
