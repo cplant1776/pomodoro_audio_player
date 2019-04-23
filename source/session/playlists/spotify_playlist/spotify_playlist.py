@@ -8,6 +8,7 @@ from shutil import move
 from shutil import which
 import socket
 import subprocess
+from threading import Thread
 
 # Third Party Imports
 from kivy.app import App
@@ -17,7 +18,7 @@ import spotipy
 
 
 # Local Imports
-from source.functions import create_headless_driver, hide_spotify_window
+from source.functions import create_headless_driver, create_hide_spotify_window_thread
 from source.session.playlists.playlist import Playlist
 from source.session.playlists.spotify_playlist.spotify_authentication import SpotifyAuthenticator
 
@@ -59,7 +60,7 @@ class SpotifyPlaylist(Playlist):
 
         # Return device ID of open spotify client on same PC
         for device in devices['devices']:
-            if device['name'] == os_name:
+            if device['name'].lower() == os_name.lower():
                 self.device_id = device['id']
                 return
 
@@ -78,7 +79,7 @@ class SpotifyPlaylist(Playlist):
         self.current_mode = style
         self.set_device_id()
         self.player.start_playback(device_id=self.device_id, context_uri=self.uri[style])
-        hide_spotify_window()
+        create_hide_spotify_window_thread()
         if not self.uri_shuffled[style]:
             self.player.shuffle(True, device_id=self.device_id)
 
@@ -90,11 +91,11 @@ class SpotifyPlaylist(Playlist):
 
     def resume(self):
         self.player.start_playback(device_id=self.device_id)
-        hide_spotify_window()
+        create_hide_spotify_window_thread()
 
     def skip_track(self):
         self.player.next_track(device_id=self.device_id)
-        hide_spotify_window()
+        create_hide_spotify_window_thread()
 
     def change_mode(self):
         """Swaps browser between rest/work/long rest modes"""

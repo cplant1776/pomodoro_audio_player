@@ -6,6 +6,7 @@ from random import shuffle
 import re
 import requests
 import sys
+from threading import Thread
 import time
 import tkinter
 import win32con
@@ -13,6 +14,7 @@ import win32gui
 
 
 # Third Party Imports
+from kivy.app import App
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -129,27 +131,62 @@ def clear_expired_cache():
         os.remove(cache_path)
 
 
+def create_hide_spotify_window_thread():
+    t = Thread(target=hide_spotify_window)
+    print("Schedule hide spotify thread")
+    t.start()
+
+
 def hide_spotify_window():
     user_os = sys.platform
+    print("hide spotify window")
 
     if user_os in WINDOWS_OS:
-        toplist = []
-        winlist = []
 
-        def enum_callback(window, results):
-            winlist.append((window, win32gui.GetWindowText(window)))
+        for n in range(10):
+            time.sleep(0.15)
+            print("hide attempt {}".format(n))
+            attempt_succesful = search_for_spotify_window()[1]
+            if attempt_succesful:
+                break
+            else:
+                pass
 
-        win32gui.EnumWindows(enum_callback, toplist)
-        spotify = [(window, title) for window, title in winlist if 'spotify' in title.lower()]
-        try:
-            spotify = spotify[0]
-        except IndexError:
-            return
-        win32gui.SetForegroundWindow(spotify[0])
-        win32gui.ShowWindow(spotify[0], win32con.SW_MINIMIZE)
+        spotify_window = search_for_spotify_window()[0][0]
+        win32gui.SetForegroundWindow(spotify_window)
+        win32gui.ShowWindow(spotify_window, win32con.SW_MINIMIZE)
 
     elif user_os in MAC_OS:
         pass
 
     elif user_os in LINUX_OS:
         pass
+
+
+def search_for_spotify_window():
+    toplist = []
+    winlist = []
+    session = App.get_running_app().root.session
+
+    def enum_callback(window, results):
+        winlist.append((window, win32gui.GetWindowText(window)))
+
+    def get_spotify_artist_name():
+        playback_info = session.Intervals[session.interval_loop].playlist.player.current_playback()
+        return playback_info['item']['artists'][0]['name']
+
+    time.sleep(0.1)
+    win32gui.EnumWindows(enum_callback, toplist)
+
+    artist_name = get_spotify_artist_name()
+
+    try:
+        while artist_name != get_spotify_artist_name():
+            artist_name = get_spotify_artist_name()
+        spotify = [(window, title) for window, title in winlist if artist_name.lower() in title.lower()]
+        spotify = spotify[0]
+        print("IndexError spotify = {}".format(spotify))
+        return spotify, True
+
+    except IndexError:
+        return None, False
