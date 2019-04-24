@@ -68,6 +68,8 @@ class SpotifyPlaylist(Playlist):
         if self.playback_device.attempt_to_open_client_failed():
             # Finally, prompt user for location
             self.prompt_user_for_spotify_location()
+        else:
+            self.set_device_id()
 
     @staticmethod
     def prompt_user_for_spotify_location():

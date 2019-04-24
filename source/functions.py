@@ -155,6 +155,7 @@ def hide_spotify_window():
         spotify_window = search_for_spotify_window()[0][0]
         win32gui.SetForegroundWindow(spotify_window)
         win32gui.ShowWindow(spotify_window, win32con.SW_MINIMIZE)
+        focus_app_window()
 
     elif user_os in MAC_OS:
         pass
@@ -175,18 +176,52 @@ def search_for_spotify_window():
         playback_info = session.Intervals[session.interval_loop].playlist.player.current_playback()
         return playback_info['item']['artists'][0]['name']
 
-    time.sleep(0.1)
     win32gui.EnumWindows(enum_callback, toplist)
 
-    artist_name = get_spotify_artist_name()
-
     try:
-        while artist_name != get_spotify_artist_name():
-            artist_name = get_spotify_artist_name()
-        spotify = [(window, title) for window, title in winlist if artist_name.lower() in title.lower()]
+        spotify = [(window, title) for window, title in winlist if 'spotify' in title.lower()]
         spotify = spotify[0]
-        print("IndexError spotify = {}".format(spotify))
+        print("spotify = {}".format(spotify))
         return spotify, True
 
     except IndexError:
-        return None, False
+        artist_name = None
+
+        try:
+            while artist_name != get_spotify_artist_name():
+                artist_name = get_spotify_artist_name()
+            spotify = [(window, title) for window, title in winlist if artist_name.lower() in title.lower()]
+            spotify = spotify[0]
+            print("IndexError spotify = {}".format(spotify))
+            return spotify, True
+
+        except IndexError or TypeError:
+            return None, False
+
+
+def focus_app_window():
+    app_window = search_for_app_window()
+    if app_window:
+        win32gui.SetForegroundWindow(app_window)
+    else:
+        print("App window not found.")
+    # win32gui.ShowWindow(app_window, win32con.SW_MINIMIZE)
+
+
+def search_for_app_window():
+    toplist = []
+    winlist = []
+
+    def enum_callback(window, results):
+        winlist.append((window, win32gui.GetWindowText(window)))
+
+    win32gui.EnumWindows(enum_callback, toplist)
+    app_window = [(window, title) for window, title in winlist if title.lower() == 'pomodoro']
+
+    try:
+        app_window = app_window[0][0]
+    except IndexError or TypeError:
+        return None
+
+    print("app window = {}".format(app_window))
+    return app_window
