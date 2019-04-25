@@ -48,6 +48,7 @@
 
                 SessionScreenButton:
                     id: pause_button
+                    text: ''
                     on_press:
                         root.pause_session_progress()
                         app.root.session.pause_interval()
@@ -57,7 +58,6 @@
 
                 SessionScreenButton:
                     id: resume_button
-                    text: "Resume"
                     on_press:
                         root.start_session_progress()
                         app.root.session.resume_interval()

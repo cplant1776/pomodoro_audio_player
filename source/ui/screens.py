@@ -281,8 +281,11 @@ class SessionScreen(Screen):
 
     def update_session_progress(self, *args):
         self.progress_value += 1
-        self.ids.interval_time_remaining.text = str(
-            datetime.timedelta(seconds=self.parent.session.Timer.get_event_time_remaining()))
+        try:
+            self.ids.interval_time_remaining.text = str(
+                datetime.timedelta(seconds=self.parent.session.Timer.get_event_time_remaining()))
+        except AttributeError:
+            pass
 
     def pause_session_progress(self):
         session = self.parent.session
@@ -322,6 +325,36 @@ class SessionScreen(Screen):
         self.progress_max = 0
         self.progress_value = 100
 
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def pop_file_browser(self):
+        content = BrowseFilesScreen(load=self.load)
+        # Popup a file browser to select current_playlist
+        self._popup = Popup(title="Load file", content=content,
+                            size_hint=(0.75, 0.75))
+        self._popup.open()
+
+    def show_error(self, error_text):
+        self._popup = UniversalErrorPopup(error_text)
+        self._popup.open()
+
+    def load(self, path, filename):
+        if "spotify" in filename:
+            session = self.parent.session
+            session.Intervals[session.interval_loop].playlist.set_device_id()
+        else:
+            self.dismiss_popup()
+            self.show_error(error_text="Not a valid location. Now ending session. Please wait a moment . . .")
+            Clock.schedule_once(self.return_to_start_screen(), 5)
+
+    def return_to_start_screen(self):
+        session = self.parent.session
+        session.end_interval()
+        session.end_session()
+        app = App.get_running_app()
+        app.root.current = 'StartScreen'
+
 
 class SessionOverScreen(Screen):
     pass
@@ -343,7 +376,7 @@ class SpotifyPlaylistsScreen(Screen):
     def load(self, playlist_type, playlist_info):
         box_id_selector = {'work': 'work_playlist_name',
                            'rest': 'rest_playlist_name',
-                           'long_rest': 'long_rest_playlist_name'}
+                           'long rest': 'long_rest_playlist_name'}
         box_id = box_id_selector[playlist_type.lower()]
         self.update_box_info(self.ids[box_id], playlist_info)
 

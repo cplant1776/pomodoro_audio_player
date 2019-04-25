@@ -1,0 +1,100 @@
+#===================================
+# TESTER SCREEN
+#===================================
+<TesterScreen>:
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        BoxLayout:
+            size_hint: 0.2, 1
+            padding: "15dp"
+
+            UniversalBackButton:
+                id: back_button
+
+        BoxLayout:
+            id: content_container
+            orientation: 'vertical'
+
+            Label:
+                id: interval_time_remaining
+                text: '00:00:00'
+                font_size: "200dp"
+                size_hint: 1, 0.3
+
+            SessionScreenProgressBar:
+                id: progress_bar
+                size_hint: 0.8, 0.05
+                max: 100
+                value: 50
+
+            BoxLayout:
+                id: playback_info_box
+                orientation: 'horizontal'
+                size_hint: 1, 0.3
+                spacing: "20dp"
+
+                Widget:
+                    size_hint: 0.4, 1
+
+                Image:
+                    source: './assets/images/coming_soon.png'
+                    allow_stretch: True
+
+                Label:
+                    markup: True
+                    text: '[b]{}[/b]\n\n{}\n{}'.format("Artist Name", "Album Title", "Song Title")
+                    halign: 'left'
+                    valign:'middle'
+                    text_size: self.size
+                    font_size: "20dp"
+
+            BoxLayout:
+                id: button_box
+                size_hint: 1, 0.1
+                spacing: "20dp"
+                padding: "20dp"
+                orientation: 'horizontal'
+
+                SessionScreenButton:
+                    id: pause_button
+
+                    UniversalButtonImage:
+                        source: './assets/icons/pause-white.png'
+
+                SessionScreenButton:
+                    id: resume_button
+
+                    UniversalButtonImage:
+                        source: './assets/icons/play-white.png'
+
+                SessionScreenButton:
+                    id: skip_track_button
+
+                    UniversalButtonImage:
+                        source: './assets/icons/fast-forward-white.png'
+
+                SessionScreenButton:
+                    id: skip_interval_button
+
+                    UniversalButtonImage:
+                        source: './assets/icons/skip-white.png'
+        Widget:
+            size_hint: 0.2, 1
+
+
+<SessionScreenProgressBar>:
+    pos_hint: {'center_x': 0.5}
+    max: 100
+    value: 0
+
+<SessionScreenButton>:
+    pos_hint_x: 0.25
+
+#        canvas.before:
+#            Color:
+#                rgba: 1,0,0,1
+#            Rectangle:
+#                pos: self.pos
+#                size: self.size
