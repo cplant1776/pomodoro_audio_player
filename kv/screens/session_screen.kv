@@ -1,5 +1,5 @@
 #===================================
-# SESSION SCREEN
+# TESTER SCREEN
 #===================================
 <SessionScreen>:
     on_enter:
@@ -28,27 +28,44 @@
                 id: interval_time_remaining
                 text: '00:00:00'
                 font_size: "200dp"
-                pos_hint: 1, 0.5
-                pos_hint: {"top": 1}
+                size_hint: 1, 0.3
 
             SessionScreenProgressBar:
                 id: progress_bar
-                size_hint: 0.8, None
-                height: "20dp"
+                size_hint: 0.8, 0.05
                 max: root.progress_max
                 value: root.progress_value
 
+            BoxLayout:
+                id: playback_info_box
+                orientation: 'horizontal'
+                size_hint: 1, 0.3
+                spacing: "20dp"
+
+                Widget:
+                    size_hint: 0.4, 1
+
+                Image:
+                    source: root.playback_image
+                    allow_stretch: True
+
+                Label:
+                    markup: True
+                    text: '[b]{}[/b]\n\n{}\n{}'.format(root.playback_artist, root.playback_album, root.playback_title)
+                    halign: 'left'
+                    valign:'middle'
+                    text_size: self.size
+                    font_size: "20dp"
 
             BoxLayout:
                 id: button_box
-                pos_hint_y: 0.4
-                padding: "100dp"
+                size_hint: 1, 0.1
                 spacing: "20dp"
+                padding: "20dp"
                 orientation: 'horizontal'
 
                 SessionScreenButton:
                     id: pause_button
-                    text: ''
                     on_press:
                         root.pause_session_progress()
                         app.root.session.pause_interval()

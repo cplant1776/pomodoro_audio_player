@@ -263,6 +263,11 @@ class SessionScreen(Screen):
     progress_max = NumericProperty(0)
     progress_value = NumericProperty(100)
 
+    playback_image = StringProperty('./assets/images/coming_soon.png')
+    playback_artist = StringProperty('Initial Artist')
+    playback_album = StringProperty('Initial Album')
+    playback_title = StringProperty('Initial Title')
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.progress_value_event = None
