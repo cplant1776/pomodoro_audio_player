@@ -1,5 +1,6 @@
 # Standard Library Imports
 import mutagen
+from mutagen.easyid3 import EasyID3KeyError
 import os
 from os.path import split
 from random import shuffle
@@ -225,3 +226,45 @@ def search_for_app_window():
 
     print("app window = {}".format(app_window))
     return app_window
+
+
+def update_current_playback_info(data={}):
+    screen = App.get_running_app().root.ids['session_screen']
+
+    # Determine if local or spotify
+    if data['playlist_type'] == 'local':
+        playback = mutagen.File(data['path'], easy=True)
+    else:
+        playback = data
+
+    # Update artist name
+    try:
+        screen.playback_artist = playback['artist'][0]
+    except EasyID3KeyError or KeyError:
+        screen.playback_artist = 'Unknown Artist'
+        print('Artists not found!')
+
+    try:
+        screen.playback_artist = playback['albumartist'][0]
+    except EasyID3KeyError or KeyError:
+        screen.playback_artist = 'Unknown Artist'
+        print('Album Artist not found!')
+
+    # Update album name
+    try:
+        screen.playback_album = playback['album'][0]
+    except EasyID3KeyError or KeyError:
+        screen.playback_album = 'Unknown Album'
+        print('Album name not found!')
+
+    # Update song name
+    try:
+        screen.playback_title = playback['title'][0]
+    except EasyID3KeyError or KeyError:
+        screen.playback_album = 'Unknown Title'
+        print('Title not found!')
+
+
+
+
+# {'album': ['City of Heroes Soundtrack'], 'title': ['Imperial City'], 'artist': ['Contributing Guy'], 'albumartist': ['Album Guy']}
