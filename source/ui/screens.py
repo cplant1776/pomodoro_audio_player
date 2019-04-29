@@ -263,7 +263,7 @@ class SessionScreen(Screen):
     progress_max = NumericProperty(0)
     progress_value = NumericProperty(100)
 
-    playback_image = StringProperty('./assets/images/coming_soon.png')
+    playback_artwork = StringProperty('./assets/images/coming_soon.png')
     playback_artist = StringProperty('Initial Artist')
     playback_album = StringProperty('Initial Album')
     playback_title = StringProperty('Initial Title')

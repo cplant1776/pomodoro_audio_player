@@ -1,7 +1,7 @@
 # Standard Library Imports
 import os
 from os.path import split
-from random import shuffle
+from random import shuffle, randint
 import re
 import requests
 import sys
@@ -14,11 +14,11 @@ import win32gui
 
 # Third Party Imports
 from kivy.app import App
+from mutagen import File
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import stagger
-from stagger.id3 import *       # contains ID3 frame types
 
 
 # Local Imports
@@ -243,7 +243,12 @@ def update_current_playback_info_local(file_path=''):
     if tag.title:
         data['title'] = tag.title
     if tag.picture:
-        data['img_path'] = tag.picture
+        file = File(file_path)
+        artwork = file.tags['APIC:'].data
+        temp_file = 'tmp/{}.jpg'.format(randint(9999, 9999999))
+        with open(temp_file, 'wb') as img:
+            img.write(artwork)
+        data['artwork'] = temp_file
 
     update_current_playback_info(data)
 
@@ -272,7 +277,8 @@ def update_current_playback_info(data={}):
         screen.playback_title = 'Unknown Title'
         print('Title not found!')
 
-
-
-
-# {'album': ['City of Heroes Soundtrack'], 'title': ['Imperial City'], 'artist': ['Contributing Guy'], 'albumartist': ['Album Guy']}
+    try:
+        screen.playback_artwork = data['artwork']
+    except KeyError:
+        screen.playback_artwork = './assets/images/coming_soon.png'
+        print("Artwork not found!")
