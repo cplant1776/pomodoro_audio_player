@@ -1,6 +1,4 @@
 # Standard Library Imports
-import mutagen
-from mutagen.easyid3 import EasyID3KeyError
 import os
 from os.path import split
 from random import shuffle
@@ -19,6 +17,9 @@ from kivy.app import App
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+import stagger
+from stagger.id3 import *       # contains ID3 frame types
+
 
 # Local Imports
 
@@ -29,14 +30,14 @@ LINUX_OS = ['linux', 'linux2']
 
 def get_playlist_song_titles(file_paths):
     result = []
-    for p in file_paths:
-        file = mutagen.File(p, easy=True)
-        if 'title' in file:
+    for path in file_paths:
+        tag = stagger.read_tag(path)
+        if tag.title:
             # Append title if exists
-            result.append(file['title'][0])
+            result.append(tag.title)
         else:
             # Append filename
-            head, tail = split(p)
+            head, tail = split(path)
             result.append(tail)
     result = '\n'.join(result)
     return result
@@ -228,40 +229,47 @@ def search_for_app_window():
     return app_window
 
 
+def update_current_playback_info_local(file_path=''):
+    data = {}
+    tag = stagger.read_tag(file_path)
+
+    if tag.album_artist:
+        data['artist'] = tag.album_artist
+    elif tag.artist:
+        data['artist'] = tag.artist
+
+    if tag.album:
+        data['album'] = tag.album
+    if tag.title:
+        data['title'] = tag.title
+    if tag.picture:
+        data['img_path'] = tag.picture
+
+    update_current_playback_info(data)
+
+
 def update_current_playback_info(data={}):
     screen = App.get_running_app().root.ids['session_screen']
 
-    # Determine if local or spotify
-    if data['playlist_type'] == 'local':
-        playback = mutagen.File(data['path'], easy=True)
-    else:
-        playback = data
-
     # Update artist name
     try:
-        screen.playback_artist = playback['artist'][0]
-    except EasyID3KeyError or KeyError:
+        screen.playback_artist = data['artist']
+    except KeyError:
         screen.playback_artist = 'Unknown Artist'
         print('Artists not found!')
 
-    try:
-        screen.playback_artist = playback['albumartist'][0]
-    except EasyID3KeyError or KeyError:
-        screen.playback_artist = 'Unknown Artist'
-        print('Album Artist not found!')
-
     # Update album name
     try:
-        screen.playback_album = playback['album'][0]
-    except EasyID3KeyError or KeyError:
+        screen.playback_album = data['album']
+    except KeyError:
         screen.playback_album = 'Unknown Album'
         print('Album name not found!')
 
     # Update song name
     try:
-        screen.playback_title = playback['title'][0]
-    except EasyID3KeyError or KeyError:
-        screen.playback_album = 'Unknown Title'
+        screen.playback_title = data['title']
+    except KeyError:
+        screen.playback_title = 'Unknown Title'
         print('Title not found!')
 
 

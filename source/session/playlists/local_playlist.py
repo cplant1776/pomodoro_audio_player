@@ -7,7 +7,7 @@ from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 
 # Local Imports
-from source.functions import update_current_playback_info
+from source.functions import update_current_playback_info_local
 from source.session.eventhandler import EventHandler
 from source.session.playlists.playlist import Playlist
 from source.session.timer import Timer
@@ -73,7 +73,8 @@ class LocalPlaylist(Playlist):
 
     def next_song_sequence(self):
         self.update_current_index()
-        update_current_playback_info({'playlist_type': 'local', 'path': self.tracks[self.current_index].path})
+        print(self.tracks[self.current_index].path[0])
+        update_current_playback_info_local(file_path=self.tracks[self.current_index].path)
         self.play_next_track()
 
         # Update Timer with new info
