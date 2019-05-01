@@ -133,7 +133,7 @@ def clear_expired_cache():
         os.remove(cache_path)
 
 
-def create_hide_spotify_window_thread():
+def hide_spotify_window_thread():
     t = Thread(target=hide_spotify_window)
     print("Schedule hide spotify thread")
     t.start()
@@ -251,6 +251,10 @@ def update_current_playback_info_local(file_path=''):
         data['artwork'] = temp_file
 
     update_current_playback_info(data)
+
+
+def update_current_playback_info_spotify():
+    print("="*50 + "Updated" + "="*50)
 
 
 def update_current_playback_info(data={}):
