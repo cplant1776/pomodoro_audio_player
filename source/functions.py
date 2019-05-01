@@ -253,8 +253,40 @@ def update_current_playback_info_local(file_path=''):
     update_current_playback_info(data)
 
 
-def update_current_playback_info_spotify():
-    print("="*50 + "Updated" + "="*50)
+def update_current_playback_info_spotify(res=None):
+    data = {}
+
+    try:
+        data['artist'] = res['item']['album']['artists'][0]['name']
+    except KeyError:
+        print("spotify api - No artist name found!")
+
+    try:
+        data['album'] = res['item']['album']['name']
+    except KeyError:
+        print("spotify api - No album name found!")
+
+    try:
+        data['title'] = res['item']['name']
+    except KeyError:
+        print("spotify api - No song title found!")
+
+    try:  # Try for smaller image first
+        album_art_url = res['item']['album']['images'][1]['url']
+    except IndexError:
+
+        try:  # Fallback to larger image
+            album_art_url = res['item']['album']['images'][0]['url']
+        except IndexError:
+            print("spotify api - No album art found!")
+
+    if album_art_url:
+        destination_path = get_temp_file_path(album_art_url)
+        download_temporary_image(album_art_url, destination_path)
+        data['artwork'] = destination_path
+
+
+    update_current_playback_info(data)
 
 
 def update_current_playback_info(data={}):

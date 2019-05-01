@@ -17,12 +17,10 @@ from selenium import webdriver
 from spotipy import util
 import spotipy
 
-
 # Local Imports
 from source.functions import create_headless_driver, hide_spotify_window_thread, update_current_playback_info_spotify
 from source.session.playlists.playlist import Playlist
 from source.session.playlists.spotify_playlist.spotify_authentication import SpotifyAuthenticator
-
 
 # =========================
 # CONSTANTS
@@ -33,6 +31,7 @@ PLAYBACK_DEVICE_FILE = os.path.join(ROOT, 'spotify_playback_device.html')
 
 class SpotifyPlaylist(Playlist):
     """Container for SpotifyBrowser"""
+
     def __init__(self, playback_device):
         super().__init__()
         self.playback_device = playback_device
@@ -102,13 +101,12 @@ class SpotifyPlaylist(Playlist):
 
     def poll_for_changed_track(self, *args):
         current_track_uri = self.get_current_track_name()
-        print("old track: {}".format(self.current_track_uri))
-        print("new track: {}".format(current_track_uri))
+
         if current_track_uri == self.current_track_uri:
             pass
         else:
             self.current_track_uri = current_track_uri
-            update_current_playback_info_spotify()
+            update_current_playback_info_spotify(res=self.player.current_playback())
 
 
 class SpotifyPlaybackDevice:
@@ -184,7 +182,7 @@ def prompt_user_for_spotify_location():
 """
     Deprecated - web-based playback devices proved too unstable when combined with Selenium.
     Therefore, now using the Spotify Client on the local pc as the playback device.
-    
+
 class SpotifyPlaybackDevice:
     # Spotify playabck device controlled via the Spotify Connect API (spotify_playback_device.html)
 
