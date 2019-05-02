@@ -109,7 +109,7 @@ class LocalPlaylist(Playlist):
             self.current_index += 1
 
     def no_more_tracks(self):
-        return True if self.current_index == len(self.tracks) else False
+        return True if self.current_index == len(self.tracks)-1 else False
 
     def restart_playlist(self):
         self.current_index = 0

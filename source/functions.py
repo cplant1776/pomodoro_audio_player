@@ -285,7 +285,6 @@ def update_current_playback_info_spotify(res=None):
         download_temporary_image(album_art_url, destination_path)
         data['artwork'] = destination_path
 
-
     update_current_playback_info(data)
 
 
@@ -316,5 +315,13 @@ def update_current_playback_info(data={}):
     try:
         screen.playback_artwork = data['artwork']
     except KeyError:
-        screen.playback_artwork = './assets/images/coming_soon.png'
+        session = App.get_running_app().root.session
+        current_playlist_type = App.get_running_app().root.session.Intervals[session.interval_loop].style
+
+        artwork_file = {'work': 'focus-placeholder.jpg',
+                        'rest': 'rest-placeholder.jpg',
+                        'long_rest': 'long-rest-placeholder.jpg'}
+
+        artwork_path = os.path.join('.', 'assets', 'images', 'album_artwork', artwork_file[current_playlist_type])
+        screen.playback_artwork = artwork_path
         print("Artwork not found!")
