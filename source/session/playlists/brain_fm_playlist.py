@@ -5,7 +5,7 @@ from time import sleep
 
 # Third Party Imports
 from selenium import webdriver
-from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, TimeoutException
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, ElementNotVisibleException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,7 +13,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 # Local Imports
-from source.functions import create_headless_driver
+from source.functions import create_headless_driver, update_current_playback_info_brainfm
 from source.session.playlists.playlist import Playlist
 
 
@@ -24,7 +24,7 @@ MODE_TOGGLE = cycle(['work', 'rest'])
 BRAIN_FM_URL = "https://brain.fm/login"
 CSS_SELECTORS = {'home_button'          : '[href="/app"] > div',
                  'focus'                : '[class*="focus"]',
-                 'focus_time'           : ['div[class^=timeOptionNumber]'],
+                 'focus_time'           : 'button[class^=modules-music-player-css-DurationOption__wrapper]',
                  'relax'                : '[class*="relax"]',
                  'relax_style'          : 'div[class*="optionContainer"]:nth-child(2)',
                  'relax_duration'       : 'div[class="timeOptionNumber"]',
@@ -35,8 +35,6 @@ CSS_SELECTORS = {'home_button'          : '[href="/app"] > div',
                  'skip_track_button'    : '[class*="Skip"]',
                  'invalid_credentials': '.Toastify__progress-bar--error'
                  }
-X_PATHS = {'infinity_button'    : '//button[text()="2 hours"]/following-sibling::button',
-           }
 
 
 def alternate_mode():
@@ -70,6 +68,7 @@ class BrainFMPlaylist(Playlist):
         """Swaps browser between rest/work modes"""
         self.current_mode = alternate_mode()
         self.browser.set_current_mode(self.current_mode)
+        update_current_playback_info_brainfm()
 
 
 class BrainFMBrowser:
@@ -117,7 +116,7 @@ class BrainFMBrowser:
 
     def click_and_wait_for_load(self, button_selector='', wait_selector='', delay=10):
         """Clicks an element based on button_selector and waits for full load before continuing"""
-        print('click_and_wait')
+        print('Clicked: {} Waiting for: {}'.format(button_selector, wait_selector))
         button = self.driver.find_element_by_css_selector(button_selector)
         self.protected_click(button)
         was_found = self.wait_for_page_load(delay=delay, selector=wait_selector)
@@ -141,11 +140,6 @@ class BrainFMBrowser:
         # Choose relaxation duration
         self.click_and_wait_for_load(button_selector=CSS_SELECTORS['relax_duration'],
                                      wait_selector=CSS_SELECTORS['playback_toggle'])
-
-    # def set_duration_to_infinite(self):
-    #     # Set duration to infinite
-    #     infinity_button = self.driver.find_element_by_xpath(X_PATHS['infinity_button'])
-    #     self.protected_click(infinity_button)
 
     def click_skip_button(self):
         """Skips currently playing track and plays next"""
@@ -193,6 +187,10 @@ class BrainFMBrowser:
         except ElementClickInterceptedException:
             sleep(0.5)
             self.protected_click(button)
+        except StaleElementReferenceException:
+            return
+        except ElementNotVisibleException:
+            return
 
     def update_credentials(self, username='', password=''):
         self.username = username

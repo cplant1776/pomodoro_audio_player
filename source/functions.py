@@ -288,6 +288,14 @@ def update_current_playback_info_spotify(res=None):
     update_current_playback_info(data)
 
 
+def update_current_playback_info_brainfm():
+    screen = App.get_running_app().root.ids['session_screen']
+    screen.ids['playback_info_label'].opacity = 0
+
+    data = {'is_brainfm': True}
+    update_current_playback_info(data)
+
+
 def update_current_playback_info(data={}):
     screen = App.get_running_app().root.ids['session_screen']
 
@@ -325,3 +333,9 @@ def update_current_playback_info(data={}):
         artwork_path = os.path.join('.', 'assets', 'images', 'album_artwork', artwork_file[current_playlist_type])
         screen.playback_artwork = artwork_path
         print("Artwork not found!")
+
+    try:
+        temp = data['is_brainfm']
+        screen.ids['playback_info_label'].opacity = 0
+    except KeyError:
+        screen.ids['playback_info_label'].opacity = 1

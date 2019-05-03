@@ -100,7 +100,7 @@ class StartScreen(Screen):
     def pop_help(self):
         help_text = """
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse consectetur eget nunc eget maximus. Nam condimentum porta lacinia. Pellentesque ultrices nisi quis volutpat iaculis. Quisque dictum sem nec dignissim auctor. In hac habitasse platea dictumst. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce velit augue, eleifend a accumsan ut, pretium non augue. Praesent id imperdiet lectus, vel suscipit elit. Pellentesque ut neque ante. Mauris a turpis ullamcorper arcu facilisis cursus in pretium purus. Proin luctus a arcu eu cursus. Aenean congue ultrices commodo.
-        
+
     Vestibulum sed nulla commodo, posuere velit id, semper turpis. Donec facilisis interdum ex, eget lacinia magna. Quisque eros mauris, hendrerit elementum condimentum pellentesque, condimentum rhoncus elit. Fusce finibus rutrum posuere. Aenean augue ante, bibendum sed quam eget, consectetur hendrerit enim. Nulla condimentum sagittis tortor sed volutpat. Integer dapibus iaculis neque, ut volutpat mi venenatis id. Aenean ut ex diam. Integer fringilla condimentum enim, eu suscipit velit egestas a. Nulla a rhoncus diam.'
         """
         self.popup = UniversalHelpPopup(help_text)
@@ -301,7 +301,7 @@ class SessionScreen(Screen):
             print("pause_session_progress: no playback active")
 
     def schedule_skip_interval_progress(self):
-            Clock.schedule_once(self.skip_interval_progress, 0.5)
+        Clock.schedule_once(self.skip_interval_progress, 0.5)
 
     def skip_interval_progress(self, *args):
         # Update progress bar for skipped interval
@@ -395,16 +395,20 @@ class SpotifyPlaylistsScreen(Screen):
         box.draw_playlist_label_background()
 
     def submit_playlists(self):
-        # if self.all_playlists_selected():
-        app = App.get_running_app()
-        root_screen = app.root
-        root_screen.transition_direction = 'left'
-        root_screen.previous_screen = 'SpotifyPlaylistsScreen'
-        root_screen.current = 'LoginScreen'
-        # else:
-        #     # TODO: Add error popup
-        #     print("Not all playlists selected!")
+        if self.all_playlists_selected():
+            app = App.get_running_app()
+            root_screen = app.root
+            root_screen.transition_direction = 'left'
+            root_screen.previous_screen = 'SpotifyPlaylistsScreen'
+            root_screen.current = 'LoginScreen'
+        else:
+            self.show_error('Not all playlists selected!')
+            print("Not all playlists selected!")
         pass
+
+    def show_error(self, error_text):
+        self._popup = UniversalErrorPopup(error_text)
+        self._popup.open()
 
     def all_playlists_selected(self):
         for thumbnail_box in self.ids.playlist_select_container.children:
@@ -448,7 +452,6 @@ class SpotifySearchScreen(Screen):
                 app = App.get_running_app()
                 app.root.ids['spotify_playlist_screen'].load(self.playlist_type, data)
                 break
-
 
     @staticmethod
     def cancel():
