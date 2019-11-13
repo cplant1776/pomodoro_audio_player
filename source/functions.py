@@ -75,7 +75,7 @@ def generate_session_structure(num_of_work_intervals=4):
     return interval_sequence
 
 
-def download_temporary_image(url, destination):
+def download_temporary_image(url, destination=os.path.join('tmp', 'x.png')):
     # Send request to url
     res = requests.get(url, stream=True)
     # Check for valid response then download to temp directory
@@ -83,6 +83,9 @@ def download_temporary_image(url, destination):
         with open(destination, 'wb') as f:
             for chunk in res:
                 f.write(chunk)
+        return True
+    else:
+        return False
 
 
 def get_temp_file_path(url):
@@ -107,7 +110,7 @@ def create_headless_driver():
         options = FirefoxOptions()
         options.headless = True
         return webdriver.Firefox(options=options)
-    #     TODO: Add specific exceptions: no driver, no browser
+    #     TODO: Add specific exceptionsecrets: no driver, no browser
     except:
         print("Firefox launch failed. . .")
         # TODO: Add popup for user with what caused the error

@@ -437,7 +437,7 @@ class SpotifySearchScreen(Screen):
                                                               client_secret=PUBLIC_SPOTIFY_CLIENT_SECRET)
         sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
         # Run playlist search with search_string
-        results = sp.search(q=search_string, limit=10, type='playlist')
+        results = sp.search(q=search_string, limit=20, type='playlist')
         # Create thumbnails from the results
         self.ids.results_scrollview.populate_thumbnails(results)
 

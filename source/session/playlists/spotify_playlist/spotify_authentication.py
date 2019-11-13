@@ -5,8 +5,11 @@ import time
 
 # Third Party Imports
 from selenium import webdriver
-from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, WebDriverException
+from selenium.common.exceptions import ElementNotInteractableException, ElementClickInterceptedException, \
+    WebDriverException, NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import url_contains
 import spotipy
@@ -20,12 +23,14 @@ from source.functions import create_headless_driver
 # =========================
 # CONSTANTS
 # =========================
-PUBLIC_CLIENT_ID = 'fda8d241ac5f41d18df47391d853accb'
-PUBLIC_CLIENT_SECRET = '3c30c5317e5a4b9398f599a26e9ac428'
-SPOTIFY_SCOPE = "streaming user-read-birthdate user-read-email user-read-private user-modify-playback-state user-read-playback-state"
+PUBLIC_CLIENT_ID = '5bd79d3d2c98400abf5a1e4be73c796c'
+PUBLIC_CLIENT_SECRET = 'ff789a76518840e1a0ca6ab401933f54'
+SPOTIFY_SCOPE = "streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state"
+# SPOTIFY_SCOPE = "streaming user-read-birthdate user-read-email user-read-private user-modify-playback-state user-read-playback-state"
 REDIRECT_URI = 'http://localhost/'
 CSS_SELECTORS = {'username': '#login-username',
                  'password': '#login-password',
+                 'auth_button': '#auth-accept',
                  'login_button': '#login-button'}
 
 
@@ -105,6 +110,18 @@ class SpotifyAuthenticator:
                 quit()
 
             print("Opened %s in your browser" % auth_url)
+
+            # Click accept if present
+            try:
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, CSS_SELECTORS["auth_button"])))
+                print("Finding agree button . . .")
+                auth_btn = driver.find_element_by_css_selector(CSS_SELECTORS["auth_button"])
+                print("Clicking agree button . . . ")
+                protected_click(auth_btn)
+            except NoSuchElementException:
+                print("Failed to find agree button . . .")
+            except ElementNotInteractableException:
+                print("Cannot interact with agree button . . .")
 
             try:
                 WebDriverWait(driver, 10).until(url_contains("http://localhost/?code="))

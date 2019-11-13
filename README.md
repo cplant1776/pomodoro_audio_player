@@ -1,36 +1,26 @@
 ## Pomodoro Audio Assistant
 
-A simple GUI-based Python program that handles music playback while practicing [the Pomodoro Technique® by Francesco Cirillo](https://en.wikipedia.org/wiki/Pomodoro_Technique). The program first lets the user set up their Pomodoro (how long is each work/rest interval, and how many). Next, the user selects audio sources to play during the different types of intervals (local playlist, [brain.fm](https://brain.fm/), soon spotify playlist). Finally, the session screen will automatically shuffle the appropriate playlist for the interval and transition between intervals. The GUI is based on Kivy, so the app can be ported to Android and iPhone.
+A simple GUI-based Python program that handles music playback while practicing [the Pomodoro Technique® by Francesco Cirillo](https://en.wikipedia.org/wiki/Pomodoro_Technique). The program first lets the user set up their Pomodoro (how long is each work/rest interval, and how many). Next, the user selects audio sources to play during the different types of intervals (local playlist, [brain.fm](https://brain.fm/), and spotify playlist). Finally, the session screen will automatically shuffle the appropriate playlist for the interval and transition between intervals. The GUI is based on Kivy, so the app can be ported to Android and iPhone.
 
 ## Motivation
 
-I created this project with two objectives:
-
-1. Gain experience with working on a more complex project, as most of my experience had consisted of scripting or single-file applications.
+1. Gain experience with working on a more complex project, as most of my previous experience had consisted of scripting or single-file applications.
 2. Automate a process that I was already doing manually almost every day.
 3. Learn the basics of GUI/event-driven programming, because I had never created something requiring a fleshed out GUI
 
-This project began simply because one day I was using using the Pomodoro Technique® and got tired of manually switching the type of music I was listening to during the intervals. It began as a bare-bones script with no interface, but I figured it would be a good opportunity to advance my skills while building something I would actually use. Because I consistently make use of the program, I always have a stream of features I would like to add. This makes it easy to continue building on the project while learning more and more.
+This project began simply because one day I was using using the Pomodoro Technique® and got tired of manually switching the type of music I was listening to during the intervals. It began as a bare-bones script with no interface, but I figured it would be a good opportunity to advance my skills while building something I would actually use.
 
-## Screenshots
+## In Action
 
-Pomodoro session screen:
+![Starting a Spotify session](docs/screenshots/gif_01.gif?raw=true "Starting a Spotify session")
 
-![Pomodoro session screen](screenshots/pomodoro_session.png?raw=true "Pomodoro session screen")
+![Playback page](docs/screenshots/gif_02.gif?raw=true "Playback page")
 
-
-Browsing for a local playlist:
-
-![browsing for local playlist](screenshots/pomodoro_local_source.png?raw=true "browsing for local playlist")
-
-
-Choosing session settings
-
-![choosing_session_settings](screenshots/pomodoro_settings.png?raw=true "Choosing session settings")
+![browsing for local playlist](docs/screenshots/pomodoro_local_source.png?/raw=true "browsing for local playlist")
 
 ## Current Features
 
-* Select audio from two (2) sources: local playlist files, [brain.fm](https://brain.fm/)
+* Select audio from two (3) sources: local playlist files, [brain.fm](https://brain.fm/), or Spotify
 * Automatically shuffles (non-repeating) playlist from appropriate playlist for each interval
 * See both Pomodoro and Interval progress in real-time
 * Pause/Resume interval progress
@@ -73,14 +63,12 @@ Google Chrome
 
 ##### Webdriver
 
-To use Brain.fm as a source, you will need either Mozilla Firefox or Google Chrome and its accompanying webdriver. [More info here.](https://selenium-python.readthedocs.io/installation.html#drivers) You can find links to the drivers below:
+To use Brain.fm or Spotify as a source, you will need either Mozilla Firefox or Google Chrome and its accompanying webdriver. [More info here.](https://selenium-python.readthedocs.io/installation.html#drivers) You can find links to the drivers below:
 
 * [Mozilla Firefox - geckodriver](https://github.com/mozilla/geckodriver/releases)
 * [Google Chrome - ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads)
 
-## Upcoming Changes/Fixes
+## To-Do
 
-* Finish implementing Spotify playlists
 * Handle mid-session network drops
 * Add ability to securely store user's preferences and credentials
-* General UI prettifying
